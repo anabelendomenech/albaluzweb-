@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo - ALBALUZ</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="catalogo.js"></script>
+</head>
+<body>
+  <header>
+    <nav class="main-nav">
+      <a href="index.html" class="logo">ALBALUZ</a>
+      <ul>
+        <li><a href="index.html#sobre-nosotros">Sobre Nosotras</a></li>
+        <li><a href="index.html#como-funciona">Cómo Funciona</a></li>
+        <li><a href="agendar.html">Agendar Cita</a></li>
+        <li><a href="catalogo.html">Catálogo</a></li>
+        <li><a href="index.html#nueva-coleccion">Nueva Colección</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="index.html#contacto">Contacto</a></li>
+      </ul>
+      <button class="hamburger" aria-label="Abrir menú">&#9776;</button>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Catálogo de Vestidos</h1>
+
+    <section class="filtros">
+      <select id="filtro-tipo">
+        <option value="">Tipo</option>
+        <option value="Largo">Largos</option>
+        <option value="Corto">Cortos</option>
+        <option value="Mono">Monos</option>
+      </select>
+
+      <select id="filtro-talle">
+        <option value="">Talle</option>
+        <option value="S">S</option>
+        <option value="M">M</option>
+        <option value="L">L</option>
+      </select>
+
+      <select id="filtro-color">
+        <option value="">Color</option>
+        <option value="Rojo">Rojo</option>
+        <option value="Azul">Azul</option>
+        <option value="Negro">Negro</option>
+        <option value="Verde">Verde</option>
+        <option value="Blanco">Blanco</option>
+        <option value="Rosa">Rosa</option>
+        <option value="Dorado">Dorado</option>
+      </select>
+    </section>
+
+    <section id="contenedor-catalogo" class="catalogo-grid">
+      <!-- Aquí se cargan automáticamente los vestidos -->
+    </section>
+  </main>
+</body>
+</html>
