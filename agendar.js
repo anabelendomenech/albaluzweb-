@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const horaTurno = document.getElementById("hora-turno");
   const form = document.getElementById("form-agendar");
   const respuesta = document.getElementById("form-respuesta");
-  const scriptURL = "https://script.google.com/macros/s/TU_SCRIPT_ID/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbx6CTQtq1ic7OuEDPElEaPYAHqrx5YIU3rFi9rv6KQ2nXSYLk9g0YC66vBKZ0ksfyiZSQ/exec";
 
   const horariosBase = ["15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30"];
 
