@@ -1,53 +1,34 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const contenedor = document.getElementById("contenedor-catalogo");
+const galeria = document.getElementById("galeria-vestidos");
+const filtro = document.getElementById("filtro-color");
 
-  const tipoFiltro = document.getElementById("filtro-tipo");
-  const talleFiltro = document.getElementById("filtro-talle");
-  const colorFiltro = document.getElementById("filtro-color");
+// Ejemplo (más adelante conectamos con Drive o Sheets)
+const vestidos = [
+  {
+    imagen: "https://drive.google.com/uc?id=ID1",
+    nombre: "Vestido azul largo con brillos",
+    color: "Azul",
+    precio: "$1200",
+    descripcion: "Vestido largo azul ideal para gala"
+  },
+  // Agregar más...
+];
 
-  let vestidos = [];
+function mostrarVestidos(lista) {
+  galeria.innerHTML = "";
+  lista.forEach(v => {
+    galeria.innerHTML += `
+      <div class="vestido-card">
+        <img src="${v.imagen}" alt="${v.nombre}">
+        <div class="vestido-info">
+          <h3>${v.nombre}</h3>
+          <p>${v.descripcion}</p>
+          <strong>${v.precio}</strong>
+        </div>
+      </div>`;
+  });
+}
 
-  async function cargarVestidos() {
-    const res = await fetch("vestidos.json");
-    vestidos = await res.json();
-    renderizarVestidos(vestidos);
-  }
-
-  function renderizarVestidos(lista) {
-    contenedor.innerHTML = "";
-    lista.forEach((vestido) => {
-      const div = document.createElement("div");
-      div.className = "vestido";
-      div.innerHTML = `
-        <img src="img/${vestido.imagen}" alt="${vestido.nombre}" />
-        <h3>${vestido.nombre}</h3>
-        <p>💲${vestido.precio} - Talle: ${vestido.talle}</p>
-        <p>Color: ${vestido.color}</p>
-        <p><strong>${vestido.nuevaColeccion ? "🌟 NUEVA COLECCIÓN" : ""}</strong></p>
-      `;
-      contenedor.appendChild(div);
-    });
-  }
-
-  function aplicarFiltros() {
-    const tipo = tipoFiltro.value;
-    const talle = talleFiltro.value;
-    const color = colorFiltro.value;
-
-    const filtrados = vestidos.filter((v) => {
-      return (
-        (!tipo || v.tipo === tipo) &&
-        (!talle || v.talle === talle) &&
-        (!color || v.color.toLowerCase() === color.toLowerCase())
-      );
-    });
-
-    renderizarVestidos(filtrados);
-  }
-
-  tipoFiltro.addEventListener("change", aplicarFiltros);
-  talleFiltro.addEventListener("change", aplicarFiltros);
-  colorFiltro.addEventListener("change", aplicarFiltros);
-
-  cargarVestidos();
+mostrarVestidos(vestidos);
+filtro.addEventListener("change", () => {
+  mostrarVestidos(filtro.value === "todos" ? vestidos : vestidos.filter(v => v.color === filtro.value));
 });
