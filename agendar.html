@@ -3,42 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Agendar Cita - ALBALUZ</title>
+  <title>Agendar tu Cita - Albaluz</title>
   <link rel="stylesheet" href="styles.css" />
-  <script defer src="agendar.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Montserrat&display=swap" rel="stylesheet"/>
 </head>
-<body style="background-color: #baab7f;">
-  <main class="fullscreen">
-    <section id="agendar" class="formulario-reserva">
-      <h1>Reservá tu turno</h1>
-      <p>Para asegurarte la calidad del vestido, podés agendarte con un máximo de 1 mes de anticipación.</p>
+<body>
+  <section class="fullscreen" id="agendar-cita">
+    <h2>Agendá tu Cita</h2>
+    <p><strong>Para asegurarte la calidad del vestido, máximo agendás con 1 mes de anticipación.</strong></p>
+    
+    <form id="form-agendar">
+      <label for="fecha-evento">¿Cuándo es tu evento?</label>
+      <input type="date" id="fecha-evento" name="fecha-evento" required />
 
-      <form id="form-agendar">
-        <label for="nombre">Nombre completo</label>
-        <input type="text" id="nombre" name="nombre" required />
-
-        <label for="fecha-evento">¿Cuándo es tu evento?</label>
-        <input type="date" id="fecha-evento" name="fecha-evento" required />
-
-        <label for="fecha-cita">Seleccioná tu turno para visitarnos</label>
-        <input type="date" id="fecha-cita" name="fecha-cita" required />
-
-        <label for="cantidad-personas">¿Cuántas personas se probarán?</label>
-        <input type="number" id="cantidad-personas" name="cantidad-personas" min="1" max="5" required />
-
-        <label for="mensaje-extra">Pedidos especiales o comentarios</label>
-        <textarea id="mensaje-extra" name="mensaje-extra" placeholder="Por ejemplo: quiero probarme vestidos rojos o talles M/L..."></textarea>
-
-        <p class="anuncio">✨ Con tu reserva accedés al código <strong>ALBALUZANIVERSARIO</strong> por el 10% OFF ✨</p>
-
-        <button type="submit">Reservar ahora</button>
-      </form>
-
-      <div id="mensaje-confirmacion" class="mensaje-exito" style="display:none;">
-        <h3>🎉 ¡Reserva enviada!</h3>
-        <p>Te llegará un WhatsApp con los detalles. También te contactaremos el día anterior para confirmar.</p>
-      </div>
-    </section>
-  </main>
-</body>
-</html>
+      <label for="fecha-cita">¿Qué día querés venir a proba
