@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   ];
 
   // Hoja pública con formato: Fecha | Horario | Ocupado (✔️ o vacío)
-  const SHEET_URL = 'https://opensheet.elk.sh/https://docs.google.com/spreadsheets/d/1YJNg8ZP1ZEXAMPLE_ID/edit#gid=0/reservas';
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyGsUCt3nGVol3GsISXHxwKk7oWuRkQ9m1635Izk1vwxM9z32om4QQ0yPX1ScYMkauuPQ/exec';
 
   fechaCita.addEventListener('change', async () => {
     const diaSeleccionado = fechaCita.value;
