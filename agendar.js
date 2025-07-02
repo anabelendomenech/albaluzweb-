@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mensajeConfirmacion = document.getElementById("mensaje-confirmacion");
 
   // Configuración: URL del webhook de Google Apps Script para guardar reservas
-  const GOOGLE_SCRIPT_URL = "TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxnFKqNNrTuHyRaGr6eMqVceBb1TJLUgdZBTqkfBFILepCfRtMEjWvEYDhUU-7K8it2bQ/exec";
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
