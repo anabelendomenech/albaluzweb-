@@ -1,41 +1,25 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Agendar tu Cita - Albaluz</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Montserrat&display=swap" rel="stylesheet"/>
+  <title>Agendar - ALBALUZ</title>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-  <section class="fullscreen" id="agendar-cita">
+  <section id="agendar-cita" class="fullscreen">
     <h2>Agendá tu Cita</h2>
-    <p><strong>Para asegurarte la calidad del vestido, máximo agendás con 1 mes de anticipación.</strong></p>
-    
+    <p>Reservá hasta 1 mes antes para garantizar la calidad del vestido.</p>
     <form id="form-agendar">
-      <label for="fecha-evento">¿Cuándo es tu evento?</label>
-      <input type="date" id="fecha-evento" name="fecha-evento" required />
-
-      <label for="fecha-cita">¿Qué día querés venir a probarte?</label>
-      <input type="date" id="fecha-cita" name="fecha-cita" required />
-
-      <label for="hora-turno">Elegí tu horario</label>
-      <select id="hora-turno" name="hora-turno" required>
-        <option value="">Seleccioná una hora</option>
-      </select>
-
-      <label for="personas">¿Cuántas personas vienen?</label>
-      <input type="number" name="personas" id="personas" min="1" max="5" required />
-
-      <label for="mensaje">Pedidos adicionales (opcional)</label>
-      <textarea name="mensaje" id="mensaje" placeholder="Color que buscás, tipo de vestido, etc."></textarea>
-
-      <button type="submit" class="button">Agendar</button>
+      <label>Evento</label><input type="date" name="evento" required/>
+      <label>Cita</label><input type="date" id="fecha-cita" name="cita" required/>
+      <label>Hora</label><select id="hora-turno" name="hora" required><option value="">Seleccioná</option></select>
+      <label>Personas</label><input type="number" name="personas" min="1" max="5" required/>
+      <label>Pedidos extra (opcional)</label><textarea name="mensaje"></textarea>
+      <button type="submit" class="button">Reservar</button>
     </form>
-
     <div id="form-respuesta"></div>
   </section>
-
   <script src="agendar.js"></script>
 </body>
 </html>
