@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ALBALUZ - Alquiler de Vestidos</title>
+  <link rel="stylesheet" href="styles/styles.css" />
+  <link rel="stylesheet" href="styles/catalogo.css" />
+  <script defer src="scripts/scripts.js"></script>
+  <script defer src="scripts/catalogo.js"></script>
+</head>
+<body>
+  <!-- 🎈 CARTEL DE ANIVERSARIO -->
+  <div id="aniversario-banner">
+    <div class="contenido-banner">
+      <h2>🎉 ¡ALBALUZ cumple 2 años!</h2>
+      <p>Usá el código <strong>ALBALUZANIVERSARIO</strong> y llevate un descuento al reservar</p>
+      <button onclick="cerrarBanner()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <nav class="main-nav">
+      <div class="logo">ALBALUZ</div>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#catalogo">Catálogo</a></li>
+        <li><a href="#nueva-coleccion">Nueva Colección</a></li>
+        <li><a href="#blog">Blog</a></li>
+        <li><a href="#agendar">Agendar</a></li>
+        <li><a href="#comentarios">Comentarios</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- PORTADA -->
+  <section id="inicio" class="fullscreen">
+    <h1>ALBALUZ</h1>
+    <p>Alquiler de vestidos con estilo, propósito y amor 💕</p>
+    <div class="scroll-indicator" id="indicator">↓ Desliza para explorar ↓</div>
+  </section>
+
+  <!-- 🛍️ CATÁLOGO DINÁMICO -->
+  <section id="catalogo">
+    <h2>Catálogo de Vestidos</h2>
+
+    <div class="filtros">
+      <select id="filtro-tipo"><option value="">Tipo</option></select>
+      <select id="filtro-talle"><option value="">Talle</option></select>
+      <select id="filtro-color"><option value="">Color</option></select>
+    </div>
+
+    <div id="galeria-vestidos"></div>
+  </section>
+
+  <!-- 💎 NUEVA COLECCIÓN -->
+  <section id="nueva-coleccion">
+    <h2>Nueva Colección ✨</h2>
+    <div id="galeria-nueva"></div>
+  </section>
+
+  <!-- 📖 BLOG -->
+  <section id="blog">
+    <h2>Blog</h2>
+    <div class="blog-lista">
+      <div class="blog-item">
+        <h3>¿Por qué alquilar y no comprar?</h3>
+        <p>Descubrí las ventajas de la moda circular y cómo ayudás al planeta.</p>
+      </div>
+      <div class="blog-item">
+        <h3>Colorimetría: encontrá tu color ideal</h3>
+        <p>Aprendé a identificar los tonos que mejor te quedan según tu piel y cabello.</p>
+      </div>
+      <div class="blog-item">
+        <h3>Tipos de cortes y accesorios para cada cuerpo</h3>
+        <p>Cómo elegir vestidos que resalten lo mejor de vos y combinar accesorios.</p>
+      </div>
+      <div class="blog-item">
+        <h3>Moda consciente: más estilo, menos residuos</h3>
+        <p>Todo sobre sostenibilidad, reciclaje de prendas y consumo responsable.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 📅 AGENDAR -->
+  <section id="agendar">
+    <h2>Reservá tu turno</h2>
+    <p>Elegí tu día para probarte vestidos en nuestra tienda.</p>
+    <a href="agendar.html" class="button">Agendar ahora</a>
+    <p>🎁 Mostrá el código <strong>ALBALUZANIVERSARIO</strong> y obtené un descuento exclusivo.</p>
+  </section>
+
+  <!-- 💬 COMENTARIOS -->
+  <section id="comentarios">
+    <h2>Comentarios de Clientas</h2>
+    <form name="comentarios" method="POST" data-netlify="true">
+      <textarea name="mensaje" placeholder="Escribí tu experiencia..." required></textarea>
+      <div class="rating">
+        <label>Tu puntuación:</label>
+        <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
+      </div>
+      <button type="submit">Enviar</button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>ALBALUZ © 2025 - Moda Circular & Amor</p>
+    <a href="https://wa.me/598_________" target="_blank">📲 Escribinos por WhatsApp</a>
+  </footer>
+</body>
+</html>
