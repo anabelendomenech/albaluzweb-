@@ -1,0 +1,12 @@
+[
+  {
+    "nombre": "Vestido azul largo con brillos",
+    "imagen": "IMG_3526.jpg",
+    "tipo": "Largo",
+    "talle": "L",
+    "color": "Azul",
+    "precio": 1200,
+    "nuevaColeccion": true,
+    "noDisponible": ["2025-07-12", "2025-07-18"]
+  }
+]
