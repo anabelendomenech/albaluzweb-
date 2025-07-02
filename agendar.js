@@ -45,4 +45,49 @@ document.addEventListener("DOMContentLoaded", () => {
       cantidadPersonas,
       mensajeExtra,
       codigoDescuento: "ALBALUZANIVERSARIO",
-      tim
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      // Enviar datos a Google Sheets (Apps Script)
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(reserva),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) throw new Error("Error al guardar la reserva.");
+
+      // Mostrar mensaje de confirmación
+      form.style.display = "none";
+      mensajeConfirmacion.style.display = "block";
+
+      // Enviar WhatsApp automáticamente (abre ventana)
+      enviarWhatsApp(reserva);
+    } catch (error) {
+      alert("Hubo un problema al procesar tu reserva. Por favor, intentá de nuevo.");
+      console.error(error);
+    }
+  });
+
+  function enviarWhatsApp(reserva) {
+    // Número de teléfono del negocio (sin signos ni espacios, con código de país)
+    const telefonoNegocio = "59898256239"; // Cambiar por el real
+
+    // Mensaje para enviar por WhatsApp (url encodeado)
+    const mensaje = `
+Hola Albaluz! Tengo una reserva:
+- Nombre: ${reserva.nombre}
+- Fecha del evento: ${reserva.fechaEvento}
+- Fecha para la cita: ${reserva.fechaCita}
+- Cantidad personas: ${reserva.cantidadPersonas}
+- Comentarios: ${reserva.mensajeExtra || "Ninguno"}
+- Código descuento: ${reserva.codigoDescuento}
+`.trim();
+
+    const urlWhatsApp = `https://wa.me/${telefonoNegocio}?text=${encodeURIComponent(mensaje)}`;
+
+    // Abrir WhatsApp Web en nueva pestaña para enviar mensaje al negocio
+    window.open(urlWhatsApp, "_blank");
+  }
+});
