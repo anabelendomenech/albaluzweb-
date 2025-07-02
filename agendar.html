@@ -6,14 +6,90 @@
   <title>Agendar tu Cita - Albaluz</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Montserrat&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #baab7f;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    #agendar-cita {
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1em;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      text-align: left;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input, select, textarea, button {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+
+    button {
+      background-color: #ba5970;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #9a475c;
+    }
+
+    #form-respuesta {
+      margin-top: 15px;
+      color: green;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      #agendar-cita {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <section class="fullscreen" id="agendar-cita">
+  <section id="agendar-cita">
     <h2>Agendá tu Cita</h2>
     <p><strong>Para asegurarte la calidad del vestido, máximo agendás con 1 mes de anticipación.</strong></p>
     
     <form id="form-agendar">
       <label for="fecha-evento">¿Cuándo es tu evento?</label>
-      <input type="date" id="fecha-evento" name="fecha-evento" required />
-
-      <label for="fecha-cita">¿Qué día querés venir a proba
+      <input type="date" id="fecha-evento" name="fecha-evento" requi
