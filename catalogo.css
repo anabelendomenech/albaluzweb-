@@ -1,0 +1,62 @@
+#catalogo, #nueva-coleccion {
+  padding: 50px 20px;
+  background: #fffaf9;
+  text-align: center;
+}
+
+.filtros {
+  margin-bottom: 20px;
+}
+
+.filtros select {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.vestido {
+  display: inline-block;
+  width: 250px;
+  margin: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #f4f4f4;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.vestido img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+#aniversario-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: url('../img/globos.jpg') center/cover no-repeat;
+  color: white;
+  text-align: center;
+  padding: 30px 10px;
+  z-index: 9999;
+}
+
+#aniversario-banner .contenido-banner {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: auto;
+}
+
+#aniversario-banner button {
+  margin-top: 15px;
+  padding: 8px 15px;
+  border: none;
+  background: #ba5970;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
