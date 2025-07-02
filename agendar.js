@@ -1,93 +1,100 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("form-agendar");
-  const mensajeConfirmacion = document.getElementById("mensaje-confirmacion");
+document.addEventListener('DOMContentLoaded', async () => {
+  const fechaEvento = document.getElementById('fecha-evento');
+  const fechaCita = document.getElementById('fecha-cita');
+  const horaTurno = document.getElementById('hora-turno');
+  const form = document.getElementById('form-agendar');
+  const formRespuesta = document.getElementById('form-respuesta');
 
-  // Configuración: URL del webhook de Google Apps Script para guardar reservas
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxnFKqNNrTuHyRaGr6eMqVceBb1TJLUgdZBTqkfBFILepCfRtMEjWvEYDhUU-7K8it2bQ/exec";
+  // Horarios disponibles fijos
+  const horariosBase = [
+    "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"
+  ];
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  // Hoja pública con formato: Fecha | Horario | Ocupado (✔️ o vacío)
+  const SHEET_URL = 'https://opensheet.elk.sh/https://docs.google.com/spreadsheets/d/1YJNg8ZP1ZEXAMPLE_ID/edit#gid=0/reservas';
 
-    // Recoger datos del formulario
-    const nombre = form.nombre.value.trim();
-    const fechaEvento = form["fecha-evento"].value;
-    const fechaCita = form["fecha-cita"].value;
-    const cantidadPersonas = form["cantidad-personas"].value;
-    const mensajeExtra = form["mensaje-extra"].value.trim();
-
-    // Validar fechas
+  fechaCita.addEventListener('change', async () => {
+    const diaSeleccionado = fechaCita.value;
     const hoy = new Date();
-    const fechaEventoDate = new Date(fechaEvento);
-    const fechaCitaDate = new Date(fechaCita);
+    const fechaSel = new Date(diaSeleccionado);
 
-    if (fechaEventoDate < hoy) {
-      alert("La fecha del evento no puede ser pasada.");
-      return;
-    }
-    if (fechaCitaDate < hoy) {
-      alert("La fecha para visitarnos no puede ser pasada.");
+    const diferenciaDias = (fechaSel - hoy) / (1000 * 60 * 60 * 24);
+    if (diferenciaDias > 31) {
+      alert("Solo podés agendar con hasta un mes de anticipación.");
+      fechaCita.value = "";
       return;
     }
 
-    // Validar máximo 1 mes de anticipación (aprox 31 días)
-    const diffMs = fechaCitaDate - hoy;
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-    if (diffDays > 31) {
-      alert("Podés agendar con un máximo de 1 mes de anticipación.");
-      return;
-    }
+    // Limpiar y cargar los horarios disponibles
+    horaTurno.innerHTML = `<option value="">Cargando...</option>`;
+    const horariosDisponibles = await obtenerHorariosDisponibles(diaSeleccionado);
+    horaTurno.innerHTML = `<option value="">Seleccioná una hora</option>`;
+    horariosDisponibles.forEach(hora => {
+      const option = document.createElement('option');
+      option.value = hora;
+      option.textContent = hora;
+      horaTurno.appendChild(option);
+    });
 
-    // Crear objeto reserva
-    const reserva = {
-      nombre,
-      fechaEvento,
-      fechaCita,
-      cantidadPersonas,
-      mensajeExtra,
-      codigoDescuento: "ALBALUZANIVERSARIO",
-      timestamp: new Date().toISOString(),
-    };
-
-    try {
-      // Enviar datos a Google Sheets (Apps Script)
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify(reserva),
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) throw new Error("Error al guardar la reserva.");
-
-      // Mostrar mensaje de confirmación
-      form.style.display = "none";
-      mensajeConfirmacion.style.display = "block";
-
-      // Enviar WhatsApp automáticamente (abre ventana)
-      enviarWhatsApp(reserva);
-    } catch (error) {
-      alert("Hubo un problema al procesar tu reserva. Por favor, intentá de nuevo.");
-      console.error(error);
+    if (horariosDisponibles.length === 0) {
+      horaTurno.innerHTML = `<option value="">No hay horarios disponibles</option>`;
     }
   });
 
-  function enviarWhatsApp(reserva) {
-    // Número de teléfono del negocio (sin signos ni espacios, con código de país)
-    const telefonoNegocio = "59898256239"; // Cambiar por el real
+  async function obtenerHorariosDisponibles(fecha) {
+    try {
+      const res = await fetch(SHEET_URL);
+      const datos = await res.json();
+      const horariosOcupados = datos
+        .filter(f => f.Fecha === fecha && f.Ocupado === "✔️")
+        .map(f => f.Horario);
 
-    // Mensaje para enviar por WhatsApp (url encodeado)
-    const mensaje = `
-Hola Albaluz! Tengo una reserva:
-- Nombre: ${reserva.nombre}
-- Fecha del evento: ${reserva.fechaEvento}
-- Fecha para la cita: ${reserva.fechaCita}
-- Cantidad personas: ${reserva.cantidadPersonas}
-- Comentarios: ${reserva.mensajeExtra || "Ninguno"}
-- Código descuento: ${reserva.codigoDescuento}
-`.trim();
-
-    const urlWhatsApp = `https://wa.me/${telefonoNegocio}?text=${encodeURIComponent(mensaje)}`;
-
-    // Abrir WhatsApp Web en nueva pestaña para enviar mensaje al negocio
-    window.open(urlWhatsApp, "_blank");
+      return horariosBase.filter(h => !horariosOcupados.includes(h));
+    } catch (err) {
+      console.error("Error cargando horarios:", err);
+      return [];
+    }
   }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = {
+      evento: fechaEvento.value,
+      cita: fechaCita.value,
+      hora: horaTurno.value,
+      personas: document.getElementById('personas').value,
+      mensaje: document.getElementById('mensaje').value
+    };
+
+    // Enviar a Google Sheets vía webhook de App Script (lo configuro ahora si querés)
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbEXAMPLE_SCRIPT_ID/exec';
+
+    try {
+      const res = await fetch(scriptURL, {
+        method: 'POST',
+        body: new URLSearchParams(data)
+      });
+
+      // WhatsApp automático a cliente
+      const mensajeWsp = `¡Hola! Gracias por reservar con ALBALUZ 💫
+📅 Evento: ${data.evento}
+🛍️ Cita: ${data.cita} a las ${data.hora}
+👯‍♀️ Personas: ${data.personas}
+📎 Extra: ${data.mensaje || '---'}
+
+🎉 Código de descuento: *ALBALUZANIVERSARIO*
+
+¡Te esperamos! 🌸`;
+
+      const linkWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensajeWsp)}`;
+      window.open(linkWhatsApp, "_blank");
+
+      form.reset();
+      formRespuesta.innerHTML = "<p>¡Reserva registrada! Te llegará un WhatsApp con el resumen.</p>";
+    } catch (err) {
+      console.error("Error al agendar:", err);
+      formRespuesta.innerHTML = "<p>Hubo un error. Intentá de nuevo más tarde.</p>";
+    }
+  });
 });
