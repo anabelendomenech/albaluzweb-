@@ -1,4 +1,4 @@
-/* RESET Y FUENTES */
+/* Reset general */
 * {
   margin: 0;
   padding: 0;
@@ -12,14 +12,15 @@ body, html {
   scroll-behavior: smooth;
 }
 
-/* HEADER Y NAV */
+/* Navbar */
 header {
-  background-color: #ba5970;
-  color: #fff;
-  padding: 15px 30px;
-  position: sticky;
+  background-color: #fff;
+  padding: 10px 20px;
+  position: fixed;
+  width: 100%;
   top: 0;
-  z-index: 999;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .main-nav {
@@ -28,229 +29,214 @@ header {
   align-items: center;
 }
 
-.logo {
+.main-nav .logo {
   font-size: 1.8em;
   font-weight: bold;
-  letter-spacing: 2px;
+  color: #ba5970;
 }
 
 .main-nav ul {
-  display: flex;
   list-style: none;
-  gap: 15px;
+  display: flex;
+  gap: 20px;
 }
 
-.main-nav a {
+.main-nav ul li a {
   text-decoration: none;
-  color: white;
+  color: #333;
   font-weight: 600;
 }
 
-/* BANNER ANIVERSARIO */
-.aniversario-banner {
-  background-color: #fff2d6;
+.main-nav ul li a:hover {
   color: #ba5970;
-  text-align: center;
-  padding: 12px;
-  font-weight: bold;
-  font-size: 1em;
-  letter-spacing: 1px;
 }
 
-/* INICIO */
-#inicio {
-  height: 100vh;
-  background-image: url('img/fondo.jpg');
-  background-size: cover;
-  background-position: center;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+/* Secciones */
+main {
+  padding-top: 80px;
 }
 
-.inicio-titulo {
-  font-size: 3em;
-  font-weight: 700;
-}
-
-.inicio-subtitulo {
-  font-size: 1.4em;
-  margin: 15px 0;
-}
-
-.button-catalogo {
-  background-color: #fff;
-  color: #ba5970;
-  font-weight: bold;
-  padding: 10px 20px;
-  border-radius: 10px;
-  text-decoration: none;
-  transition: background 0.3s;
-}
-
-.button-catalogo:hover {
-  background-color: #ffe3e3;
-}
-
-/* SECCIONES */
-section.fullscreen {
-  min-height: 100vh;
+section {
   padding: 60px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   text-align: center;
 }
 
-section h2 {
+/* Aniversario */
+.aniversario-banner {
+  background: url('img/globos.jpg') center/cover no-repeat;
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 1.2em;
+  border-bottom: 4px solid #fff;
+}
+
+.aniversario-banner h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+/* Hero */
+.hero {
+  background-color: #ba5970;
+  color: white;
+  padding: 80px 20px;
+}
+
+.hero h2 {
   font-size: 2.2em;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 1.1em;
+  margin-bottom: 20px;
+}
+
+.button {
+  padding: 10px 20px;
+  background-color: white;
+  color: #ba5970;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.button:hover {
+  background-color: #f7f7f7;
+}
+
+/* Misión */
+#mision p {
+  max-width: 600px;
+  margin: 20px auto;
 }
 
 .responsive-img {
-  max-width: 80%;
+  max-width: 90%;
   height: auto;
-  border-radius: 10px;
-  margin-top: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
 }
 
-/* SLIDER NUEVA COLECCIÓN */
+/* Nueva Colección */
 .slider {
   display: flex;
+  gap: 15px;
   overflow-x: auto;
-  gap: 20px;
   padding: 10px;
   scroll-snap-type: x mandatory;
 }
 
 .slider img {
-  scroll-snap-align: center;
-  width: 250px;
+  width: 300px;
   border-radius: 10px;
+  scroll-snap-align: start;
+  flex-shrink: 0;
 }
 
-/* BLOG */
+/* FAQ */
+#faq .faq-item {
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: left;
+}
+
+#faq .faq-item h3 {
+  background-color: white;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: 600;
+  color: #ba5970;
+  border: 1px solid #ba5970;
+}
+
+.faq-content {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 0 0 5px 5px;
+  display: none;
+}
+
+/* Blog */
 #blog .row {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .blog-post {
-  background: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  max-width: 250px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  width: 250px;
 }
 
 .blog-post img {
   width: 100%;
-  border-radius: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
-/* FAQ */
-.faq-item {
-  margin: 20px 0;
-  width: 80%;
-  max-width: 700px;
-  text-align: left;
-}
-
-.faq-item h3 {
-  cursor: pointer;
-  background: #fff;
-  padding: 10px;
-  border-radius: 5px;
-  color: #ba5970;
-}
-
-.faq-content {
-  display: none;
-  padding: 10px;
-  background: #f8f8f8;
-  border-radius: 0 0 5px 5px;
-  color: #000;
-}
-
-/* UBICACIÓN */
-#ubicacion iframe {
-  margin-top: 20px;
-  border-radius: 10px;
-}
-
-/* FOOTER */
+/* Footer */
 footer {
-  background-color: #ba5970;
-  color: white;
-  padding: 20px;
+  background-color: white;
+  color: #333;
   text-align: center;
+  padding: 30px 20px;
+  font-size: 0.9em;
 }
 
 footer a {
-  color: #fff;
+  color: #ba5970;
+  text-decoration: none;
+}
+
+footer a:hover {
   text-decoration: underline;
 }
 
-.whatsapp-btn {
-  background: #25D366;
-  color: white;
-  padding: 10px 15px;
-  margin-top: 10px;
-  display: inline-block;
-  border-radius: 10px;
-  text-decoration: none;
-}
-
-.whatsapp-btn:hover {
-  background: #128C7E;
-}
-
-/* BOTONES */
-.button {
-  background-color: #ba5970;
-  color: white;
-  padding: 12px 25px;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: bold;
-  margin-top: 15px;
-}
-
-.button:hover {
-  background-color: #8c3f56;
-}
-
-/* RESPONSIVE */
+/* Responsive */
 @media (max-width: 768px) {
   .main-nav ul {
     flex-direction: column;
-    background: #ba5970;
+    background-color: #fff;
     position: absolute;
     top: 60px;
-    right: 20px;
+    right: 10px;
+    border-radius: 5px;
     display: none;
-    border-radius: 8px;
-    padding: 10px;
   }
 
-  .main-nav ul.active {
-    display: block;
+  .main-nav.active ul {
+    display: flex;
   }
 
-  .main-nav .hamburger {
+  .hamburger {
     display: block;
     cursor: pointer;
   }
 
-  .main-nav .hamburger div {
-    width: 25px;
-    height: 3px;
-    background: white;
-    margin: 4px 0;
+  .slider {
+    flex-direction: column;
+    align-items: center;
   }
+
+  .blog-post {
+    width: 90%;
+  }
+}
+
+.hamburger {
+  display: none;
+}
+
+.hamburger div {
+  width: 25px;
+  height: 3px;
+  background-color: #333;
+  margin: 4px 0;
 }
