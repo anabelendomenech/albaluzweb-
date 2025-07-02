@@ -1,68 +1,94 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const fechaEventoInput = document.getElementById('fecha-evento');
-  const fechaCitaSelect = document.getElementById('fecha-cita');
-  const horaCitaSelect = document.getElementById('hora-cita');
-  const form = document.getElementById('form-agendar');
-  const formMessage = document.getElementById('form-message');
 
-  // Horarios base con media hora entre 15 y 18:30 hs
-  const horariosBase = [
-    "15", "15:30", "16", "16:30", "17", "17:30", "18", "18:30"
-  ];
+const API_URL = "https://script.google.com/macros/s/AKfycbxGi1BB8-eaffVnpk06pesNEoF1bTJyRTZsSasoPorQn5NM_ebeHVAymvbS4EnlCBoYBw/exec"; // reemplazar con tu URL de deployment
 
-  // Simulación: horarios ocupados para fechas
-  // Aquí en producción se consultaría Google Sheets para obtener horarios ocupados
-  // El formato: { 'YYYY-MM-DD': ['15', '16:30', ...] }
-  const horariosOcupados = {
-    // Ejemplo: '2025-07-12': ['15', '16:30'],
-    // Se reemplazará con datos reales desde Google Sheets
-  };
+document.addEventListener("DOMContentLoaded", () => {
+  const fechaEventoInput = document.getElementById("fecha-evento");
+  const fechaCitaSelect = document.getElementById("fecha-cita");
+  const horaCitaSelect = document.getElementById("hora-cita");
+  const form = document.getElementById("form-agendar");
+  const formMessage = document.getElementById("form-message");
 
-  // Función para cargar fechas disponibles máximo 1 mes desde hoy
-  function cargarFechasDisponibles() {
-    fechaCitaSelect.innerHTML = '<option value="" disabled selected>Seleccioná una fecha</option>';
+  // Cargar fechas disponibles (máximo 1 mes)
+  function cargarFechas() {
+    fechaCitaSelect.innerHTML = `<option value="" disabled selected>Seleccioná una fecha</option>`;
     const hoy = new Date();
     for (let i = 0; i < 31; i++) {
-      const fecha = new Date(hoy);
-      fecha.setDate(hoy.getDate() + i);
-      const fechaStr = fecha.toISOString().split('T')[0];
-      fechaCitaSelect.innerHTML += `<option value="${fechaStr}">${fecha.toLocaleDateString()}</option>`;
+      const f = new Date(hoy);
+      f.setDate(hoy.getDate() + i);
+      const iso = f.toISOString().split("T")[0];
+      const display = f.toLocaleDateString();
+      fechaCitaSelect.innerHTML += `<option value="${iso}">${display}</option>`;
     }
   }
 
-  // Al cambiar fecha, carga horarios disponibles
-  fechaCitaSelect.addEventListener('change', () => {
-    horaCitaSelect.innerHTML = '<option value="" disabled selected>Seleccioná un horario</option>';
+  // Al cambiar fecha, consultar horarios libres desde API
+  fechaCitaSelect.addEventListener("change", async () => {
+    horaCitaSelect.innerHTML = `<option value="" disabled selected>Cargando horarios...</option>`;
     const fecha = fechaCitaSelect.value;
-    const ocupados = horariosOcupados[fecha] || [];
 
-    horariosBase.forEach(horario => {
-      if (!ocupados.includes(horario)) {
-        horaCitaSelect.innerHTML += `<option value="${horario}">${horario}</option>`;
+    try {
+      const response = await fetch(`${API_URL}?action=getHorarios&fecha=${fecha}`);
+      const data = await response.json();
+
+      if (data.horarios && data.horarios.length > 0) {
+        horaCitaSelect.innerHTML = `<option value="" disabled selected>Seleccioná un horario</option>`;
+        data.horarios.forEach(h => {
+          horaCitaSelect.innerHTML += `<option value="${h}">${h}</option>`;
+        });
+      } else {
+        horaCitaSelect.innerHTML = `<option disabled selected>No hay horarios disponibles</option>`;
       }
-    });
-
-    if (horaCitaSelect.options.length === 1) {
-      horaCitaSelect.innerHTML = '<option disabled selected>No hay horarios disponibles</option>';
+    } catch (error) {
+      horaCitaSelect.innerHTML = `<option disabled selected>Error al cargar horarios</option>`;
     }
   });
 
-  // Al enviar el formulario
-  form.addEventListener('submit', (e) => {
+  // Enviar reserva a API
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Validaciones extra si querés agregar
+    const reserva = {
+      nombre: form.nombre ? form.nombre.value.trim() : "Anonimo",
+      evento: form["fecha-evento"].value.trim(),
+      fechaCita: form["fecha-cita"].value.trim(),
+      horario: form["hora-cita"].value.trim(),
+      personas: form.personas.value.trim(),
+      mensaje: form.mensaje.value.trim(),
+      action: "guardarReserva",
+    };
 
-    // Simulación de guardar reserva y enviar notificaciones
-    formMessage.style.color = 'green';
-    formMessage.textContent = '¡Cita agendada exitosamente!';
+    // Validaciones básicas
+    if (!reserva.fechaCita || !reserva.horario) {
+      formMessage.style.color = "red";
+      formMessage.textContent = "Por favor, completá todos los campos.";
+      return;
+    }
 
-    // Aquí va el código para enviar a Google Sheets y WhatsApp (API o Zapier)
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "guardarReserva", reserva }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    // Opcional: resetear formulario
-    form.reset();
-    horaCitaSelect.innerHTML = '<option value="" disabled selected>Seleccioná un horario</option>';
+      const data = await res.json();
+      if (data.success) {
+        formMessage.style.color = "green";
+        formMessage.textContent = "¡Cita agendada exitosamente!";
+
+        // Resetear formulario y horarios
+        form.reset();
+        horaCitaSelect.innerHTML = `<option value="" disabled selected>Seleccioná un horario</option>`;
+      } else {
+        throw new Error(data.error || "Error desconocido");
+      }
+    } catch (error) {
+      formMessage.style.color = "red";
+      formMessage.textContent = `Error: ${error.message}`;
+    }
   });
 
-  cargarFechasDisponibles();
+  cargarFechas();
 });
