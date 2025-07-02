@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agendar Cita - ALBALUZ</title>
+  <link rel="stylesheet" href="styles/agendar.css" />
+  <script defer src="scripts/agendar.js"></script>
+</head>
+<body>
+  <main>
+    <section id="agendar">
+      <h1>Reservá tu turno</h1>
+      <form name="agendar" method="POST" data-netlify="true">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" name="nombre" required />
+
+        <label for="email">Correo electrónico</label>
+        <input type="email" name="email" required />
+
+        <label for="telefono">Teléfono</label>
+        <input type="tel" name="telefono" required />
+
+        <label for="evento">¿Cuándo es tu evento?</label>
+        <input type="date" name="evento" required />
+
+        <label for="turno">¿Qué día querés venir?</label>
+        <input type="date" name="turno" required />
+
+        <label for="personas">¿Cuántas personas vienen a probarse?</label>
+        <input type="number" name="personas" min="1" max="5" required />
+
+        <button type="submit">Agendar</button>
+      </form>
+
+      <p class="descuento">🎁 Mostrá este código en tienda para obtener tu descuento: <strong>ALBALUZANIVERSARIO</strong></p>
+    </section>
+  </main>
+</body>
+</html>
