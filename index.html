@@ -1,95 +1,96 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Albaluz - Alquiler de Vestidos</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-  <div class="aniversario-banner">
-    🎉 ¡Cumplimos 2 años! Al hacer tu reserva, llevás un 10% de descuento. Válido todo julio. Código: <strong>ALBALUZANIVERSARIO</strong>
-  </div>
-
   <header>
     <nav class="main-nav">
       <div class="logo">ALBALUZ</div>
-      <button class="hamburger"><div></div><div></div><div></div></button>
       <ul>
-        <li><a href="#inicio">Inicio</a></li>
-        <li><a href="#sobre-nosotras">Nosotras</a></li>
-        <li><a href="#como-funciona">Cómo Funciona</a></li>
         <li><a href="catalogo.html">Catálogo</a></li>
-        <li><a href="#nueva-coleccion">Nueva Colección</a></li>
-        <li><a href="#blog">Blog</a></li>
-        <li><a href="#agendar-cita">Agendar</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="#ubicacion">Ubicación</a></li>
-        <li><a href="#contacto">Contacto</a></li>
+        <li><a href="agendar.html">Agendar</a></li>
+        <li><a href="#contacto">Contáctanos</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
-    <section id="inicio" class="fullscreen inicio-modern">
-      <h1 class="inicio-titulo">Tu estilo, nuestra magia</h1>
-      <p class="inicio-subtitulo">Viví la experiencia ALBALUZ</p>
-      <a href="catalogo.html" class="button-catalogo">Ver Catálogo</a>
+    <!-- Cartel de Aniversario -->
+    <section class="aniversario-banner">
+      <h1>¡Cumplimos 2 años!</h1>
+      <p>Al hacer tu reserva, llevás un 10% de descuento. Válido todo julio.</p>
     </section>
 
-    <section id="sobre-nosotras" class="fullscreen">
-      <h2>Sobre Nosotras</h2>
-      <p>Somos mamá e hija con pasión por la moda y la sustentabilidad.</p>
-      <p>Alquilá con conciencia y elegancia. 🌱</p>
+    <!-- Bienvenida + botón -->
+    <section class="hero">
+      <h2>Alquiler de Vestidos Elegantes</h2>
+      <p>Elegí tu estilo. Reservá tu cita. ¡Viví la experiencia Albaluz!</p>
+      <a href="catalogo.html" class="button">Ver Vestidos</a>
     </section>
 
-    <section id="como-funciona" class="fullscreen">
-      <h2>Cómo Funciona</h2>
-      <p>Elegís tu vestido, reservás tu turno, lo probás y brillás.</p>
+    <!-- Nuestra misión -->
+    <section id="mision" class="fullscreen">
+      <h2>Nuestra Misión</h2>
+      <p>Somos madre e hija apostando por la moda circular: accesible, sostenible y con estilo.</p>
+      <img src="sobreNosotros.jpeg" alt="Sobre nosotras" class="responsive-img">
     </section>
 
+    <!-- Nueva colección -->
     <section id="nueva-coleccion" class="fullscreen">
       <h2>Nueva Colección</h2>
-      <div class="slider"><img src="IMG_3526.jpg" alt=""><img src="IMG_3530.jpg" alt=""><img src="IMG_3535.jpg" alt=""></div>
-    </section>
-
-    <section id="blog">
-      <h2>Blog de Estilo y Consciencia</h2>
-      <div class="row">
-        <div class="blog-post"><img src="img/blog1.jpg"><p>¿Por qué alquilar vestidos?</p></div>
-        <div class="blog-post"><img src="img/blog2.jpg"><p>Colorimetría para tu tono de piel</p></div>
-        <div class="blog-post"><img src="img/blog3.jpg"><p>Accesorios según el tipo de evento</p></div>
-        <div class="blog-post"><img src="img/blog4.jpg"><p>Moda circular: vestí con conciencia</p></div>
+      <div class="slider">
+        <img src="IMG_3526.jpeg" alt="Vestido nuevo">
+        <img src="IMG_3527.jpeg" alt="Vestido nuevo">
+        <img src="IMG_3528.jpeg" alt="Vestido nuevo">
       </div>
     </section>
 
-    <section id="agendar-cita" class="fullscreen">
-      <h2>Agendá tu Cita</h2>
-      <p>Reservá con hasta 1 mes de anticipación para garantizar calidad del vestido.</p>
-      <a href="agendar.html" class="button">Agendar ahora</a>
-    </section>
-
-    <section id="faq" class="fullscreen">
+    <!-- Preguntas frecuentes -->
+    <section id="faq">
       <h2>Preguntas Frecuentes</h2>
-      <div class="faq-item"><h3>¿Cómo me agendo?</h3><div class="faq-content"><p>Desde la web o escribinos por WhatsApp o Instagram.</p></div></div>
-      <div class="faq-item"><h3>¿Cuánto anticipación necesito?</h3><div class="faq-content"><p>Podés reservar hasta 1 mes antes. Siempre actualizamos nuestro stock.</p></div></div>
+      <div class="faq-item">
+        <h3>¿Cómo alquilar?</h3><div class="faq-content"><p>Reservá tu cita y elegí tu vestido en tienda.</p></div>
+      </div>
+      <div class="faq-item">
+        <h3>¿Se aceptan devoluciones?</h3><div class="faq-content"><p>Sí, dentro del plazo acordado y en condiciones óptimas.</p></div>
+      </div>
+      <div class="faq-item">
+        <h3>¿Cuánto anticipo necesito?</h3><div class="faq-content"><p>Máximo 1 mes antes de tu evento.</p></div>
+      </div>
+      <div class="faq-item">
+        <h3>¿Puedo ir acompañada?</h3><div class="faq-content"><p>¡Claro! Podés venir con quien quieras.</p></div>
+      </div>
+      <div class="faq-item">
+        <h3>¿Cómo son los precios?</h3><div class="faq-content"><p>Desde $900 a $1600, según el vestido.</p></div>
+      </div>
     </section>
 
-    <section id="ubicacion" class="fullscreen">
-      <h2>¿Dónde estamos?</h2>
-      <p>Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</p>
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!..." width="300" height="300" allowfullscreen="" loading="lazy"></iframe>
+    <!-- Blog -->
+    <section id="blog">
+      <h2>Blog</h2>
+      <div class="row">
+        <div class="blog-post"><img src="img/blog1.jpg"><p>¿Por qué alquilar vestidos?</p></div>
+        <div class="blog-post"><img src="img/blog2.jpg"><p>Colores según tu tono de piel</p></div>
+        <div class="blog-post"><img src="img/blog3.jpg"><p>Accesorios y cortes ideales</p></div>
+      </div>
     </section>
+
+    <!-- Contacto -->
+    <footer id="contacto">
+      <h2>Contacto</h2>
+      <p><strong>📍 Ubicación:</strong> Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</p>
+      <p><strong>📞 Teléfono:</strong> +598 9825 6239</p>
+      <p><strong>📧 Mail:</strong> domenechanaa@gmail.com</p>
+      <p><strong>Instagram:</strong> <a href="https://www.instagram.com/albaluz_alquilerdevestidos" target="_blank">@albaluz_alquilerdevestidos</a></p>
+      <p><strong>Facebook:</strong> Albaluz Alquiler de vestidos</p>
+      <p><strong>TikTok:</strong> albaluz_alquilerdevesti2</p>
+    </footer>
   </main>
 
-  <footer id="contacto">
-    <h2>Contacto</h2>
-    <p>📞 <a href="tel:+59898256239">+598 98 256 239</a> | ✉️ <a href="mailto:domenechanaa@gmail.com">domenechanaa@gmail.com</a></p>
-    <a href="https://wa.me/59898256239" class="whatsapp-btn" target="_blank">WhatsApp</a>
-  </footer>
-
-  <script src="menu.js"></script>
   <script src="scripts.js"></script>
 </body>
 </html>
