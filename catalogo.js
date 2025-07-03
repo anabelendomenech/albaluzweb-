@@ -1,49 +1,50 @@
-const vestidos = [
-  {
-    nombre: "Vestido azul largo con brillos",
-    imagen: "IMG_3526.jpeg",
-    color: "azul",
-    descripcion: "Elegante vestido largo azul con detalles brillantes, ideal para ocasiones especiales.",
-  },
-  {
-    nombre: "Vestido corto rojo",
-    imagen: "IMG_3527.jpeg",
-    color: "rojo",
-    descripcion: "Vestido corto rojo vibrante, perfecto para fiestas y eventos casuales.",
-  },
-  {
-    nombre: "Vestido largo negro",
-    imagen: "IMG_3528.jpeg",
-    color: "negro",
-    descripcion: "Clásico vestido largo negro, elegante y atemporal.",
-  },
-  // Agregá más vestidos según tu colección
-];
-
-const contenedor = document.getElementById("catalogo-vestidos");
+const ID_CARPETA = "1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W";
+const galeria = document.getElementById("galeria");
 const filtroColor = document.getElementById("filtro-color");
 
-function mostrarVestidos(filtro = "all") {
-  contenedor.innerHTML = "";
+async function cargarVestidos() {
+  const url = `https://www.googleapis.com/drive/v3/files?q='${ID_CARPETA}'+in+parents&key=AIzaSyD7A0RlH2kNzJ0&fields=files(id,name,mimeType)&orderBy=name`;
 
-  const filtrados = filtro === "all" ? vestidos : vestidos.filter(v => v.color === filtro);
+  const respuesta = await fetch(url);
+  const datos = await respuesta.json();
 
-  filtrados.forEach(v => {
-    const card = document.createElement("div");
-    card.classList.add("vestido-card");
+  galeria.innerHTML = "";
 
-    card.innerHTML = `
-      <img src="vestidos/${v.imagen}" alt="${v.nombre}" />
-      <h3>${v.nombre}</h3>
-      <p>${v.descripcion}</p>
-    `;
+  datos.files.forEach(vestido => {
+    if (vestido.mimeType.startsWith("image/")) {
+      const urlImagen = `https://drive.google.com/uc?id=${vestido.id}`;
+      const nombre = vestido.name.replace(/\.[^/.]+$/, "");
+      const color = detectarColor(nombre);
 
-    contenedor.appendChild(card);
+      const item = document.createElement("div");
+      item.className = "vestido-item";
+      item.setAttribute("data-color", color);
+
+      item.innerHTML = `
+        <img src="${urlImagen}" alt="${nombre}">
+        <p>${nombre}</p>
+      `;
+
+      galeria.appendChild(item);
+    }
   });
 }
 
-filtroColor.addEventListener("change", e => {
-  mostrarVestidos(e.target.value);
+function detectarColor(nombre) {
+  const colores = ["Azul", "Rojo", "Negro", "Verde", "Rosa", "Blanco"];
+  const encontrado = colores.find(color => nombre.toLowerCase().includes(color.toLowerCase()));
+  return encontrado || "Otro";
+}
+
+filtroColor.addEventListener("change", () => {
+  const colorSeleccionado = filtroColor.value;
+  document.querySelectorAll(".vestido-item").forEach(item => {
+    if (!colorSeleccionado || item.dataset.color === colorSeleccionado) {
+      item.style.display = "block";
+    } else {
+      item.style.display = "none";
+    }
+  });
 });
 
-mostrarVestidos();
+cargarVestidos();
