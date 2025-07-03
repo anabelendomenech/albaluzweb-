@@ -91,7 +91,7 @@ main {
 }
 
 .inicio-columna.imagen {
-  background-image: albaluz.JPG;
+  background-image: url('albaluz.JPG');
   background-size: cover;
   background-position: center;
   min-height: 400px;
