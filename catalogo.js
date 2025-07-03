@@ -3,7 +3,9 @@ const galeria = document.getElementById("galeria");
 const filtroColor = document.getElementById("filtro-color");
 
 async function cargarVestidos() {
-  const url = `https://www.googleapis.com/drive/v3/files?q='${ID_CARPETA}'+in+parents&key=AIzaSyD7A0RlH2kNzJ0&fields=files(id,name,mimeType)&orderBy=name`;
+  const API_KEY = 'AIzaSyAhMwiBz4IQ5QEB_lM4RRanekuWR52zdvY';
+const url = `https://www.googleapis.com/drive/v3/files?q='${ID_CARPETA}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType)&orderBy=name`;
+
 
   const respuesta = await fetch(url);
   const datos = await respuesta.json();
