@@ -88,6 +88,7 @@ main {
 .inicio-columna {
   flex: 1 1 300px;
   margin: 20px;
+  justify-content: center;
 }
 
 .inicio-columna.imagen {
@@ -125,6 +126,7 @@ main {
   display: inline-block;
   transition: background-color 0.3s ease;
   box-shadow: 0 4px 8px rgba(186, 89, 112, 0.4);
+  justify-content: center;
 }
 
 .button:hover {
