@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Prueba Drive</title>
+  <style>
+    #catalogo {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+    }
+    .vestido img {
+      width: 100%;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Catálogo desde Drive</h2>
+  <div id="catalogo">Cargando vestidos...</div>
+
+  <script>
+    const DRIVE_API_KEY = 'AIzaSyAhMwiBz4IQ5QEB_lM4RRanekuWR52zdvY';
+    const ID_CARPETA = '1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W';
+
+    async function cargarVestidos() {
+      const url = `https://www.googleapis.com/drive/v3/files?q='${ID_CARPETA}'+in+parents+and+mimeType+contains+'image/'&key=${DRIVE_API_KEY}&fields=files(id,name)&orderBy=name`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.files || data.files.length === 0) {
+          document.getElementById("catalogo").innerHTML = "No se encontraron imágenes. Verificá los permisos.";
+          return;
+        }
+
+        const contenedor = document.getElementById("catalogo");
+        contenedor.innerHTML = "";
+
+        data.files.forEach((file) => {
+          const div = document.createElement('div');
+          div.className = 'vestido';
+
+          const img = document.createElement('img');
+          img.src = `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`;
+          img.alt = file.name;
+
+          div.appendChild(img);
+          contenedor.appendChild(div);
+        });
+      } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("catalogo").innerHTML = "Error al cargar imágenes.";
+      }
+    }
+
+    cargarVestidos();
+  </script>
+</body>
+</html>
