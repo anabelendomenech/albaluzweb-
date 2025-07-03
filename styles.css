@@ -102,7 +102,8 @@ main {
 
 .inicio-columna.texto h1 {
   font-size: 3.2rem;
-  margin-bottom: 15px;
+  
+  justify-content: center;
   font-weight: 700;
   letter-spacing: 2px;
   color: #4a2f3a;
@@ -110,7 +111,8 @@ main {
 
 .inicio-columna.texto p {
   font-size: 1.25rem;
-  margin-bottom: 25px;
+  
+  justify-content: center;
   font-weight: 500;
   color: #66514f;
 }
