@@ -1,96 +1,112 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Albaluz - Alquiler de Vestidos</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Albaluz - Alquiler de Vestidos</title>
+<link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-    <nav class="main-nav">
-      <div class="logo">ALBALUZ</div>
-      <ul>
-        <li><a href="catalogo.html">Catálogo</a></li>
-        <li><a href="agendar.html">Agendar</a></li>
-        <li><a href="#contacto">Contáctanos</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <main>
-    <!-- Cartel de Aniversario -->
-    <section class="aniversario-banner">
-      <h1>¡Cumplimos 2 años!</h1>
-      <p>Al hacer tu reserva, llevás un 10% de descuento. Válido todo julio.</p>
-    </section>
+<header>
+  <nav class="main-nav">
+    <ul>
+      <li><a href="catalogo.html">Catálogo</a></li>
+      <li><a href="agendar.html">Agendar</a></li>
+      <li><a href="#contacto">Contáctanos</a></li>
+    </ul>
+  </nav>
+</header>
 
-    <!-- Bienvenida + botón -->
-    <section class="hero">
-      <h2>Alquiler de Vestidos Elegantes</h2>
-      <p>Elegí tu estilo. Reservá tu cita. ¡Viví la experiencia Albaluz!</p>
-      <a href="catalogo.html" class="button">Ver Vestidos</a>
-    </section>
+<main>
 
-    <!-- Nuestra misión -->
-    <section id="mision" class="fullscreen">
-      <h2>Nuestra Misión</h2>
-      <p>Somos madre e hija apostando por la moda circular: accesible, sostenible y con estilo.</p>
-      <img src="sobreNosotros.jpeg" alt="Sobre nosotras" class="responsive-img">
-    </section>
+  <section id="inicio" class="inicio-flex">
+    <div class="nota-descuento">¡Cumplimos 2 años! Al hacer tu reserva llevás un 10% de descuento válido todo julio.</div>
+    <div class="inicio-columna imagen"></div>
+    <div class="inicio-columna texto">
+      <h1>ALBALUZ</h1>
+      <p>Alquiler de Vestidos </p>
+      <a href="agendar.html" class="button">Agendar ahora</a>
+    </div>
+  </section>
 
-    <!-- Nueva colección -->
-    <section id="nueva-coleccion" class="fullscreen">
-      <h2>Nueva Colección</h2>
-      <div class="slider">
-        <img src="IMG_3526.jpeg" alt="Vestido nuevo">
-        <img src="IMG_3527.jpeg" alt="Vestido nuevo">
-        <img src="IMG_3528.jpeg" alt="Vestido nuevo">
-      </div>
-    </section>
+  <section id="mision" class="contenido-seccion">
+    <h2>Nuestra Misión</h2>
+    <p>Somos mamá e hija con pasión por la moda, buscando ofrecer vestidos de calidad para cada ocasión, sustentable y a tu estilo.</p>
+    
+  </section>
 
-    <!-- Preguntas frecuentes -->
-    <section id="faq">
-      <h2>Preguntas Frecuentes</h2>
-      <div class="faq-item">
-        <h3>¿Cómo alquilar?</h3><div class="faq-content"><p>Reservá tu cita y elegí tu vestido en tienda.</p></div>
-      </div>
-      <div class="faq-item">
-        <h3>¿Se aceptan devoluciones?</h3><div class="faq-content"><p>Sí, dentro del plazo acordado y en condiciones óptimas.</p></div>
-      </div>
-      <div class="faq-item">
-        <h3>¿Cuánto anticipo necesito?</h3><div class="faq-content"><p>Máximo 1 mes antes de tu evento.</p></div>
-      </div>
-      <div class="faq-item">
-        <h3>¿Puedo ir acompañada?</h3><div class="faq-content"><p>¡Claro! Podés venir con quien quieras.</p></div>
-      </div>
-      <div class="faq-item">
-        <h3>¿Cómo son los precios?</h3><div class="faq-content"><p>Desde $900 a $1600, según el vestido.</p></div>
-      </div>
-    </section>
+  <section id="nueva-coleccion" class="contenido-seccion">
+    <h2>Nueva Colección</h2>
+    <div class="slider">
+      <!-- Aquí van las imágenes que se deslizan solas -->
+      <img src="IMG_3526.jpeg" alt="Vestido azul largo con brillos" />
+      <img src="IMG_3527.jpeg" alt="Vestido corto rojo" />
+      <img src="IMG_3528.jpeg" alt="Vestido largo negro" />
+      <!-- Agregar más según el Drive -->
+    </div>
+  </section>
 
-    <!-- Blog -->
-    <section id="blog">
-      <h2>Blog</h2>
-      <div class="row">
-        <div class="blog-post"><img src="img/blog1.jpg"><p>¿Por qué alquilar vestidos?</p></div>
-        <div class="blog-post"><img src="img/blog2.jpg"><p>Colores según tu tono de piel</p></div>
-        <div class="blog-post"><img src="img/blog3.jpg"><p>Accesorios y cortes ideales</p></div>
-      </div>
-    </section>
+  <section id="faq" class="contenido-seccion">
+    <h2>Preguntas Frecuentes</h2>
+    <div class="faq-item">
+      <h3>¿Cómo alquilar un vestido?</h3>
+      <div class="faq-content">Escribinos por WhatsApp y coordinamos tu prueba y reserva.</div>
+    </div>
+    <div class="faq-item">
+      <h3>¿Cuánto tiempo antes debo reservar?</h3>
+      <div class="faq-content">Recomendamos agendar con máximo un mes de anticipación para asegurar stock y calidad.</div>
+    </div>
+    <div class="faq-item">
+      <h3>¿Puedo ir acompañada a probarme?</h3>
+      <div class="faq-content">Sí, indicá cuántas personas vendrán contigo al agendar.</div>
+    </div>
+    <div class="faq-item">
+      <h3>¿Cuáles son los precios?</h3>
+      <div class="faq-content">Los precios varían según vestido entre $700 y $1300, consultanos para detalles.</div>
+    </div>
+    <div class="faq-item">
+      <h3>¿Cómo son las devoluciones?</h3>
+      <div class="faq-content">Los vestidos se devuelven el siguiente dia habil del alquiler.Nosotras nos encargamos de aconddicionarlo!</div>
+    </div>
+  </section>
 
-    <!-- Contacto -->
-    <footer id="contacto">
-      <h2>Contacto</h2>
-      <p><strong>📍 Ubicación:</strong> Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</p>
-      <p><strong>📞 Teléfono:</strong> +598 9825 6239</p>
-      <p><strong>📧 Mail:</strong> domenechanaa@gmail.com</p>
-      <p><strong>Instagram:</strong> <a href="https://www.instagram.com/albaluz_alquilerdevestidos" target="_blank">@albaluz_alquilerdevestidos</a></p>
-      <p><strong>Facebook:</strong> Albaluz Alquiler de vestidos</p>
-      <p><strong>TikTok:</strong> albaluz_alquilerdevesti2</p>
-    </footer>
-  </main>
+  <section id="blog" class="contenido-seccion">
+    <h2>Blog</h2>
+    <article>
+      <h3>¿Por qué alquilar en vez de comprar?</h3>
+      <p>La moda circular es una forma consciente de consumir, reduciendo residuos y apoyando la sustentabilidad.</p>
+    </article>
+    <article>
+      <h3>Colorimetría para elegir el color perfecto</h3>
+      <p>Aprendé a elegir colores que realzan tu belleza y estilo personal.</p>
+    </article>
+    <article>
+      <h3>Accesorios que combinan con tu vestido</h3>
+      <p>Consejos para elegir accesorios que complementen tu look con elegancia.</p>
+    </article>
+   
+  </section>
 
-  <script src="scripts.js"></script>
+</main>
+
+<footer id="contacto">
+  <h2>Contáctanos</h2>
+  <div class="redes">
+    <a href="https://instagram.com/albaluz_alquilerdevestidos" target="_blank" aria-label="Instagram">
+      <img src="iconos/instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://facebook.com/AlbaluzAlquilerDeVestidos" target="_blank" aria-label="Facebook">
+      <img src="iconos/facebook.svg" alt="Facebook" />
+    </a>
+    <a href="https://tiktok.com/@albaluz_alquilerdevesti2" target="_blank" aria-label="TikTok">
+      <img src="iconos/tiktok.svg" alt="TikTok" />
+    </a>
+  </div>
+  <p>Teléfono: +598 9825 6239</p>
+  <p>Dirección: Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</p>
+</footer>
+
+<script src="scripts.js"></script>
 </body>
 </html>
