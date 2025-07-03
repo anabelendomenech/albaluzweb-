@@ -136,7 +136,7 @@ main {
 /* Secciones */
 
 .contenido-seccion {
-  background: #fff;
+  background: #d8cfa6;;
   border-radius: 15px;
   padding: 40px 30px;
   margin-bottom: 40px;
@@ -283,7 +283,7 @@ footer .redes img {
 }
 .catalogo-header {
   background-color: #baab7f;
-  color: #fff;
+  color: #d8cfa6;;
   padding: 20px;
   text-align: center;
 }
@@ -316,7 +316,7 @@ footer .redes img {
 }
 
 .vestido-card {
-    background: #fff;
+    background: #d8cfa6;;
     border-radius: 16px;
     padding: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
