@@ -1,11 +1,9 @@
 
-const ID_CARPETA = '1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W';
-
 const catalogoContainer = document.getElementById('catalogo-vestidos');
 const filtroColor = document.getElementById('filtro-color');
 
 async function cargarVestidos() {
-    const url = `https://www.googleapis.com/drive/v3/files?q='${ID_CARPETA}'+in+parents+and+mimeType+contains+'image/'&key=AIzaSyAhMwiBz4IQ5QEB_lM4RRanekuWR52zdvY&fields=files(id,name,mimeType)&orderBy=name`;
+    const url = `https://www.googleapis.com/drive/v3/files?q='1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W'+in+parents+and+mimeType+contains+'image/'&key=AIzaSyAhMwiBz4IQ5QEB_lM4RRanekuWR52zdvY&fields=files(id,name,mimeType)&orderBy=name`;
 //https://drive.google.com/drive/folders/1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W?usp=sharing
     try {
         const respuesta = await fetch(url);
