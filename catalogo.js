@@ -1,6 +1,4 @@
 
-const catalogoContainer = document.getElementById('catalogo-vestidos');
-const filtroColor = document.getElementById('filtro-color');
 
 async function cargarVestidos() {
     const url = `https://www.googleapis.com/drive/v3/files?q='1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W'+in+parents+and+mimeType+contains+'image/'&key=AIzaSyAhMwiBz4IQ5QEB_lM4RRanekuWR52zdvY&fields=files(id,name,mimeType)&orderBy=name`;
@@ -17,9 +15,9 @@ async function cargarVestidos() {
 }
 
 function mostrarVestidos(vestidos) {
-    catalogoContainer.innerHTML = '';
+    document.getElementById('catalogo-vestidos').innerHTML = '';
 
-    const colorSeleccionado = filtroColor.value.toLowerCase();
+    const colorSeleccionado = document.getElementById('filtro-color').value.toLowerCase();
 
     vestidos.forEach(file => {
         const nameParts = file.name.replace(/\.[^/.]+$/, "").split(" "); // quita extensión
@@ -40,7 +38,7 @@ function mostrarVestidos(vestidos) {
         card.appendChild(img);
         card.appendChild(descripcion);
 
-        catalogoContainer.appendChild(card);
+        document.getElementById('catalogo-vestidos').appendChild(card);
     });
 }
 
@@ -60,15 +58,15 @@ function crearOpcionesFiltro(vestidos) {
         if (nameParts.includes('nude')) colores.add('Nude');
     });
 
-    filtroColor.innerHTML = '';
+    document.getElementById('filtro-color').innerHTML = '';
     colores.forEach(color => {
         const option = document.createElement('option');
         option.value = color.toLowerCase();
         option.textContent = color;
-        filtroColor.appendChild(option);
+        document.getElementById('filtro-color').appendChild(option);
     });
 
-    filtroColor.addEventListener('change', () => mostrarVestidos(vestidos));
+    document.getElementById('filtro-color').addEventListener('change', () => mostrarVestidos(vestidos));
 }
 
 document.addEventListener('DOMContentLoaded', cargarVestidos);
