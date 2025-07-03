@@ -1,11 +1,29 @@
 [
   {
+    "id": "1bL8Ey_I7KEk_1VvJQhBgVlTKgS8CCpXq",
     "nombre": "Vestido azul largo con brillos",
-    "imagen": "IMG_3526.jpg",
+    "tipo": "Largo",
+    "talle": "M",
+    "color": "Azul",
+    "descripcion": "Vestido largo azul con brillos, elegante y cómodo",
+    "url": "https://drive.google.com/uc?export=view&id=1bL8Ey_I7KEk_1VvJQhBgVlTKgS8CCpXq"
+  },
+  {
+    "id": "1aYw6RtHvJ_k9Qk_Wu1oPYXrUu3xEyNwt",
+    "nombre": "Vestido corto rojo con encaje",
+    "tipo": "Corto",
+    "talle": "S",
+    "color": "Rojo",
+    "descripcion": "Vestido corto rojo con detalles de encaje, ideal para fiestas",
+    "url": "https://drive.google.com/uc?export=view&id=1aYw6RtHvJ_k9Qk_Wu1oPYXrUu3xEyNwt"
+  },
+  {
+    "id": "1cVzRmpbkAYTBhV9pN7Znb3P3D90Kd4Vz",
+    "nombre": "Vestido verde largo de seda",
     "tipo": "Largo",
     "talle": "L",
-    "color": "Azul",
-    "precio": 1200,
-    "nuevaColeccion": true
+    "color": "Verde",
+    "descripcion": "Vestido largo verde de seda, estilo clásico",
+    "url": "https://drive.google.com/uc?export=view&id=1cVzRmpbkAYTBhV9pN7Znb3P3D90Kd4Vz"
   }
 ]
