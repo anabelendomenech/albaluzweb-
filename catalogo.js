@@ -1,5 +1,5 @@
 const DRIVEAPI_KEY = 'AIzaSyAhMwiBz4IQ5QEB_lM4RRanekuWR52zdvY';
-const ID_CARPETA = '1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W?usp=sharing';
+const ID_CARPETA = '1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W';
 
 const catalogoContainer = document.getElementById('catalogo-vestidos');
 const filtroColor = document.getElementById('filtro-color');
