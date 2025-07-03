@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Catálogo de Vestidos - ALBALUZ</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
   <script defer src="catalogo.js"></script>
 </head>
 <body>
@@ -11,7 +11,7 @@
     <nav class="main-nav">
       <ul>
         <li><a href="index.html">Inicio</a></li>
-        <li><a href="catalogo.html">Catálogo</a></li>
+        <li><a href="catalogo.html" class="activo">Catálogo</a></li>
         <li><a href="agendar.html">Agendar</a></li>
         <li><a href="#contacto">Contactanos</a></li>
       </ul>
@@ -21,13 +21,13 @@
   <main>
     <section class="filtros">
       <h2>Filtrar Vestidos</h2>
-      <div id="filtros-tipo">
-        <button class="filtro" data-tipo="todos">Todos</button>
+      <div id="filtros-tipo" class="botones-filtro">
+        <button class="filtro activo" data-tipo="todos">Todos</button>
         <button class="filtro" data-tipo="Corto">Cortos</button>
         <button class="filtro" data-tipo="Largo">Largos</button>
       </div>
-      <div id="filtros-color">
-        <button class="filtro" data-color="todos">Todos</button>
+      <div id="filtros-color" class="botones-filtro">
+        <button class="filtro activo" data-color="todos">Todos</button>
         <button class="filtro" data-color="Azul">Azul</button>
         <button class="filtro" data-color="Rojo">Rojo</button>
         <button class="filtro" data-color="Negro">Negro</button>
@@ -43,10 +43,18 @@
 
   <footer id="contacto">
     <div class="contacto-info">
-      <a href="https://wa.me/59898256239" target="_blank"><img src="icono-whatsapp.png" alt="WhatsApp"></a>
-      <a href="https://www.instagram.com/albaluz_alquilerdevestidos" target="_blank"><img src="icono-instagram.png" alt="Instagram"></a>
-      <a href="https://www.facebook.com/Albaluz-Alquiler-de-vestidos" target="_blank"><img src="icono-facebook.png" alt="Facebook"></a>
-      <a href="https://www.tiktok.com/@albaluz_alquilerdevesti2" target="_blank"><img src="icono-tiktok.png" alt="TikTok"></a>
+      <a href="https://wa.me/59898256239" target="_blank" rel="noopener">
+        <img src="icono-whatsapp.png" alt="WhatsApp" />
+      </a>
+      <a href="https://www.instagram.com/albaluz_alquilerdevestidos" target="_blank" rel="noopener">
+        <img src="icono-instagram.png" alt="Instagram" />
+      </a>
+      <a href="https://www.facebook.com/Albaluz-Alquiler-de-vestidos" target="_blank" rel="noopener">
+        <img src="icono-facebook.png" alt="Facebook" />
+      </a>
+      <a href="https://www.tiktok.com/@albaluz_alquilerdevesti2" target="_blank" rel="noopener">
+        <img src="icono-tiktok.png" alt="TikTok" />
+      </a>
     </div>
     <p>Ubicación: Treinta y Tres 1121 bis, Dolores, Soriano, Uruguay</p>
   </footer>
