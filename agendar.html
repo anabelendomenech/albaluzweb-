@@ -1,26 +1,47 @@
-<form id="form-agendar">
-  <label for="fecha-evento">¿Cuándo es tu evento?</label>
-  <input type="date" id="fecha-evento" name="fecha-evento" required>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agendar - Albaluz</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
 
-  <label for="fecha-cita">¿Qué día querés venir a probarte?</label>
-  <input type="date" id="fecha-cita" name="fecha-cita" required>
+<header>
+  <nav class="main-nav">
+    <ul>
+      <li><a href="catalogo.html">Catálogo</a></li>
+      <li><a href="agendar.html">Agendar</a></li>
+      <li><a href="#contacto">Contáctanos</a></li>
+    </ul>
+  </nav>
+</header>
 
-  <label for="horario">Seleccioná tu horario:</label>
-  <select id="horario" name="horario" required></select>
+<main>
+  <section class="contenido-seccion" style="max-width: 500px; margin: 60px auto;">
+    <h1>Agendar tu Cita</h1>
+    <p>Para agendarte, hacé clic en el botón y te llevará a WhatsApp para coordinar.</p>
+    <a href="https://wa.me/59898256239?text=Hola%20Albaluz,%20quiero%20agendarme%20para%20probarme%20un%20vestido." target="_blank" class="button">Agendar Ahora</a>
+  </section>
+</main>
 
-  <label for="personas">¿Cuántas personas vienen?</label>
-  <input type="number" id="personas" name="personas" min="1" max="5" required>
+<footer id="contacto">
+  <h2>Contáctanos</h2>
+  <div class="redes">
+    <a href="https://instagram.com/albaluz_alquilerdevestidos" target="_blank" aria-label="Instagram">
+      <img src="iconos/instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://facebook.com/AlbaluzAlquilerDeVestidos" target="_blank" aria-label="Facebook">
+      <img src="iconos/facebook.svg" alt="Facebook" />
+    </a>
+    <a href="https://tiktok.com/@albaluz_alquilerdevesti2" target="_blank" aria-label="TikTok">
+      <img src="iconos/tiktok.svg" alt="TikTok" />
+    </a>
+  </div>
+  <p>Teléfono: +598 9825 6239</p>
+  <p>Dirección: Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</p>
+</footer>
 
-  <label for="mensaje">¿Querés dejarnos un mensaje adicional?</label>
-  <textarea id="mensaje" name="mensaje"></textarea>
-
-  <label for="contacto">Tu mail :</label>
-  <input type="email" id="contacto" name="contacto" required>
-
-  <label for="celular">Tu celular :</label>
-  <input type="text" id="celular" name="celular" required>
-
-  <button type="submit">Agendar</button>
-</form>
-
-<div id="error-message" style="color: red;"></div>
+</body>
+</html>
