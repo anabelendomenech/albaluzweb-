@@ -66,15 +66,17 @@ function mostrarVestidos(lista) {
     const div = document.createElement('div');
     div.classList.add('vestido');
     div.innerHTML = `
-      <img src="${v.url}" alt="${v.descripcion}" loading="lazy" />
+      <img src="https://drive.google.com/uc?export=view&id=${v.id}" alt="${v.descripcion}">
       <h3>${v.descripcion}</h3>
-      <p><strong>Color:</strong> ${v.color}</p>
-      <p><strong>Tipo:</strong> ${v.tipo}</p>
-      <p><strong>Talle:</strong> ${v.talle}</p>
+      <p>Color: ${v.color}</p>
+      <p>Tipo: ${v.tipo}</p>
+      <p>Talle: ${v.talle}</p>
     `;
     galeria.appendChild(div);
   });
 }
+
+ 
 
 function filtrarVestidos(tipo, color) {
   let filtrados = [...todosVestidos];
@@ -89,3 +91,4 @@ function filtrarVestidos(tipo, color) {
 
   mostrarVestidos(filtrados);
 }
+
