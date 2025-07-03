@@ -6,7 +6,6 @@
     "talle": "L",
     "color": "Azul",
     "precio": 1200,
-    "nuevaColeccion": true,
-    "noDisponible": ["2025-07-12", "2025-07-18"]
+    "nuevaColeccion": true
   }
 ]
