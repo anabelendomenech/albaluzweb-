@@ -3,70 +3,38 @@
 async function cargarVestidos() {
     const url = `https://www.googleapis.com/drive/v3/files?q='1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W'+in+parents+and+mimeType+contains+'image/'&key=AIzaSyAhMwiBz4IQ5QEB_lM4RRanekuWR52zdvY&fields=files(id,name,mimeType)&orderBy=name`;
 //https://drive.google.com/drive/folders/1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W?usp=sharing
-    try {
-        const respuesta = await fetch(url);
-        const data = await respuesta.json();
+     try {
+    const response = await fetch(url);
+    const data = await response.json();
 
-        mostrarVestidos(data.files);
-        crearOpcionesFiltro(data.files);
-    } catch (error) {
-        console.error('Error al cargar vestidos:', error);
+    if (!data.files) {
+      throw new Error("No se recibieron archivos. Verificá el permiso público de la carpeta.");
     }
+
+    mostrarVestidos(data.files);
+  } catch (error) {
+    console.error('Error al cargar vestidos:', error);
+  }
 }
 
-function mostrarVestidos(vestidos) {
-    document.getElementById('catalogo-vestidos').innerHTML = '';
+function mostrarVestidos(lista) {
+  const contenedor = document.getElementById('catalogo');
+  contenedor.innerHTML = '';
+  contenedor.style.marginTop = '100px'; // para que no tape el título
 
-    const colorSeleccionado = document.getElementById('filtro-color').value.toLowerCase();
+  lista.forEach((file) => {
+    const div = document.createElement('div');
+    div.className = 'vestido';
 
-    vestidos.forEach(file => {
-        const nameParts = file.name.replace(/\.[^/.]+$/, "").split(" "); // quita extensión
-        const color = nameParts.find(p => p.toLowerCase().includes('azul') || p.toLowerCase().includes('rojo') || p.toLowerCase().includes('negro') || p.toLowerCase().includes('verde') || p.toLowerCase().includes('rosa') || p.toLowerCase().includes('plateado') || p.toLowerCase().includes('dorado') || p.toLowerCase().includes('blanco') || p.toLowerCase().includes('nude')) || 'Otro';
+    const img = document.createElement('img');
+    img.src = `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`; // Usa thumbnail para evitar errores de permisos
+    img.alt = file.name;
 
-        if (colorSeleccionado !== 'todos' && color.toLowerCase() !== colorSeleccionado) return;
+    const nombre = document.createElement('p');
+    nombre.textContent = file.name.replace(/\.(jpg|jpeg|png)$/i, '');
 
-        const img = document.createElement('img');
-        img.src = `https://drive.google.com/uc?id=${file.id}`;
-        img.alt = file.name;
-        img.className = 'vestido-img';
-
-        const descripcion = document.createElement('p');
-        descripcion.textContent = file.name.replace(/\.[^/.]+$/, "");
-
-        const card = document.createElement('div');
-        card.className = 'vestido-card';
-        card.appendChild(img);
-        card.appendChild(descripcion);
-
-        document.getElementById('catalogo-vestidos').appendChild(card);
-    });
+    div.appendChild(img);
+    div.appendChild(nombre);
+    contenedor.appendChild(div);
+  });
 }
-
-function crearOpcionesFiltro(vestidos) {
-    const colores = new Set(['Todos']);
-
-    vestidos.forEach(file => {
-        const nameParts = file.name.toLowerCase();
-        if (nameParts.includes('azul')) colores.add('Azul');
-        if (nameParts.includes('rojo')) colores.add('Rojo');
-        if (nameParts.includes('verde')) colores.add('Verde');
-        if (nameParts.includes('negro')) colores.add('Negro');
-        if (nameParts.includes('blanco')) colores.add('Blanco');
-        if (nameParts.includes('rosa')) colores.add('Rosa');
-        if (nameParts.includes('plateado')) colores.add('Plateado');
-        if (nameParts.includes('dorado')) colores.add('Dorado');
-        if (nameParts.includes('nude')) colores.add('Nude');
-    });
-
-    document.getElementById('filtro-color').innerHTML = '';
-    colores.forEach(color => {
-        const option = document.createElement('option');
-        option.value = color.toLowerCase();
-        option.textContent = color;
-        document.getElementById('filtro-color').appendChild(option);
-    });
-
-    document.getElementById('filtro-color').addEventListener('change', () => mostrarVestidos(vestidos));
-}
-
-document.addEventListener('DOMContentLoaded', cargarVestidos);
