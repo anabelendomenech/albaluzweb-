@@ -88,7 +88,6 @@ main {
 .inicio-columna {
   flex: 1 1 300px;
   margin: 20px;
-  justify-content: center;
 }
 
 .inicio-columna.imagen {
@@ -102,8 +101,7 @@ main {
 
 .inicio-columna.texto h1 {
   font-size: 3.2rem;
-  
-  justify-content: center;
+  margin-bottom: 15px;
   font-weight: 700;
   letter-spacing: 2px;
   color: #4a2f3a;
@@ -111,11 +109,11 @@ main {
 
 .inicio-columna.texto p {
   font-size: 1.25rem;
-  
-  justify-content: center;
+  margin-bottom: 25px;
   font-weight: 500;
   color: #66514f;
 }
+
 
 .button {
   background-color: #ba5970;
