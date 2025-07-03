@@ -42,7 +42,8 @@ async function cargarVestidos() {
         color,
         talle,
         descripcion: descripcionArr.join(' ').replace(/\.(jpg|jpeg|png)$/i, ''),
-        url: getDriveImageUrlById(file.id)
+       url: `https://drive.google.com/uc?export=view&id=${file.id}`
+
       };
     });
     mostrarVestidos(todosVestidos);
