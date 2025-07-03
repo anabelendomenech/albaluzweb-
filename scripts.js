@@ -18,3 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
     indicator.style.opacity = window.scrollY > 100 ? "0" : "1";
   });
 });
+// FAQ toggle
+document.querySelectorAll(".faq-item h3").forEach(item => {
+  item.addEventListener("click", () => {
+    const content = item.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+});
