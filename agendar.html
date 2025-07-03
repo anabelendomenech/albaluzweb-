@@ -1,57 +1,26 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Agendar Cita - Albaluz</title>
-  <link rel="stylesheet" href="agendar.css" />
-</head>
-<body>
-  <header>
-    <nav class="main-nav">
-      <div class="logo">ALBALUZ</div>
-      <ul>
-        <li><a href="catalogo.html">Catálogo</a></li>
-        <li><a href="agendar.html" class="active">Agendar</a></li>
-        <li><a href="index.html#contacto">Contáctanos</a></li>
-      </ul>
-    </nav>
-  </header>
+<form id="form-agendar">
+  <label for="fecha-evento">¿Cuándo es tu evento?</label>
+  <input type="date" id="fecha-evento" name="fecha-evento" required>
 
-  <main>
-    <section id="agendar-section">
-      <h1>Agendá tu Cita</h1>
-      <p class="info-text">Para asegurarte la calidad del vestido, máximo agendás con 1 mes de anticipación.</p>
+  <label for="fecha-cita">¿Qué día querés venir a probarte?</label>
+  <input type="date" id="fecha-cita" name="fecha-cita" required>
 
-      <form id="form-agendar">
-        <label for="fecha-evento">¿Cuándo es tu evento?</label>
-        <input type="date" id="fecha-evento" name="fecha-evento" required />
+  <label for="horario">Seleccioná tu horario:</label>
+  <select id="horario" name="horario" required></select>
 
-        <label for="fecha-cita">¿Qué día querés venir a probarte?</label>
-        <select id="fecha-cita" name="fecha-cita" required>
-          <option value="" disabled selected>Seleccioná una fecha</option>
-          <!-- Fechas dinámicas aquí -->
-        </select>
+  <label for="personas">¿Cuántas personas vienen?</label>
+  <input type="number" id="personas" name="personas" min="1" max="5" required>
 
-        <label for="hora-cita">Seleccioná el horario</label>
-        <select id="hora-cita" name="hora-cita" required>
-          <option value="" disabled selected>Seleccioná un horario</option>
-          <!-- Horarios dinámicos aquí -->
-        </select>
+  <label for="mensaje">¿Querés dejarnos un mensaje adicional?</label>
+  <textarea id="mensaje" name="mensaje"></textarea>
 
-        <label for="personas">Cantidad de personas que van a probarse</label>
-        <input type="number" id="personas" name="personas" min="1" max="10" value="1" required />
+  <label for="contacto">Tu mail :</label>
+  <input type="email" id="contacto" name="contacto" required>
 
-        <label for="mensaje">Pedidos adicionales / Mensaje</label>
-        <textarea id="mensaje" name="mensaje" rows="4" placeholder="Escribe aquí..."></textarea>
+  <label for="celular">Tu celular :</label>
+  <input type="text" id="celular" name="celular" required>
 
-        <button type="submit">Agendar</button>
-      </form>
+  <button type="submit">Agendar</button>
+</form>
 
-      <div id="form-message"></div>
-    </section>
-  </main>
-
-  <script src="agendar.js"></script>
-</body>
-</html>
+<div id="error-message" style="color: red;"></div>
