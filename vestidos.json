@@ -1,29 +1,21 @@
 [
   {
-    "id": "1bL8Ey_I7KEk_1VvJQhBgVlTKgS8CCpXq/",
-    "nombre": "Vestido azul largo con brillos",
+    "id": "vestido1",
+    "nombre": "Vestido largo azul",
     "tipo": "Largo",
-    "talle": "M",
+    "talle": "M,L",
     "color": "Azul",
-    "descripcion": "Vestido largo azul con brillos, elegante y cómodo",
-    "url": "https://drive.google.com/file/d/1bL8Ey_I7KEk_1VvJQhBgVlTKgS8CCpXq/view?usp=drive_link"
+    "descripcion": "Vestido azul largo con brillos de un solo hombro",
+    "url": "img/vestido1.jpg"
   },
   {
-    "id": "1aYw6RtHvJ_k9Qk_Wu1oPYXrUu3xEyNwt",
+    "id": "vestido2",
     "nombre": "Vestido corto rojo con encaje",
     "tipo": "Corto",
     "talle": "S",
     "color": "Rojo",
-    "descripcion": "Vestido corto rojo con detalles de encaje, ideal para fiestas",
-    "url": "https://drive.google.com/uc?export=view&id=1aYw6RtHvJ_k9Qk_Wu1oPYXrUu3xEyNwt"
-  },
-  {
-    "id": "1cVzRmpbkAYTBhV9pN7Znb3P3D90Kd4Vz",
-    "nombre": "Vestido verde largo de seda",
-    "tipo": "Largo",
-    "talle": "L",
-    "color": "Verde",
-    "descripcion": "Vestido largo verde de seda, estilo clásico",
-    "url": "https://drive.google.com/uc?export=view&id=1cVzRmpbkAYTBhV9pN7Znb3P3D90Kd4Vz"
+    "descripcion": "Vestido corto rojo con detalles de encaje",
+    "url": "img/vestido2.jpg"
   }
+  // ... agregás los 8 vestidos restantes con la misma estructura
 ]
