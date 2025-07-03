@@ -281,4 +281,31 @@ footer .redes img {
   font-size: 0.95rem;
   color: #555;
 }
+.catalogo-header {
+  background-color: #baab7f;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+.catalogo-galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.vestido-item {
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.vestido-item img {
+  width: 100%;
+  border-radius: 8px;
+}
+
 
