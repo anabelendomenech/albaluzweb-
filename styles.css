@@ -247,4 +247,36 @@ footer .redes img {
   main {
     padding: 60px 15px 30px;
   }
+}.catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
+
+.vestido-card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.vestido-card img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.vestido-card h3 {
+  color: #ba5970;
+  margin-bottom: 8px;
+}
+
+.vestido-card p {
+  font-size: 0.95rem;
+  color: #555;
+}
+
