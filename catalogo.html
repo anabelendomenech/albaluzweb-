@@ -1,58 +1,26 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Catálogo - Albaluz</title>
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <title>Catálogo de Vestidos - Albaluz</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <header class="catalogo-header">
+    <h1>Catálogo de Vestidos</h1>
+    <label for="filtro-color">Filtrar por color:</label>
+    <select id="filtro-color">
+      <option value="">Todos</option>
+      <option value="Azul">Azul</option>
+      <option value="Rojo">Rojo</option>
+      <option value="Negro">Negro</option>
+      <option value="Verde">Verde</option>
+     
+    </select>
+  </header>
 
-<header>
-  <nav class="main-nav">
-    <ul>
-       <li><a href="index.html">Inicio</a></li>
-      <li><a href="catalogo.html">Catálogo</a></li>
-      <li><a href="agendar.html">Agendar</a></li>
-      <li><a href="#contacto">Contáctanos</a></li>
-    </ul>
-  </nav>
-</header>
+  <main id="galeria" class="catalogo-galeria"></main>
 
-<main class="contenido-seccion" style="max-width: 900px; margin: 60px auto;">
-  <h1>Catálogo de Vestidos</h1>
-  <p>Filtrá por color:</p>
-  <select id="filtro-color">
-    <option value="all">Todos</option>
-    <option value="azul">Azul</option>
-    <option value="rojo">Rojo</option>
-    <option value="negro">Negro</option>
-    <option value="blanco">Blanco</option>
-    <!-- Más colores según tus vestidos -->
-  </select>
-
-  <div id="catalogo-vestidos" class="catalogo-grid">
-    <!-- Aquí se cargarán los vestidos con JS -->
-  </div>
-</main>
-
-<footer id="contacto">
-  <h2>Contáctanos</h2>
-  <div class="redes">
-    <a href="https://instagram.com/albaluz_alquilerdevestidos" target="_blank" aria-label="Instagram">
-      <img src="iconos/instagram.svg" alt="Instagram" />
-    </a>
-    <a href="https://facebook.com/AlbaluzAlquilerDeVestidos" target="_blank" aria-label="Facebook">
-      <img src="iconos/facebook.svg" alt="Facebook" />
-    </a>
-    <a href="https://tiktok.com/@albaluz_alquilerdevesti2" target="_blank" aria-label="TikTok">
-      <img src="iconos/tiktok.svg" alt="TikTok" />
-    </a>
-  </div>
-  <p>Teléfono: +598 9825 6239</p>
-  <p>Dirección: Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</p>
-</footer>
-
-<script src="catalogo.js"></script>
+  <script src="catalogo.js"></script>
 </body>
 </html>
