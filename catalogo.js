@@ -1,9 +1,15 @@
 const API_KEY = 'AIzaSyAhMwiBz4IQ5QEB_lM4RRanekuWR52zdvY';
 const FOLDER_ID = '1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W';
 
+// Convierte el link completo de Drive a link directo usable en <img>
+function getDriveImageUrlById(fileId) {
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   cargarVestidos();
 
+  // Evento para filtros
   document.querySelectorAll('.filtro').forEach(btn => {
     btn.addEventListener('click', () => {
       const tipo = btn.dataset.tipo || document.querySelector('.filtro[data-tipo].activo')?.dataset.tipo || 'todos';
@@ -24,7 +30,10 @@ async function cargarVestidos() {
   try {
     const res = await fetch(url);
     const data = await res.json();
+    if (!data.files) throw new Error('No files found');
+
     todosVestidos = data.files.map(file => {
+      // Separar nombre para color, tipo, talle y descripcion
       const [color, tipo, talle, ...descripcionArr] = file.name.split('_');
       return {
         id: file.id,
@@ -32,13 +41,14 @@ async function cargarVestidos() {
         tipo,
         color,
         talle,
-        descripcion: descripcionArr.join(' ').replace('.jpg', '').replace('.jpeg', '').replace('.png', ''),
-        url: `https://drive.google.com/uc?id=${file.id}`      
+        descripcion: descripcionArr.join(' ').replace(/\.(jpg|jpeg|png)$/i, ''),
+        url: getDriveImageUrlById(file.id)
       };
     });
     mostrarVestidos(todosVestidos);
   } catch (e) {
     document.getElementById('galeria').innerHTML = '<p>Error al cargar los vestidos.</p>';
+    console.error('Error al cargar vestidos:', e);
   }
 }
 
@@ -55,11 +65,11 @@ function mostrarVestidos(lista) {
     const div = document.createElement('div');
     div.classList.add('vestido');
     div.innerHTML = `
-      <img src="${v.url}" alt="${v.descripcion}">
+      <img src="${v.url}" alt="${v.descripcion}" loading="lazy" />
       <h3>${v.descripcion}</h3>
-      <p>Color: ${v.color}</p>
-      <p>Tipo: ${v.tipo}</p>
-      <p>Talle: ${v.talle}</p>
+      <p><strong>Color:</strong> ${v.color}</p>
+      <p><strong>Tipo:</strong> ${v.tipo}</p>
+      <p><strong>Talle:</strong> ${v.talle}</p>
     `;
     galeria.appendChild(div);
   });
