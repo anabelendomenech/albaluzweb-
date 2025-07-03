@@ -354,4 +354,54 @@ footer .redes img {
   border-radius: 8px;
 }
 
+.filtros {
+  text-align: center;
+  margin: 2rem 1rem;
+}
+
+.filtros h2 {
+  margin-bottom: 1rem;
+}
+
+.filtro {
+  background-color: #baab7f;
+  border: none;
+  color: white;
+  margin: 5px;
+  padding: 10px 15px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.filtro.activo {
+  background-color: #ba5970;
+}
+
+.galeria-vestidos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 1rem;
+}
+
+.vestido {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 250px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.vestido img {
+  width: 100%;
+  height: auto;
+}
+
+.vestido h3 {
+  font-size: 1.1em;
+  margin: 10px 0 0 0;
+}
 
