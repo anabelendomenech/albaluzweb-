@@ -2,89 +2,34 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Reservas - Albaluz</title>
+  <title>Registrar Reserva - Albaluz</title>
   <link rel="stylesheet" href="styles.css" />
-  <style>
-    /* Estilos para sugerencias */
-    #sugerencias {
-      background: white;
-      position: absolute;
-      z-index: 100;
-      width: 300px;
-      border: 1px solid #ccc;
-      max-height: 150px;
-      overflow-y: auto;
-      display: none;
-    }
-    .sugerencia-item {
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-    .sugerencia-item:hover {
-      background-color: #ddd;
-    }
-    form {
-      max-width: 400px;
-      margin: 20px auto;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    label {
-      font-weight: 600;
-    }
-    input, textarea, button {
-      padding: 8px;
-      font-size: 1rem;
-    }
-    button {
-      cursor: pointer;
-      background-color: #baab7f;
-      border: none;
-      color: white;
-      font-weight: bold;
-      border-radius: 5px;
-    }
-    button:hover {
-      background-color: #9c8a60;
-    }
-    #btnAgregarClienta {
-      background-color: #5a8636;
-      margin-top: -10px;
-      margin-bottom: 15px;
-      display: none;
-    }
-  </style>
 </head>
 <body>
+  <h1>Registrar nueva reserva</h1>
 
-  <h1 style="text-align:center; margin-top:20px;">Agregar Reserva</h1>
+  <form id="form-reserva">
+    <label>Nombre de la clienta:</label>
+    <input type="text" id="nombre" required />
 
-  <form id="formReserva">
-    <label for="clienteInput">Buscar o agregar clienta:</label>
-    <input type="text" id="clienteInput" placeholder="Escribí el nombre..." autocomplete="off" required />
-    <div id="sugerencias"></div>
-    <button type="button" id="btnAgregarClienta">Agregar nueva clienta</button>
+    <label>Fecha de la reserva:</label>
+    <input type="date" id="fecha" required />
 
-    <label for="fechaReserva">Fecha de la reserva:</label>
-    <input type="date" id="fechaReserva" required />
+    <label>Hora:</label>
+    <input type="time" id="hora" required />
 
-    <label for="horaReserva">Hora:</label>
-    <input type="time" id="horaReserva" required />
+    <label>Personas que asistirán:</label>
+    <input type="number" id="personas" min="1" value="1" required />
 
-    <label for="personasReserva">Cantidad de personas:</label>
-    <input type="number" id="personasReserva" min="1" required />
+    <label>Fecha del evento:</label>
+    <input type="date" id="evento" required />
 
-    <label for="eventoReserva">Fecha del evento:</label>
-    <input type="date" id="eventoReserva" required />
+    <label>Comentarios:</label>
+    <textarea id="comentarios" rows="3"></textarea>
 
-    <label for="comentariosReserva">Comentarios:</label>
-    <textarea id="comentariosReserva" rows="3"></textarea>
-
-    <button type="button" onclick="agregarReserva()">Agregar reserva</button>
+    <button type="button" onclick="guardarReserva()">Guardar reserva</button>
   </form>
 
-  <script type="module" src="reservas.js"></script>
+  <script src="reserva.js"></script>
 </body>
 </html>
