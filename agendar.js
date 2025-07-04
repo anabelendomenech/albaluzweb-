@@ -1,4 +1,4 @@
-const formReserva = document.getElementById('form-reserva');
+// const formReserva = document.getElementById('form-reserva');
 const inputFecha = document.getElementById('fecha');
 const selectHorario = document.getElementById('horario');
 
