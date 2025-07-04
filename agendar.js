@@ -1,68 +1,59 @@
-const spreadsheetId = "1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ";
-const sheetName = "HORARIOS DISPONIBLES";
-const apiKey = "TU_API_KEY_ACÁ"; // Lo reemplazamos en el paso siguiente
+const formReserva = document.getElementById('form-reserva');
+const inputFecha = document.getElementById('fecha');
+const selectHorario = document.getElementById('horario');
 
-const fechaEventoInput = document.getElementById("fecha-evento");
-const fechaCitaSelect = document.getElementById("fecha-cita");
-const horarioSelect = document.getElementById("horario");
-const mensajeError = document.getElementById("error-message");
+const horariosDisponibles = [
+  "15:00", "15:30", "16:00", "16:30",
+  "17:00", "17:30", "18:00", "18:30"
+];
 
+// Limitar fecha mínima y máxima (hoy a 1 mes)
 const hoy = new Date();
-const maxFecha = new Date();
-maxFecha.setDate(hoy.getDate() + 31);
-fechaEventoInput.min = hoy.toISOString().split("T")[0];
-fechaEventoInput.max = maxFecha.toISOString().split("T")[0];
+const yyyy = hoy.getFullYear();
+const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+const dd = String(hoy.getDate()).padStart(2, '0');
 
-fechaEventoInput.addEventListener("change", async () => {
-  const fechaEvento = new Date(fechaEventoInput.value);
-  if (fechaEvento > maxFecha) {
-    mensajeError.textContent = "Solo podés agendar con un mes de anticipación.";
-    return;
-  }
+const fechaMin = `${yyyy}-${mm}-${dd}`;
+const fechaMaxDate = new Date(hoy);
+fechaMaxDate.setMonth(fechaMaxDate.getMonth() + 1);
 
-  const diaSemana = fechaEvento.getDay(); // 0=Domingo ... 6=Sábado
-  if (diaSemana === 0 || diaSemana === 6) {
-    mensajeError.textContent = "Solo agendamos de lunes a viernes.";
-    return;
-  }
+const yyyyMax = fechaMaxDate.getFullYear();
+const mmMax = String(fechaMaxDate.getMonth() + 1).padStart(2, '0');
+const ddMax = String(fechaMaxDate.getDate()).padStart(2, '0');
 
-  const fechaFormateada = fechaEvento.toLocaleDateString("es-ES", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit"
-  }).replace(/\//g, "-");
+const fechaMax = `${yyyyMax}-${mmMax}-${ddMax}`;
 
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}?key=${apiKey}`;
+inputFecha.min = fechaMin;
+inputFecha.max = fechaMax;
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    const headers = data.values[0];
-    const fila = data.values.find(row => row[0] === fechaFormateada);
+function cargarHorarios() {
+  selectHorario.innerHTML = '';
+  horariosDisponibles.forEach(horario => {
+    const option = document.createElement('option');
+    option.value = horario;
+    option.textContent = horario;
+    selectHorario.appendChild(option);
+  });
+}
 
-    horarioSelect.innerHTML = "";
+formReserva.addEventListener('submit', (e) => {
+  e.preventDefault();
 
-    if (fila) {
-      for (let i = 1; i < headers.length; i++) {
-        if (!fila[i] || fila[i] === "") {
-          const hora = headers[i];
-          const opt = document.createElement("option");
-          opt.value = hora;
-          opt.textContent = hora;
-          horarioSelect.appendChild(opt);
-        }
-      }
+  const data = {
+    nombre: formReserva.nombre.value.trim(),
+    evento: formReserva.evento.value.trim(),
+    fecha: formReserva.fecha.value,
+    horario: formReserva.horario.value,
+    personas: formReserva.personas.value,
+    mensaje: formReserva.mensaje.value.trim(),
+  };
 
-      if (horarioSelect.options.length === 0) {
-        mensajeError.textContent = "Ese día ya no hay horarios disponibles.";
-      } else {
-        mensajeError.textContent = "";
-      }
-    } else {
-      mensajeError.textContent = "Ese día no tiene horarios habilitados.";
-    }
-  } catch (error) {
-    mensajeError.textContent = "Error al cargar horarios.";
-    console.error(error);
-  }
+  // Aquí podrías enviar data a Google Sheets con fetch + API o Google Apps Script
+
+  alert('¡Reserva enviada! Te contactaremos pronto.');
+  formReserva.reset();
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  cargarHorarios();
 });
