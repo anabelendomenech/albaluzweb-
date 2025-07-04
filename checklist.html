@@ -1,92 +1,32 @@
-
-   
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>Checklist Alquileres - ALBALUZ</title>
-   <img src="logo.JPG" alt="ALBALUZ logo">
-  <link rel="stylesheet" href="styles.css" />
-  <style>
-    body {
-      background: #baab7f;
-      color: #333;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 30px;
-    }
-    h1 {
-      color: #ba5970;
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-    th, td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background-color: #ba5970;
-      color: white;
-    }
-    tr:hover {
-      background-color: #f9f9f9;
-    }
-    input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Checklist de Alquileres por Fin de Semana</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Vestido</th>
-        <th>Fecha Evento</th>
-        <th>Cliente</th>
-        <th>Pagó</th>
-        <th>Devolución OK</th>
-      </tr>
-    </thead>
-    <tbody id="checklist-body">
-      <!-- Se cargan los datos con JS -->
-    </tbody>
-  </table>
+  <header>
+    <h1>Checklist de Alquileres</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="catalogo.html">Catálogo</a></li>
+        <li><a href="checklist.html">Checklist</a></li>
+      </ul>
+    </nav>
+  </header>
 
-  <script>
-    const datosAlquileres = [
-      // Ejemplo, reemplazar con datos reales o conexión Google Sheets después
-      { vestido: "Vestido azul largo", fecha: "2025-07-10", cliente: "Ana D.", pago: true },
-      { vestido: "Vestido corto rojo", fecha: "2025-07-11", cliente: "Laura M.", pago: false },
-      // ... más filas
-    ];
+  <main>
+    <section>
+      <p>Podés llevar este control desde tu Google Sheets directamente:  
+      <a href="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit?usp=sharing" target="_blank">Ver hoja de control</a></p>
+    </section>
+  </main>
 
-    const tbody = document.getElementById('checklist-body');
-
-    datosAlquileres.forEach(({vestido, fecha, cliente, pago}, i) => {
-      const tr = document.createElement('tr');
-
-      tr.innerHTML = `
-        <td>${vestido}</td>
-        <td>${fecha}</td>
-        <td>${cliente}</td>
-        <td>${pago ? "✔️" : "❌"}</td>
-        <td><input type="checkbox" id="devuelto-${i}" /></td>
-      `;
-
-      tbody.appendChild(tr);
-    });
-  </script>
+  <footer>
+    <p>📍 Treinta y Tres 1121 bis - Dolores, Soriano</p>
+    <p>📞 +598 98 256 239 · 📧 domenechanaa@gmail.com</p>
+  </footer>
 </body>
 </html>
