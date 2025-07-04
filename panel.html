@@ -3,91 +3,69 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Panel Albaluz</title>
+<title>Panel Albaluz - Gestión</title>
 <link rel="stylesheet" href="styles.css" />
 <style>
   body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    min-height: 100vh;
+    margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex; min-height: 100vh; background: #f4f1e9;
   }
-
-  /* Sidebar */
-  .sidebar {
-    width: 220px;
+  nav.sidebar {
+    width: 220px; background: #baab7f; color: #fff; padding-top: 20px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  nav.sidebar a {
+    color: #fff; text-decoration: none; padding: 12px 20px; display: block; font-weight: 600;
+    border-left: 5px solid transparent;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  nav.sidebar a.active, nav.sidebar a:hover {
+    background-color: #9a8f6e; border-left-color: #fff;
+  }
+  main#content-area {
+    flex-grow: 1; padding: 20px; overflow-y: auto;
+  }
+  table {
+    width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  }
+  th, td {
+    padding: 10px; border: 1px solid #ddd; text-align: left;
+  }
+  h1 {
+    color: #5a503f; margin-bottom: 12px;
+  }
+  button {
+    background: #baab7f; border: none; padding: 10px 16px; color: white; font-weight: 700;
+    cursor: pointer; border-radius: 4px;
+  }
+  button:hover {
+    background: #9a8f6e;
+  }
+  /* Scrollbar for content area */
+  main#content-area::-webkit-scrollbar {
+    width: 8px;
+  }
+  main#content-area::-webkit-scrollbar-thumb {
     background-color: #baab7f;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    padding-top: 20px;
-  }
-  .sidebar h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-  }
-  .sidebar a {
-    color: white;
-    padding: 12px 20px;
-    text-decoration: none;
-    font-weight: 600;
-    border-left: 4px solid transparent;
-  }
-  .sidebar a:hover, .sidebar a.active {
-    background-color: #9c8a60;
-    border-left: 4px solid #5a4d3a;
-  }
-
-  /* Content */
-  .content {
-    flex: 1;
-    padding: 20px;
-    background-color: #f8f6f1;
-    overflow-y: auto;
-  }
-
-  /* Responsive */
-  @media(max-width: 700px) {
-    body {
-      flex-direction: column;
-    }
-    .sidebar {
-      width: 100%;
-      flex-direction: row;
-      overflow-x: auto;
-    }
-    .sidebar a {
-      flex: 1 0 auto;
-      text-align: center;
-      border-left: none;
-      border-bottom: 3px solid transparent;
-    }
-    .sidebar a:hover, .sidebar a.active {
-      border-bottom: 3px solid #5a4d3a;
-      background-color: transparent;
-    }
+    border-radius: 4px;
   }
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <h2>Albaluz Panel</h2>
-  <a href="#" class="active" data-tab="reservas">📅 Reservas</a>
-  <a href="#" data-tab="clientas">👩‍🦰 Clientas</a>
+<nav class="sidebar">
+  <a href="#" data-tab="reservas" class="active">📅 Reservas</a>
+  <a href="#" data-tab="clientas">📕 Clientas</a>
   <a href="#" data-tab="vestidos">👗 Vestidos</a>
   <a href="#" data-tab="checklist">✅ Checklist</a>
   <a href="#" data-tab="finanzas">💸 Finanzas</a>
-  <a href="#" data-tab="horarios">⏰ Horarios</a>
-</div>
+  <a href="#" data-tab="horarios">📆 Horarios Disponibles</a>
+</nav>
 
-<div class="content" id="content-area">
-  <!-- Aquí cargaremos dinámicamente el contenido -->
-</div>
+<main id="content-area">
+  <!-- Aquí cargará el contenido -->
+</main>
 
 <script type="module" src="panel.js"></script>
-
 </body>
 </html>
