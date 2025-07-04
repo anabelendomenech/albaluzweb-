@@ -1,49 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Catálogo - Albaluz</title>
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catálogo - ALBALUZ</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="catalogo.js"></script>
+  <script defer src="menu.js"></script>
 </head>
 <body>
+  <header>
+    <h1>Catálogo de Vestidos</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="catalogo.html">Catálogo</a></li>
+        <li><a href="checklist.html">Checklist</a></li>
+        <li><a href="panel.html">Panel</a></li>
+      </ul>
+    </nav>
+  </header>
 
-<header>
-  <nav class="main-nav">
-    <ul>
-      <li><a href="index.html">Inicio</a></li>
-      <li><a href="catalogo.html" class="activo">Catálogo</a></li>
-      <li><a href="agendar.html">Agendar</a></li>
-      <li><a href="#contacto">Contáctanos</a></li>
-    </ul>
-  </nav>
-</header>
+  <main>
+    <section class="galeria">
+      <h2>Explorá todos los modelos</h2>
+      <div id="slider" class="catalogo-grid">
+        <!-- Imágenes insertadas dinámicamente -->
+      </div>
+    </section>
+  </main>
 
-<main>
-  <h1>Catálogo de Vestidos</h1>
-  <div id="filtros">
-    <label>Color:
-      <select id="filtro-color">
-        <option value="todos">Todos</option>
-        <option value="Azul">Azul</option>
-        <option value="Verde">Verde</option>
-        <option value="Terracota">Terracota</option>
-        <option value="Bordo">Bordo</option>
-        <option value="Celeste">Celeste</option>
-        <option value="Rosado">Rosado</option>
-      </select>
-    </label>
-  </div>
-
-  <div id="catalogo" class="catalogo-grid"></div>
-</main>
-
-<footer id="contacto">
-  <p>📍 Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</p>
-  <p>✉️ domenechanaa@gmail.com | 📱 +598 9825 6239</p>
-</footer>
-
-<script src="catalogo.js"></script>
-<script src="menu.js"></script>
+  <footer>
+    <p>📍 Treinta y Tres 1121 bis - Dolores, Soriano</p>
+    <p>📞 +598 98 256 239 · 📧 domenechanaa@gmail.com</p>
+  </footer>
 </body>
 </html>
