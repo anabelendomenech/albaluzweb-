@@ -1,19 +1,41 @@
 const apiKey = 'pat4Z3hm5lJaeSBxQ.568935dff179a1efd1d93ec53da2a523f432a391c248fbfc7da27e124da92f19';
 const baseId = 'appraIuHWdh5tA4FU';
 
+let vestidos = [];
+
 async function cargarCatalogo() {
   const res = await fetch(`https://api.airtable.com/v0/${baseId}/VESTIDOS`, {
     headers: { Authorization: `Bearer ${apiKey}` }
   });
 
   const data = await res.json();
-  const contenedor = document.getElementById("catalogo");
+  vestidos = data.records;
 
-  data.records.forEach(vestido => {
+  cargarColores();
+  mostrarVestidos(vestidos);
+}
+
+function cargarColores() {
+  const filtroColor = document.getElementById("filtro-color");
+  const colores = new Set(vestidos.map(v => v.fields.Color).filter(Boolean));
+
+  colores.forEach(color => {
+    const op = document.createElement("option");
+    op.value = color;
+    op.textContent = color;
+    filtroColor.appendChild(op);
+  });
+}
+
+function mostrarVestidos(lista) {
+  const contenedor = document.getElementById("catalogo");
+  contenedor.innerHTML = "";
+
+  lista.forEach(vestido => {
     const nombre = vestido.fields.Nombre || "Vestido";
     const talle = vestido.fields.Talle || "-";
     const color = vestido.fields.Color || "-";
-    const estado = vestido.fields.Estado || "-";
+    const tipo = vestido.fields.Tipo || "-";
     const foto = vestido.fields.Foto && vestido.fields.Foto[0] && vestido.fields.Foto[0].url;
 
     if (foto) {
@@ -24,11 +46,27 @@ async function cargarCatalogo() {
         <h3>${nombre}</h3>
         <p><strong>Talle:</strong> ${talle}</p>
         <p><strong>Color:</strong> ${color}</p>
-        <p><strong>Estado:</strong> ${estado}</p>
+        <p><strong>Tipo:</strong> ${tipo}</p>
       `;
       contenedor.appendChild(card);
     }
   });
+}
+
+document.getElementById("filtro-color").addEventListener("change", aplicarFiltros);
+document.getElementById("filtro-tipo").addEventListener("change", aplicarFiltros);
+
+function aplicarFiltros() {
+  const colorSel = document.getElementById("filtro-color").value;
+  const tipoSel = document.getElementById("filtro-tipo").value;
+
+  const filtrados = vestidos.filter(v => {
+    const color = v.fields.Color || "";
+    const tipo = v.fields.Tipo || "";
+    return (!colorSel || color === colorSel) && (!tipoSel || tipo === tipoSel);
+  });
+
+  mostrarVestidos(filtrados);
 }
 
 cargarCatalogo();
