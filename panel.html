@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel de Gestión - ALBALUZ</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    main {
+      padding-top: 100px;
+      text-align: center;
+    }
+
+    .panel-container {
+      display: grid;
+      gap: 20px;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .panel-boton {
+      background-color: #ba5970;
+      color: white;
+      border: none;
+      padding: 20px;
+      border-radius: 20px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    .panel-boton:hover {
+      background-color: #9c4461;
+    }
+
+    h1 {
+      color: #ba5970;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="catalogo.html">Catálogo</a></li>
+        <li><a href="agendar.html">Agendar</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Panel de Gestión ALBALUZ</h1>
+    <div class="panel-container">
+      <a class="panel-boton" href="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=0" target="_blank">📅 Ver Reservas (Agenda)</a>
+      <a class="panel-boton" href="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=789122212" target="_blank">✅ Editar Horarios Disponibles</a>
+      <a class="panel-boton" href="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=123456789" target="_blank">👗 Ver Alquileres</a>
+      <a class="panel-boton" href="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=456789123" target="_blank">💸 Ingresos y Gastos</a>
+      <a class="panel-boton" href="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=987654321" target="_blank">📞 Contacto de Clientas</a>
+    </div>
+  </main>
+</body>
+</html>
