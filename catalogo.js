@@ -1,32 +1,55 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const slider = document.getElementById("slider");
-  if (!slider) return;
+  const galeria = document.getElementById("galeria");
 
-  const vestidos = [
-    "Vestido Negro XL Escote Espalda",
-    "Vestido Azul Satén L Corte Princesa",
-    "Vestido Plateado M Lentejuelas Manga Larga",
-    "Vestido Rojo XS Corto Espalda Abierta"
-  ];
+  if (!galeria) return;
 
-  vestidos.forEach(nombre => {
-    const archivo = nombre.replace(/\s+/g, "_").toLowerCase() + ".jpg";
-    const img = document.createElement("img");
-    img.src = `img/${archivo}`;
-    img.alt = nombre;
-    img.className = "vestido-slide";
-    img.addEventListener("click", () => {
-      window.open("https://wa.me/59898256239?text=Hola!%20Quiero%20consultar%20por%20el%20" + encodeURIComponent(nombre), "_blank");
+  fetch("vestidos.json")
+    .then((response) => response.json())
+    .then((data) => {
+      mostrarCatalogo(data);
+    })
+    .catch((error) => {
+      console.error("Error al cargar los vestidos:", error);
     });
-    slider.appendChild(img);
-  });
-
-  let idx = 0;
-  setInterval(() => {
-    const slides = document.querySelectorAll(".vestido-slide");
-    slides.forEach((s, i) => {
-      s.style.display = i === idx ? "block" : "none";
-    });
-    idx = (idx + 1) % vestidos.length;
-  }, 3000);
 });
+
+function mostrarCatalogo(data) {
+  const galeria = document.getElementById("galeria");
+  galeria.innerHTML = "";
+
+  data.forEach((vestido) => {
+    const contenedor = document.createElement("div");
+    contenedor.className = "item";
+
+    const img = document.createElement("img");
+    img.src = `img/${vestido.imagen}`;
+    img.alt = vestido.nombre;
+
+    const nombre = document.createElement("h3");
+    nombre.textContent = vestido.nombre;
+
+    const boton = document.createElement("a");
+    boton.href = `https://wa.me/59898256239?text=Hola!%20Quiero%20consultar%20por%20el%20${encodeURIComponent(vestido.nombre)}`;
+    boton.textContent = "Consultar por WhatsApp";
+    boton.className = "boton";
+
+    contenedor.appendChild(img);
+    contenedor.appendChild(nombre);
+    contenedor.appendChild(boton);
+    galeria.appendChild(contenedor);
+  });
+}
+
+function filtrarCategoria(prefijo) {
+  const galeria = document.getElementById("galeria");
+  galeria.innerHTML = "";
+
+  fetch("vestidos.json")
+    .then((response) => response.json())
+    .then((data) => {
+      const filtrados = data.filter((vestido) =>
+        vestido.imagen.startsWith(prefijo)
+      );
+      mostrarCatalogo(filtrados);
+    });
+}
