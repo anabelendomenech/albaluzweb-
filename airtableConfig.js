@@ -1,12 +1,5 @@
 // airtableConfig.js
-const AIRTABLE_TOKEN = "patJkwJavmMqqadFg.a7a67545b975cdedecdac67964ab97202305609d9b4b58f5e555418c61e20d05";
-const BASE_ID = "appraIuHWdh5tA4FU";
-
-const endpoints = {
-  RESERVAS: "RESERVAS",
-  CLIENTAS: "CLIENTAS",
-  VESTIDOS: "VESTIDOS",
-  CHECKLIST: "CHECKLIST",
-  FINANZAS: "FINANZAS",
-  "HORARIOS DISPONIBLES": "HORARIOS DISPONIBLES"
+const airtableConfig = {
+  apiKey: "patJkwJavmMqqadFg.8f7cd9b76489dcf487132ed27f6fb6a60725ab34f0cd90658459cb24e8228df7",
+  baseId: "appraIuHWdh5tA4FU"
 };
