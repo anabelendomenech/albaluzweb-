@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Agendar - Albaluz</title>
+<title>Agendar Reserva - Albaluz</title>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -11,38 +11,47 @@
 <header>
   <nav class="main-nav">
     <ul>
-       <li><a href="index.html">Inicio</a></li>
+      <li><a href="index.html">Inicio</a></li>
       <li><a href="catalogo.html">Catálogo</a></li>
-      <li><a href="agendar.html">Agendar</a></li>
+      <li><a href="agendar.html" class="activo">Agendar</a></li>
       <li><a href="#contacto">Contáctanos</a></li>
     </ul>
   </nav>
 </header>
 
 <main>
-  <section class="contenido-seccion" style="max-width: 500px; margin: 60px auto;">
-    <h1>Agendar tu Cita</h1>
-    <p>Para agendarte, hacé clic en el botón y te llevará a WhatsApp para coordinar.</p>
-    <a href="https://wa.me/59898256239?text=Hola%20Albaluz,%20quiero%20agendarme%20para%20probarme%20un%20vestido." target="_blank" class="button">Agendar Ahora</a>
-  </section>
+  <h1>Agendar Reserva</h1>
+  <form id="form-reserva">
+    <label for="nombre">Nombre completo:</label>
+    <input type="text" id="nombre" name="nombre" required />
+
+    <label for="evento">Evento:</label>
+    <input type="text" id="evento" name="evento" required />
+
+    <label for="fecha">Fecha de evento:</label>
+    <input type="date" id="fecha" name="fecha" required min="" />
+
+    <label for="horario">Horario:</label>
+    <select id="horario" name="horario" required>
+      <!-- Horarios cargados con JS -->
+    </select>
+
+    <label for="personas">Cantidad de personas:</label>
+    <input type="number" id="personas" name="personas" min="1" max="10" required />
+
+    <label for="mensaje">Mensaje adicional:</label>
+    <textarea id="mensaje" name="mensaje" rows="3"></textarea>
+
+    <button type="submit">Enviar reserva</button>
+  </form>
 </main>
 
 <footer id="contacto">
-  <h2>Contáctanos</h2>
-  <div class="redes">
-    <a href="https://instagram.com/albaluz_alquilerdevestidos" target="_blank" aria-label="Instagram">
-      <img src="iconos/instagram.svg" alt="Instagram" />
-    </a>
-    <a href="https://facebook.com/AlbaluzAlquilerDeVestidos" target="_blank" aria-label="Facebook">
-      <img src="iconos/facebook.svg" alt="Facebook" />
-    </a>
-    <a href="https://tiktok.com/@albaluz_alquilerdevesti2" target="_blank" aria-label="TikTok">
-      <img src="iconos/tiktok.svg" alt="TikTok" />
-    </a>
-  </div>
-  <p>Teléfono: +598 9825 6239</p>
-  <p>Dirección: Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</p>
+  <p>📍 Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</p>
+  <p>✉️ domenechanaa@gmail.com | 📱 +598 9825 6239</p>
 </footer>
 
+<script src="agendar.js"></script>
+<script src="menu.js"></script>
 </body>
 </html>
