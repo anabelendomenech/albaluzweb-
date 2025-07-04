@@ -1,5 +1,5 @@
 // airtableConfig.js
-const AIRTABLE_TOKEN = "TU_TOKEN_NUEVO_PRIVADO";
+const AIRTABLE_TOKEN = "patJkwJavmMqqadFg.a7a67545b975cdedecdac67964ab97202305609d9b4b58f5e555418c61e20d05";
 const BASE_ID = "appraIuHWdh5tA4FU";
 
 const endpoints = {
