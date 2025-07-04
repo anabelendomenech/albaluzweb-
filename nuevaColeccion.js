@@ -1,5 +1,5 @@
-const apiKey = 'pat4Z3hm5lJaeSBxQ.568935dff179a1efd1d93ec53da2a523f432a391c248fbfc7da27e124da92f19';
-const baseId = 'appraIuHWdh5tA4FU';
+const { apiKey, baseId } = airtableConfig;
+
 
 async function cargarNuevaColeccion() {
   const url = `https://api.airtable.com/v0/${baseId}/VESTIDOS?filterByFormula=({Estado}='Nueva Colección')`;
