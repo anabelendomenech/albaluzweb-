@@ -1,66 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Panel de Gestión - ALBALUZ</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel Privado - Albaluz</title>
+  <link rel="stylesheet" href="styles.css" />
   <style>
-    #panel-content { display: none; }
-    #login-panel { margin: 2rem auto; max-width: 300px; text-align: center; }
-    #login-panel input { padding: 0.5rem; margin-top: 1rem; width: 100%; }
-    #login-panel button { padding: 0.5rem 1rem; margin-top: 1rem; width: 100%; }
+    body {
+      background-color: #fef7e5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+
+    .panel-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .password-container {
+      margin-top: 5rem;
+    }
+
+    .iframe-container {
+      display: none;
+      margin-top: 2rem;
+    }
+
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      background-color: #baab7f;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background-color: #958a63;
+    }
+
+    input[type="password"] {
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .button {
+      margin-left: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      background-color: #baab7f;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Panel de Gestión</h1>
-    <nav>
-      <ul>
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="catalogo.html">Catálogo</a></li>
-        <li><a href="checklist.html">Checklist</a></li>
-        <li><a href="panel.html">Panel</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <!-- LOGIN SIMPLE -->
-  <main id="login-panel">
-    <h2>🔐 Acceso privado</h2>
-    <p>Ingresá la contraseña para continuar</p>
-    <input type="password" id="password" placeholder="Contraseña">
-    <button onclick="verificarPassword()">Entrar</button>
-    <p id="error" style="color:red;"></p>
-  </main>
+  <div class="panel-container">
+    <div class="password-container" id="loginPanel">
+      <h2>Panel privado</h2>
+      <p>Ingresá la contraseña:</p>
+      <input type="password" id="password" placeholder="Contraseña" />
+      <button class="button" onclick="verificarPassword()">Entrar</button>
+    </div>
 
-  <!-- PANEL OCULTO -->
-  <main id="panel-content">
-    <section>
-      <h2>Reservas y Alquileres</h2>
-      <p>Accedé a tus documentos de gestión ALBALUZ:</p>
-      <ul>
-        <li><a href="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit?usp=sharing" target="_blank">📝 Hoja de control ALBALUZ</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W?usp=sharing" target="_blank">📁 Carpeta con imágenes (vestidos, packaging, accesorios)</a></li>
-      </ul>
-    </section>
-  </main>
+    <div class="iframe-container" id="panelContenido" style="display:none;">
+      <h2>Panel de Gestión ALBALUZ</h2>
+      <div class="tabs">
+        <button class="tab active" onclick="mostrarTab('reservas')">Reservas</button>
+        <button class="tab" onclick="mostrarTab('horarios')">Horarios</button>
+        <button class="tab" onclick="mostrarTab('alquileres')">Alquileres</button>
+      </div>
 
-  <footer>
-    <p>📍 Treinta y Tres 1121 bis - Dolores, Soriano</p>
-    <p>📞 +598 98 256 239 · 📧 domenechanaa@gmail.com</p>
-  </footer>
+      <div id="reservas" class="iframe-content">
+        <iframe src="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=0" allowfullscreen></iframe>
+      </div>
+      <div id="horarios" class="iframe-content" style="display:none;">
+        <iframe src="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=362157777" allowfullscreen></iframe>
+      </div>
+      <div id="alquileres" class="iframe-content" style="display:none;">
+        <iframe src="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=1586703625" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
 
-  <script>
-    function verificarPassword() {
-      const clave = document.getElementById('password').value;
-      const error = document.getElementById('error');
-      if (clave === 'ALBALUZ2025') {
-        document.getElementById('login-panel').style.display = 'none';
-        document.getElementById('panel-content').style.display = 'block';
-      } else {
-        error.textContent = 'Contraseña incorrecta. Intenta de nuevo.';
-      }
+<script>
+  function verificarPassword() {
+    const clave = document.getElementById("password").value;
+    if (clave === "ALBALUZ2025") {
+      document.getElementById("loginPanel").style.display = "none";
+      document.getElementById("panelContenido").style.display = "block";
+    } else {
+      alert("Contraseña incorrecta");
     }
-  </script>
+  }
+
+  function mostrarTab(id) {
+    document.querySelectorAll(".iframe-content").forEach(div => div.style.display = "none");
+    document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
+    document.getElementById(id).style.display = "block";
+    event.target.classList.add("active");
+  }
+</script>
+
 </body>
 </html>
