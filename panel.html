@@ -2,51 +2,155 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel de Gestión - Albaluz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel Albaluz</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      background-color: #fffaf2;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #baab7f;
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 12px;
+      background-color: #e8e1cd;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .tab-button.active {
+      background-color: #baab7f;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 20px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    h2 {
+      color: #6b5d3a;
+    }
+
+    input, select, textarea {
+      margin: 5px 0;
+      padding: 8px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #baab7f;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #e8e1cd;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+  </style>
 </head>
 <body>
-  <div id="login-form">
-    <h2>Panel Privado</h2>
-    <input type="password" id="password" placeholder="Contraseña" />
-    <button onclick="login()">Ingresar</button>
+  <h1 style="text-align:center; color:#6b5d3a;">Panel de Gestión Albaluz</h1>
+
+  <div class="tabs">
+    <button class="tab-button active" data-tab="reservas">📅 Reservas</button>
+    <button class="tab-button" data-tab="alquileres">👗 Alquileres</button>
+    <button class="tab-button" data-tab="checklist">✅ Checklist</button>
+    <button class="tab-button" data-tab="finanzas">💸 Finanzas</button>
+    <button class="tab-button" data-tab="clientas">📕 Clientas</button>
+    <button class="tab-button" data-tab="horarios">🕒 Horarios</button>
   </div>
 
-  <main id="contenido-panel" style="display:none;">
-    <h1>Panel de Control</h1>
+  <div id="reservas" class="tab-content active">
+    <h2>📅 Agregar Reserva</h2>
+    <!-- Formulario reservas -->
+    <form id="form-reservas">
+      <input type="text" placeholder="Nombre" name="nombre" required />
+      <input type="date" name="fechaReserva" required />
+      <input type="time" name="hora" required />
+      <input type="number" name="personas" placeholder="Cantidad de personas" required />
+      <input type="date" name="fechaEvento" required />
+      <textarea name="comentarios" placeholder="Comentarios"></textarea>
+      <button type="submit">Guardar Reserva</button>
+    </form>
+    <div id="tabla-reservas"></div>
+  </div>
 
-    <section id="reservas">
-      <h2>📅 Reservas</h2>
-      <div id="tabla-reservas"></div>
-    </section>
+  <div id="alquileres" class="tab-content">
+    <h2>👗 Registrar Alquiler</h2>
+    <!-- Luego completamos esto -->
+    <p>Formulario en construcción.</p>
+  </div>
 
-    <section id="clientas">
-      <h2>📕 Clientas</h2>
-      <div id="tabla-clientas"></div>
-    </section>
+  <div id="checklist" class="tab-content">
+    <h2>✅ Checklist de Vestidos</h2>
+    <div id="tabla-checklist"></div>
+  </div>
 
-    <section id="vestidos">
-      <h2>👗 Vestidos</h2>
-      <div id="tabla-vestidos"></div>
-    </section>
+  <div id="finanzas" class="tab-content">
+    <h2>💸 Finanzas</h2>
+    <div id="tabla-finanzas"></div>
+  </div>
 
-    <section id="checklist">
-      <h2>✅ Checklist</h2>
-      <div id="tabla-checklist"></div>
-    </section>
+  <div id="clientas" class="tab-content">
+    <h2>📕 Base de Datos de Clientas</h2>
+    <div id="tabla-clientas"></div>
+  </div>
 
-    <section id="finanzas">
-      <h2>💸 Finanzas</h2>
-      <div id="tabla-finanzas"></div>
-    </section>
-
-    <section id="horarios">
-      <h2>📆 Horarios Disponibles</h2>
-      <div id="tabla-horarios"></div>
-    </section>
-  </main>
+  <div id="horarios" class="tab-content">
+    <h2>🕒 Horarios Disponibles</h2>
+    <div id="tabla-horarios"></div>
+  </div>
 
   <script src="panel.js"></script>
+  <script>
+    const tabs = document.querySelectorAll(".tab-button");
+    const contents = document.querySelectorAll(".tab-content");
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(btn => btn.classList.remove("active"));
+        contents.forEach(c => c.classList.remove("active"));
+
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.tab).classList.add("active");
+      });
+    });
+  </script>
 </body>
 </html>
