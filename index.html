@@ -21,14 +21,18 @@
 
 <main>
 
-  <!-- Inicio con nombre y imagen -->
+  <!-- Inicio con nombre y logo -->
   <section id="inicio" class="inicio-flex">
     <div class="nota-descuento">¡Cumplimos 2 años! Al hacer tu reserva llevás un 10% de descuento válido todo julio.</div>
-    <div class="inicio-columna imagen"></div>
+    
+    <div class="inicio-columna imagen">
+      <img src="img/logo-albaluz.png" alt="Logo Albaluz" class="logo-img" />
+    </div>
+    
     <div class="inicio-columna texto">
       <h1>ALBALUZ</h1>
       <p class="subtitulo">Alquiler de Vestidos</p>
-      <a href="https://wa.me/59898256239" target="_blank" rel="noopener" class="button">Agendar ahora</a>
+      <a href="catalogo.html" target="_blank" class="button">Ver colección</a>
     </div>
   </section>
 
@@ -42,7 +46,7 @@
   <section id="agendar" class="contenido-seccion agendar">
     <h2>Agendate para elegir tu vestido ideal</h2>
     <p>Consultanos por WhatsApp y coordiná tu cita personalizada.</p>
-    <a href="https://wa.me/59898256239" target="_blank" rel="noopener" class="btn-whatsapp">Consultar por WhatsApp</a>
+    <a href="https://wa.me/59898256239" target="_blank" class="btn-whatsapp">Consultar por WhatsApp</a>
   </section>
 
   <!-- Más de 150 vestidos, talles, packaging -->
@@ -58,6 +62,21 @@
     <div class="arco-card">
       <h3>Packaging eco friendly</h3>
       <p>Cuidamos el planeta en cada alquiler con nuestro packaging sustentable.</p>
+    </div>
+  </section>
+
+  <!-- Imágenes packaging -->
+  <section id="packaging-eco" class="contenido-seccion packaging-eco">
+    <h2>Packaging Eco Friendly</h2>
+    <div class="packaging-imgs">
+      <div class="pack-item">
+        <img src="img/packaging.bolsa.craft.jpg" alt="Bolsa craft" class="circle-img" />
+        <p>Bolsa de papel reciclado</p>
+      </div>
+      <div class="pack-item">
+        <img src="img/packaging.fundaprotectora.png" alt="Funda protectora" class="circle-img" />
+        <p>Funda protectora reutilizable</p>
+      </div>
     </div>
   </section>
 
@@ -91,15 +110,16 @@
     </div>
   </section>
 
-  <!-- Contacto reordenado -->
+  <!-- Contacto -->
   <section id="contacto" class="contenido-seccion contacto">
     <h2>Contacto</h2>
-    <ul class="contact-list">
-      <li><strong>Teléfono/WhatsApp:</strong> <a href="https://wa.me/59898256239" target="_blank" rel="noopener">+598 9825 6239</a></li>
-      <li><strong>Dirección:</strong> Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</li>
-      <li><strong>Email:</strong> <a href="mailto:domenechanaa@gmail.com">domenechanaa@gmail.com</a></li>
-      <li><strong>Instagram:</strong> <a href="https://instagram.com/albaluz" target="_blank" rel="noopener">@albaluz</a></li>
-    </ul>
+    <div class="contacto-lineal">
+      <p>📍 <a href="https://www.google.com/maps/place/Treinta+y+Tres+1121,+Dolores,+Departamento+de+Soriano,+Uruguay" target="_blank">Treinta y tres 1121 bis, Dolores</a></p>
+      <p>📞 <a href="https://wa.me/59898256239" target="_blank">+598 9825 6239</a></p>
+      <p>📸 <a href="https://www.instagram.com/albaluz_alquilerdevestidos" target="_blank">@albaluz_alquilerdevestidos</a></p>
+      <p>🎵 <a href="https://www.tiktok.com/@albaluz_alquilerdevesti2" target="_blank">@albaluz_alquilerdevesti2</a></p>
+      <p>📘 <a href="https://www.facebook.com/p/Albaluz-Alquiler-de-vestidos-100095095251771/" target="_blank">Facebook Albaluz</a></p>
+    </div>
   </section>
 
 </main>
@@ -113,16 +133,16 @@
     });
   });
 
-  // Slider automática para nueva colección (imágenes de /img)
+  // Slider con nombres exactos desde carpeta img
   document.addEventListener("DOMContentLoaded", () => {
     const slider = document.getElementById("slider");
     if (!slider) return;
 
     const vestidos = [
-      "vestido_negro_xl_escote_espalda.jpg",
-      "vestido_azul_saten_l_corte_princesa.jpg",
-      "vestido_plateado_m_lentejuelas_manga_larga.jpg",
-      "vestido_rojo_xs_corto_espalda_abierta.jpg"
+      "vestido-azul-brillos-unhombro.jpg",
+      "vestido-negro-xl-espalda.jpg",
+      "vestido-rojo-corto-espaldaabierta.jpg",
+      "vestido-plateado-lentejuelas-manga.jpg"
     ];
 
     let idx = 0;
@@ -135,8 +155,7 @@
       img.className = "vestido-slide";
       img.style.cursor = "pointer";
       img.addEventListener("click", () => {
-        const nombre = img.alt;
-        window.open("https://wa.me/59898256239?text=Hola!%20Quiero%20consultar%20por%20el%20vestido%20" + encodeURIComponent(nombre), "_blank");
+        window.open("https://wa.me/59898256239?text=Hola!%20Quiero%20consultar%20por%20el%20vestido%20" + encodeURIComponent(img.alt), "_blank");
       });
       slider.appendChild(img);
     }
