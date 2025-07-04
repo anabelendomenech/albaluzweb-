@@ -1,1 +1,5 @@
 airtableConfig.js
+.env
+*.log
+.DS_Store
+
