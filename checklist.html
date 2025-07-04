@@ -1,41 +1,92 @@
 
-<!DOCTYPE html>
+   
+ <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Checklist de Alquiler - ALBALUZ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checklist Alquileres - ALBALUZ</title>
+   <img src="logo.JPG" alt="ALBALUZ logo">
+  <link rel="stylesheet" href="styles.css" />
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background-color: #fff; color: #333; margin: 40px; }
-    h1 { text-align: center; margin-bottom: 20px; }
-    .logo { text-align: center; margin-bottom: 20px; }
-    .logo img { height: 80px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 16px; }
-    th, td { border: 1px solid #baab7f; padding: 10px; text-align: left; }
-    th { background-color: #baab7f; color: white; }
-    .observaciones { height: 80px; }
-    .firma { margin-top: 40px; display: flex; justify-content: space-between; }
-    .firma div { width: 45%; text-align: center; }
+    body {
+      background: #baab7f;
+      color: #333;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 30px;
+    }
+    h1 {
+      color: #ba5970;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #ba5970;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <div class="logo">
-    <img src="logo.JPG" alt="ALBALUZ logo">
-  </div>
-  <h1>Checklist de Alquiler</h1>
+  <h1>Checklist de Alquileres por Fin de Semana</h1>
   <table>
-    <tr><th>Nombre de la clienta</th><td></td></tr>
-    <tr><th>Fecha del evento</th><td></td></tr>
-    <tr><th>Vestido alquilado</th><td></td></tr>
-    <tr><th>Talle</th><td></td></tr>
-    <tr><th>Precio</th><td></td></tr>
-    <tr><th>Seña/Pago</th><td></td></tr>
-    <tr><th>Fecha de retiro</th><td></td></tr>
-    <tr><th>Fecha de devolución</th><td></td></tr>
-    <tr><th>Observaciones</th><td class="observaciones"></td></tr>
+    <thead>
+      <tr>
+        <th>Vestido</th>
+        <th>Fecha Evento</th>
+        <th>Cliente</th>
+        <th>Pagó</th>
+        <th>Devolución OK</th>
+      </tr>
+    </thead>
+    <tbody id="checklist-body">
+      <!-- Se cargan los datos con JS -->
+    </tbody>
   </table>
-  <div class="firma">
-    <div><p>__________________________</p><p>Firma clienta</p></div>
-    <div><p>__________________________</p><p>Firma ALBALUZ</p></div>
-  </div>
+
+  <script>
+    const datosAlquileres = [
+      // Ejemplo, reemplazar con datos reales o conexión Google Sheets después
+      { vestido: "Vestido azul largo", fecha: "2025-07-10", cliente: "Ana D.", pago: true },
+      { vestido: "Vestido corto rojo", fecha: "2025-07-11", cliente: "Laura M.", pago: false },
+      // ... más filas
+    ];
+
+    const tbody = document.getElementById('checklist-body');
+
+    datosAlquileres.forEach(({vestido, fecha, cliente, pago}, i) => {
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td>${vestido}</td>
+        <td>${fecha}</td>
+        <td>${cliente}</td>
+        <td>${pago ? "✔️" : "❌"}</td>
+        <td><input type="checkbox" id="devuelto-${i}" /></td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+  </script>
 </body>
 </html>
