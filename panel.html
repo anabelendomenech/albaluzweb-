@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <title>Panel de Gestión - ALBALUZ</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    #panel-content { display: none; }
+    #login-panel { margin: 2rem auto; max-width: 300px; text-align: center; }
+    #login-panel input { padding: 0.5rem; margin-top: 1rem; width: 100%; }
+    #login-panel button { padding: 0.5rem 1rem; margin-top: 1rem; width: 100%; }
+  </style>
 </head>
 <body>
   <header>
@@ -18,13 +24,23 @@
     </nav>
   </header>
 
-  <main>
+  <!-- LOGIN SIMPLE -->
+  <main id="login-panel">
+    <h2>🔐 Acceso privado</h2>
+    <p>Ingresá la contraseña para continuar</p>
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="verificarPassword()">Entrar</button>
+    <p id="error" style="color:red;"></p>
+  </main>
+
+  <!-- PANEL OCULTO -->
+  <main id="panel-content">
     <section>
       <h2>Reservas y Alquileres</h2>
-      <p>Accedé a tu Google Sheets para controlar reservas, horarios y checklist:</p>
+      <p>Accedé a tus documentos de gestión ALBALUZ:</p>
       <ul>
-        <li><a href="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit?usp=sharing" target="_blank">📝 Ver hoja de control ALBALUZ</a></li>
-        <li><a href="https://drive.google.com/drive/folders/1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W?usp=sharing" target="_blank">📁 Ver carpeta de fotos</a></li>
+        <li><a href="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit?usp=sharing" target="_blank">📝 Hoja de control ALBALUZ</a></li>
+        <li><a href="https://drive.google.com/drive/folders/1-Ex9DNg9wjFRPrvDX457gmBw0I7hvk_W?usp=sharing" target="_blank">📁 Carpeta con imágenes (vestidos, packaging, accesorios)</a></li>
       </ul>
     </section>
   </main>
@@ -33,5 +49,18 @@
     <p>📍 Treinta y Tres 1121 bis - Dolores, Soriano</p>
     <p>📞 +598 98 256 239 · 📧 domenechanaa@gmail.com</p>
   </footer>
+
+  <script>
+    function verificarPassword() {
+      const clave = document.getElementById('password').value;
+      const error = document.getElementById('error');
+      if (clave === 'ALBALUZ2025') {
+        document.getElementById('login-panel').style.display = 'none';
+        document.getElementById('panel-content').style.display = 'block';
+      } else {
+        error.textContent = 'Contraseña incorrecta. Intenta de nuevo.';
+      }
+    }
+  </script>
 </body>
 </html>
