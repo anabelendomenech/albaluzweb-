@@ -1,21 +1,112 @@
 [
   {
     "id": "vestido1",
-    "nombre": "Vestido largo azul",
+    "nombre": "Vestido azul largo con brillos y un solo hombro",
     "tipo": "Largo",
-    "talle": "M,L",
+    "talle": "M/L",
     "color": "Azul",
-    "descripcion": "Vestido azul largo con brillos de un solo hombro",
-    "url": "img/vestido1.jpg"
+    "precio": 1200,
+    "descripcion": "Vestido azul largo con brillos y un solo hombro",
+    "url": "https://drive.google.com/uc?export=view&id=1XEjzXm8POFoKAc_LnVeyLMN3x6q-SDe3"
   },
   {
     "id": "vestido2",
-    "nombre": "Vestido corto rojo con encaje",
+    "nombre": "Vestido verde largo con brillos y un solo hombro",
+    "tipo": "Largo",
+    "talle": "M",
+    "color": "Verde",
+    "precio": 1200,
+    "descripcion": "Vestido verde largo con brillos y un solo hombro",
+    "url": "https://drive.google.com/uc?export=view&id=1j9Wj1Dcg6jABZD6dTOgiXe_Ju_09nX2K"
+  },
+  {
+    "id": "vestido3",
+    "nombre": "Vestido verde largo con espalda cruzada",
+    "tipo": "Largo",
+    "talle": "M/L",
+    "color": "Verde",
+    "precio": 1000,
+    "descripcion": "Vestido verde largo con espalda cruzada",
+    "url": "https://drive.google.com/uc?export=view&id=1yQ3E4xxXf3rquWpuqG73aMBt-_rHzLhZ"
+  },
+  {
+    "id": "vestido4",
+    "nombre": "Vestido verde largo una tira",
+    "tipo": "Largo",
+    "talle": "M/L",
+    "color": "Verde",
+    "precio": 1000,
+    "descripcion": "Vestido verde largo con una sola tira",
+    "url": "https://drive.google.com/uc?export=view&id=1wM17qQbsmKCoRZRnLkRnv-YLg4Aw1mkq"
+  },
+  {
+    "id": "vestido5",
+    "nombre": "Vestido azul largo con brillos y espalda cruzada",
+    "tipo": "Largo",
+    "talle": "M/L",
+    "color": "Azul",
+    "precio": 1200,
+    "descripcion": "Vestido azul largo con brillos y espalda cruzada",
+    "url": "https://drive.google.com/uc?export=view&id=1S7GJvPoyOxNbi6PqPb_PXtaNoIp1wcuX"
+  },
+  {
+    "id": "vestido6",
+    "nombre": "Vestido terracota corto con brillos",
     "tipo": "Corto",
-    "talle": "S",
-    "color": "Rojo",
-    "descripcion": "Vestido corto rojo con detalles de encaje",
-    "url": "img/vestido2.jpg"
+    "talle": "M/L",
+    "color": "Terracota",
+    "precio": 900,
+    "descripcion": "Vestido terracota corto con brillos",
+    "url": "https://drive.google.com/uc?export=view&id=1MzC87d2JfTYt7UotGwiPN06gXJcQ5YrA"
+  },
+  {
+    "id": "vestido7",
+    "nombre": "Vestido azul corto con brillos y una manga",
+    "tipo": "Corto",
+    "talle": "S/M",
+    "color": "Azul",
+    "precio": 900,
+    "descripcion": "Vestido azul corto con brillos y una manga",
+    "url": "https://drive.google.com/uc?export=view&id=1eQBBqnZtfYj6N7qyODr9YUwRjWgpT4B2"
+  },
+  {
+    "id": "vestido8",
+    "nombre": "Vestido bordo corto con brillos",
+    "tipo": "Corto",
+    "talle": "S/M",
+    "color": "Bordo",
+    "precio": 900,
+    "descripcion": "Vestido bordo corto con brillos",
+    "url": "https://drive.google.com/uc?export=view&id=1t_27P6yGXcly_7Rpsd75ZPt1__R-oWrv"
+  },
+  {
+    "id": "vestido9",
+    "nombre": "Vestido azul largo con brillos",
+    "tipo": "Largo",
+    "talle": "M/L",
+    "color": "Azul",
+    "precio": 1200,
+    "descripcion": "Vestido azul largo con brillos",
+    "url": "https://drive.google.com/uc?export=view&id=1p3rU9Csju0jXckz0WYY_5ZMuV9co9HMi"
+  },
+  {
+    "id": "vestido10",
+    "nombre": "Vestido corset celeste largo con brillos",
+    "tipo": "Largo",
+    "talle": "M/L",
+    "color": "Celeste",
+    "precio": 1200,
+    "descripcion": "Vestido corset celeste largo con brillos",
+    "url": "https://drive.google.com/uc?export=view&id=1rbjo-d6UowpOrvl-T2_gTo9r7yN_4wPH"
+  },
+  {
+    "id": "vestido11",
+    "nombre": "Vestido rosado corto",
+    "tipo": "Corto",
+    "talle": "M/L",
+    "color": "Rosado",
+    "precio": 900,
+    "descripcion": "Vestido rosado corto (solo catálogo)",
+    "url": "https://drive.google.com/uc?export=view&id=1HpXPDBCSj3MWyoz2oPiDEY19ZXrGmvMJ"
   }
-  // ... agregás los 8 vestidos restantes con la misma estructura
 ]
