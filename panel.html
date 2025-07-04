@@ -3,126 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel Privado - Albaluz</title>
+  <title>Panel de Gestión - ALBALUZ</title>
   <link rel="stylesheet" href="styles.css" />
-  <style>
-    body {
-      background-color: #fef7e5;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #333;
-    }
-
-    .panel-container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem;
-      text-align: center;
-    }
-
-    .password-container {
-      margin-top: 5rem;
-    }
-
-    .iframe-container {
-      display: none;
-      margin-top: 2rem;
-    }
-
-    iframe {
-      width: 100%;
-      height: 600px;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-    }
-
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .tab {
-      background-color: #baab7f;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 12px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .tab.active {
-      background-color: #958a63;
-    }
-
-    input[type="password"] {
-      padding: 0.6rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-    }
-
-    .button {
-      margin-left: 0.5rem;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      background-color: #baab7f;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-  </style>
+  <script defer src="panel.js"></script>
+  <script defer src="airtableConfig.js"></script>
 </head>
 <body>
-
-  <div class="panel-container">
-    <div class="password-container" id="loginPanel">
-      <h2>Panel privado</h2>
-      <p>Ingresá la contraseña:</p>
-      <input type="password" id="password" placeholder="Contraseña" />
-      <button class="button" onclick="verificarPassword()">Entrar</button>
-    </div>
-
-    <div class="iframe-container" id="panelContenido" style="display:none;">
-      <h2>Panel de Gestión ALBALUZ</h2>
-      <div class="tabs">
-        <button class="tab active" onclick="mostrarTab('reservas')">Reservas</button>
-        <button class="tab" onclick="mostrarTab('horarios')">Horarios</button>
-        <button class="tab" onclick="mostrarTab('alquileres')">Alquileres</button>
-      </div>
-
-      <div id="reservas" class="iframe-content">
-        <iframe src="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=0" allowfullscreen></iframe>
-      </div>
-      <div id="horarios" class="iframe-content" style="display:none;">
-        <iframe src="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=362157777" allowfullscreen></iframe>
-      </div>
-      <div id="alquileres" class="iframe-content" style="display:none;">
-        <iframe src="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit#gid=1586703625" allowfullscreen></iframe>
-      </div>
-    </div>
+  <div id="login">
+    <h2>Acceso al Panel</h2>
+    <input type="password" id="password" placeholder="Contraseña" />
+    <button onclick="verificarAcceso()">Ingresar</button>
   </div>
 
-<script>
-  function verificarPassword() {
-    const clave = document.getElementById("password").value;
-    if (clave === "ALBALUZ2025") {
-      document.getElementById("loginPanel").style.display = "none";
-      document.getElementById("panelContenido").style.display = "block";
-    } else {
-      alert("Contraseña incorrecta");
-    }
-  }
+  <main id="panel" style="display: none;">
+    <h1>🎛 Panel de Gestión - ALBALUZ</h1>
 
-  function mostrarTab(id) {
-    document.querySelectorAll(".iframe-content").forEach(div => div.style.display = "none");
-    document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
-    document.getElementById(id).style.display = "block";
-    event.target.classList.add("active");
-  }
-</script>
+    <section>
+      <h2>📅 Reservas</h2>
+      <div id="reservas"></div>
+    </section>
 
+    <section>
+      <h2>📕 Clientas</h2>
+      <div id="clientas"></div>
+    </section>
+
+    <section>
+      <h2>👗 Vestidos</h2>
+      <div id="vestidos"></div>
+    </section>
+
+    <section>
+      <h2>✅ Checklist (Fin de semana)</h2>
+      <div id="checklist"></div>
+    </section>
+
+    <section>
+      <h2>💸 Finanzas</h2>
+      <div id="finanzas"></div>
+    </section>
+
+    <section>
+      <h2>📆 Horarios Disponibles</h2>
+      <div id="horarios"></div>
+    </section>
+  </main>
 </body>
 </html>
