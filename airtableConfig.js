@@ -1,5 +1,5 @@
 // airtableConfig.js (NO subir a GitHub)
-const API_KEY = "patDH9IOq3A8bjzkZ.db588bbbf55f75b62fa8bbff9023c4c69a6ff0840c9cdcce001b8887de69308d";
+const API_KEY = "ppatv7PT1S00KcD2ee.c5453132c504a3c8da03a4d4d603dcc5567734fbf85fba088e6c2128bd9ec6e7";
 const BASE_ID = "appraIuHWdh5tA4FU";
 
 const headers = {
