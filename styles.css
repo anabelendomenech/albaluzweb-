@@ -1,4 +1,4 @@
-/* Reset y básico */
+/* Reset */
 * {
   box-sizing: border-box;
 }
@@ -12,24 +12,21 @@ body, html {
   scroll-behavior: smooth;
 }
 
-/* Header */
-
 header {
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: #ba5970;
-  padding: 10px 0;
-  z-index: 9999;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  background-color: #fff;
+  border-bottom: 2px solid #ba5970;
+  z-index: 1000;
 }
 
 .main-nav ul {
+  list-style: none;
   display: flex;
   justify-content: center;
-  list-style: none;
+  padding: 10px 0;
   margin: 0;
-  padding: 0;
 }
 
 .main-nav ul li {
@@ -37,371 +34,154 @@ header {
 }
 
 .main-nav ul li a {
-  color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
   text-decoration: none;
+  color: #ba5970;
+  font-weight: bold;
+  font-size: 1.1rem;
   transition: color 0.3s ease;
 }
 
+.main-nav ul li a.activo,
 .main-nav ul li a:hover {
-  color: #f8f8f8;
+  color: #7d3b50;
 }
 
-/* Main */
-
 main {
-  padding-top: 70px;
-  max-width: 1100px;
+  padding: 80px 20px 20px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
-/* Inicio */
-
-.inicio-flex {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  min-height: 80vh;
-  background-color: #d8cfa6;
-  margin-bottom: 40px;
-  position: relative;
-}
-
 .nota-descuento {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #ba5970;
-  color: white;
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  max-width: 350px;
+  background: #7d3b50;
+  color: #fff;
+  padding: 15px;
+  border-radius: 10px;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  font-weight: 600;
+  margin-bottom: 30px;
+  font-size: 1.2rem;
 }
 
-.inicio-columna {
-  flex: 1 1 300px;
-  margin: 20px;
+.galeria-nueva-coleccion {
+  margin-bottom: 50px;
 }
 
-.inicio-columna.imagen {
-  background-image: url('albaluz.JPG');
-  background-size: cover;
-  background-position: center;
-  min-height: 400px;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-.inicio-columna.texto h1 {
-  font-size: 3.2rem;
-  margin-bottom: 15px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #4a2f3a;
-}
-
-.inicio-columna.texto p {
-  font-size: 1.25rem;
-  margin-bottom: 25px;
-  font-weight: 500;
-  color: #66514f;
-}
-
-
-.button {
-  background-color: #ba5970;
-  color: white;
-  padding: 15px 30px;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  text-decoration: none;
-  display: inline-block;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 4px 8px rgba(186, 89, 112, 0.4);
-  justify-content: center;
-}
-
-.button:hover {
-  background-color: #9c4461;
-}
-
-/* Secciones */
-
-.contenido-seccion {
-  background: #d8cfa6;;
-  border-radius: 15px;
-  padding: 40px 30px;
-  margin-bottom: 40px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.contenido-seccion h2 {
-  font-weight: 700;
+.galeria-nueva-coleccion h2 {
   color: #ba5970;
   margin-bottom: 20px;
   text-align: center;
 }
 
-/* Imagen misión */
-
-.img-mision {
-  display: block;
-  max-width: 100%;
-  margin: 15px auto 0 auto;
-  border-radius: 15px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-}
-
-/* Slider Nueva Colección */
-
 .slider {
   display: flex;
   overflow-x: auto;
   gap: 15px;
-  scroll-behavior: smooth;
+  padding-bottom: 10px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
-.slider img {
-  height: 250px;
-  border-radius: 12px;
-  flex-shrink: 0;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  cursor: pointer;
+.slider::-webkit-scrollbar {
+  height: 8px;
+}
+
+.slider::-webkit-scrollbar-thumb {
+  background-color: #ba5970;
+  border-radius: 4px;
+}
+
+.slider::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
+}
+
+.slider > div {
+  flex: 0 0 auto;
+  width: 250px;
+  border-radius: 15px;
+  background: white;
+  box-shadow: 0 4px 8px rgba(186, 91, 112, 0.3);
+  scroll-snap-align: center;
+  padding: 15px;
+  text-align: center;
   transition: transform 0.3s ease;
 }
 
-.slider img:hover {
+.slider > div:hover {
   transform: scale(1.05);
 }
 
-/* FAQ */
-
-.faq-item h3 {
-  cursor: pointer;
-  background: #ba5970;
-  color: white;
-  margin: 15px 0 5px;
-  padding: 12px 15px;
-  border-radius: 8px;
-  user-select: none;
+.slider img {
+  max-width: 100%;
+  border-radius: 10px;
+  margin-bottom: 10px;
 }
 
-.faq-content {
-  display: none;
-  padding: 15px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  color: #333;
-  margin-bottom: 15px;
-  line-height: 1.4;
-}
-
-/* Footer */
-
-footer {
-  background-color: #ba5970;
-  color: white;
-  text-align: center;
-  padding: 30px 20px;
-  font-size: 1rem;
-}
-
-footer .redes {
-  margin-bottom: 15px;
-}
-
-footer .redes a {
-  margin: 0 12px;
+.btn-wsp {
   display: inline-block;
-  filter: brightness(1);
-  transition: filter 0.3s ease;
+  background-color: #25d366;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
 }
 
-footer .redes a:hover {
-  filter: brightness(1.3);
+.btn-wsp:hover {
+  background-color: #1ebe57;
 }
 
-footer .redes img {
-  width: 28px;
-  height: 28px;
-  vertical-align: middle;
-}
-
-/* Responsive */
-
-@media (max-width: 768px) {
-  .inicio-flex {
-    flex-direction: column;
-  }
-
-  .inicio-columna {
-    margin: 10px 0;
-  }
-
-  main {
-    padding: 60px 15px 30px;
-  }
-}.catalogo-grid {
+.catalogo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+  grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
   gap: 20px;
-  margin-top: 20px;
 }
 
 .vestido-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(186, 91, 112, 0.2);
   padding: 15px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
   text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.vestido-card:hover {
+  transform: scale(1.03);
 }
 
 .vestido-card img {
   width: 100%;
-  height: 280px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 12px;
-}
-
-.vestido-card h3 {
-  color: #ba5970;
-  margin-bottom: 8px;
-}
-
-.vestido-card p {
-  font-size: 0.95rem;
-  color: #555;
-}
-.catalogo-header {
-  background-color: #baab7f;
-  color: #d8cfa6;;
-  padding: 20px;
-  text-align: center;
-}
-
-.catalogo-galeria {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
-
-.vestido-item {
-  background-color: white;
-  padding: 10px;
   border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
 }
 
-.vestido-item img {
-  width: 100%;
-  border-radius: 8px;
-}
-.grid-catalogo {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-    padding: 0 20px;
-}
-
-.vestido-card {
-    background: #d8cfa6;;
-    border-radius: 16px;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-.vestido-img {
-    width: 100%;
-    height: auto;
-    border-radius: 12px;
-}
-#catalogo {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem;
-}
-
-.vestido {
+.consulta-precio {
   background: white;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 30px 20px;
+  border-radius: 15px;
   text-align: center;
-  transition: transform 0.3s ease;
+  margin-bottom: 50px;
+  box-shadow: 0 4px 10px rgba(186, 91, 112, 0.15);
 }
 
-.vestido:hover {
-  transform: scale(1.05);
+.consulta-precio h2 {
+  color: #ba5970;
+  margin-bottom: 15px;
 }
 
-.vestido img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
+.consulta-precio p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
 }
 
-.filtros {
-  text-align: center;
-  margin: 2rem 1rem;
-}
-
-.filtros h2 {
-  margin-bottom: 1rem;
-}
-
-.filtro {
-  background-color: #baab7f;
-  border: none;
+footer {
+  background-color: #7d3b50;
   color: white;
-  margin: 5px;
-  padding: 10px 15px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.filtro.activo {
-  background-color: #ba5970;
-}
-
-.galeria-vestidos {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  padding: 1rem;
-}
-
-.vestido {
-  background-color: white;
-  border-radius: 10px;
-  overflow: hidden;
-  width: 250px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   text-align: center;
+  padding: 20px 10px;
+  margin-top: 50px;
+  font-size: 0.9rem;
 }
-
-.vestido img {
-  width: 100%;
-  height: auto;
-}
-
-.vestido h3 {
-  font-size: 1.1em;
-  margin: 10px 0 0 0;
-}
-
