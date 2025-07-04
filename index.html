@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Albaluz - Alquiler de Vestidos</title>
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Albaluz - Alquiler de Vestidos</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
@@ -21,20 +21,52 @@
 
 <main>
 
-  <section id="inicio" class="inicio-flex">
-    <div class="nota-descuento">¡Cumplimos 2 años! Al hacer tu reserva llevás un 10% de descuento válido todo julio.</div>
-    <div class="galeria-nueva-coleccion">
-      <h2>Nueva Colección</h2>
-      <div class="slider">
-        <!-- Se cargan los vestidos de nueva colección con JS -->
-      </div>
+  <!-- Nombre y cartel para agendar por WhatsApp -->
+  <section class="intro-principal">
+    <h1>Albaluz - Alquiler de Vestidos</h1>
+    <p class="cartel-whatsapp">
+      ¿Querés agendar tu cita? <a href="https://wa.me/59898256239" target="_blank" rel="noopener">Hablá con nosotros por WhatsApp</a>
+    </p>
+  </section>
+
+  <!-- Información general -->
+  <section class="info-principal">
+    <p>Contamos con más de <strong>150 vestidos</strong>, <strong>talles desde XS hasta XXL</strong>, y ofrecemos <strong>asesoramiento personalizado</strong> con agenda para que tengas toda la tienda para vos.</p>
+    <p>Horarios extendidos, consulte para reservar.</p>
+    <p>Packaging <strong>eco friendly</strong>, cuidamos el medio ambiente.</p>
+  </section>
+
+  <!-- Galería Nueva Colección -->
+  <section id="nueva-coleccion" class="galeria-nueva-coleccion">
+    <h2>Nueva Colección</h2>
+    <div class="slider">
+      <!-- Aquí se cargan con JS los vestidos -->
     </div>
   </section>
 
+  <!-- Consulta precios por WhatsApp -->
   <section id="consulta-precio" class="consulta-precio">
     <h2>Consulta precios por WhatsApp</h2>
     <p>Para conocer los precios, envíanos un mensaje por WhatsApp haciendo click en el siguiente enlace:</p>
-    <a href="https://wa.me/59898256239" target="_blank" class="btn-wsp">Consultar por WhatsApp</a>
+    <a href="https://wa.me/59898256239" target="_blank" rel="noopener" class="btn-wsp">Consultar por WhatsApp</a>
+  </section>
+
+  <!-- Preguntas Frecuentes -->
+  <section id="faq" class="preguntas-frecuentes">
+    <h2>Preguntas Frecuentes</h2>
+    <details>
+      <summary>¿Cuánto dura el alquiler?</summary>
+      <p>El alquiler es por 3 días, incluyendo el día del evento.</p>
+    </details>
+    <details>
+      <summary>¿Se puede reservar con anticipación?</summary>
+      <p>Sí, recomendamos reservar con al menos 2 semanas de anticipación.</p>
+    </details>
+    <details>
+      <summary>¿Qué talles tienen disponibles?</summary>
+      <p>Disponemos desde XS hasta XXL.</p>
+    </details>
+    <!-- Agrega más preguntas si quieres -->
   </section>
 
 </main>
@@ -46,5 +78,42 @@
 
 <script src="catalogo.js"></script>
 <script src="menu.js"></script>
+
+<script>
+  // Código para mostrar la galería de nueva colección con auto scroll
+  document.addEventListener('DOMContentLoaded', () => {
+    const slider = document.querySelector('.slider');
+    if (!slider) return;
+
+    fetch('vestidos.json')
+      .then(res => res.json())
+      .then(vestidos => {
+        const nuevaColeccion = vestidos.slice(0, 10); // primeros 10
+
+        nuevaColeccion.forEach(v => {
+          const div = document.createElement('div');
+          div.classList.add('slider-item');
+          div.innerHTML = `
+            <img src="${v.url}" alt="${v.descripcion}" />
+            <h3>${v.nombre}</h3>
+            <p><strong>Talle:</strong> ${v.talle}</p>
+            <a href="https://wa.me/59898256239" target="_blank" rel="noopener" class="btn-wsp">Consultar</a>
+          `;
+          slider.appendChild(div);
+        });
+
+        // Auto scroll simple para slider horizontal
+        let scrollPos = 0;
+        const maxScroll = slider.scrollWidth - slider.clientWidth;
+        setInterval(() => {
+          scrollPos += 1;
+          if (scrollPos > maxScroll) scrollPos = 0;
+          slider.scrollTo(scrollPos, 0);
+        }, 40);
+      })
+      .catch(err => console.error('Error cargando vestidos:', err));
+  });
+</script>
+
 </body>
 </html>
