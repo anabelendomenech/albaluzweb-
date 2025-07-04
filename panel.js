@@ -1,88 +1,113 @@
+// panel.js
 const API_KEY = "pat4Z3hm5lJaeSBxQ.568935dff179a1efd1d93ec53da2a523f432a391c248fbfc7da27e124da92f19";
 const BASE_ID = "appraIuHWdh5tA4FU";
+const BASE_URL = `https://api.airtable.com/v0/${BASE_ID}`;
 
-async function fetchAirtableData(tableName) {
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}`;
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${API_KEY}`
-    }
+const headers = {
+  Authorization: `Bearer ${API_KEY}`,
+  "Content-Type": "application/json"
+};
+
+// ================== RESERVAS ==================
+
+document.getElementById("form-reservas").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const nombre = e.target.nombre.value;
+  const fechaReserva = e.target.fechaReserva.value;
+  const hora = e.target.hora.value;
+  const personas = parseInt(e.target.personas.value);
+  const fechaEvento = e.target.fechaEvento.value;
+  const comentarios = e.target.comentarios.value;
+
+  const fields = {
+    "Nombre": nombre,
+    "Fecha de la reserva": fechaReserva,
+    "Hora": hora,
+    "Cantidad de personas": personas,
+    "Fecha del evento": fechaEvento,
+    "Comentarios": comentarios
+  };
+
+  const response = await fetch(`${BASE_URL}/RESERVAS`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ fields })
   });
 
-  if (!response.ok) {
-    console.error(`Error al cargar la tabla ${tableName}`, response.status);
-    return [];
-  }
-
-  const data = await response.json();
-  return data.records;
-}
-
-function login() {
-  const input = document.getElementById("password");
-  if (input.value === "ALBALUZ2025") {
-    document.getElementById("login-form").style.display = "none";
-    document.getElementById("contenido-panel").style.display = "block";
-    cargarDatos();
+  if (response.ok) {
+    alert("✅ Reserva guardada correctamente");
+    e.target.reset();
+    obtenerReservas();
   } else {
-    alert("Contraseña incorrecta");
+    alert("❌ Error al guardar la reserva");
   }
+});
+
+async function obtenerReservas() {
+  const res = await fetch(`${BASE_URL}/RESERVAS`, { headers });
+  const data = await res.json();
+  const contenedor = document.getElementById("tabla-reservas");
+
+  if (!data.records) return;
+
+  contenedor.innerHTML = `
+    <table>
+      <tr>
+        <th>Nombre</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Personas</th>
+        <th>Evento</th>
+        <th>Comentarios</th>
+      </tr>
+      ${data.records.map(r => `
+        <tr>
+          <td>${r.fields["Nombre"] || ""}</td>
+          <td>${r.fields["Fecha de la reserva"] || ""}</td>
+          <td>${r.fields["Hora"] || ""}</td>
+          <td>${r.fields["Cantidad de personas"] || ""}</td>
+          <td>${r.fields["Fecha del evento"] || ""}</td>
+          <td>${r.fields["Comentarios"] || ""}</td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
 }
 
-async function cargarDatos() {
-  // RESERVAS
-  const reservas = await fetchAirtableData("RESERVAS");
-  mostrarTabla("tabla-reservas", reservas, ["Nombre", "Fecha de la reserva", "Hora", "Cantidad de personas", "Fecha del evento", "Comentarios"]);
+// ================== CHECKLIST ==================
 
-  // CLIENTAS
-  const clientas = await fetchAirtableData("CLIENTAS");
-  mostrarTabla("tabla-clientas", clientas, ["Nombre", "Celular", "Mail", "Historial de reservas", "Cuántas veces alquiló", "Cuándo fue la última vez"]);
+async function obtenerChecklist() {
+  const res = await fetch(`${BASE_URL}/CHECKLIST`, { headers });
+  const data = await res.json();
+  const contenedor = document.getElementById("tabla-checklist");
 
-  // VESTIDOS
-  const vestidos = await fetchAirtableData("VESTIDOS");
-  mostrarTabla("tabla-vestidos", vestidos, ["Nombre", "Talle", "Color", "Foto", "Estado", "Veces alquilado"]);
+  if (!data.records) return;
 
-  // CHECKLIST
-  const checklist = await fetchAirtableData("CHECKLIST");
-  mostrarTabla("tabla-checklist", checklist, ["Día", "Vestidos a preparar", "Pagó", "Devuelto"]);
-
-  // FINANZAS
-  const finanzas = await fetchAirtableData("FINANZAS");
-  mostrarTabla("tabla-finanzas", finanzas, ["Fecha", "Tipo", "Monto", "Motivo", "Observaciones", "Saldo acumulado"]);
-
-  // HORARIOS
-  const horarios = await fetchAirtableData("HORARIOS DISPONIBLES");
-  mostrarTabla("tabla-horarios", horarios, ["Fecha", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"]);
+  contenedor.innerHTML = `
+    <table>
+      <tr>
+        <th>Día</th>
+        <th>Vestidos</th>
+        <th>Cliente</th>
+        <th>Pagó</th>
+        <th>Devuelto</th>
+      </tr>
+      ${data.records.map(r => `
+        <tr>
+          <td>${r.fields["Día"] || ""}</td>
+          <td>${r.fields["Vestidos"] || ""}</td>
+          <td>${r.fields["Cliente"] || ""}</td>
+          <td>${r.fields["Pagó"] || "❌"}</td>
+          <td>${r.fields["Devuelto"] || "❌"}</td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
 }
 
-function mostrarTabla(id, records, columnas) {
-  const contenedor = document.getElementById(id);
-  if (!contenedor) return;
-
-  const table = document.createElement("table");
-  const thead = document.createElement("thead");
-  const tbody = document.createElement("tbody");
-
-  const filaHeader = document.createElement("tr");
-  columnas.forEach(col => {
-    const th = document.createElement("th");
-    th.textContent = col;
-    filaHeader.appendChild(th);
-  });
-  thead.appendChild(filaHeader);
-
-  records.forEach(registro => {
-    const fila = document.createElement("tr");
-    columnas.forEach(col => {
-      const celda = document.createElement("td");
-      celda.textContent = registro.fields[col] || "";
-      fila.appendChild(celda);
-    });
-    tbody.appendChild(fila);
-  });
-
-  table.appendChild(thead);
-  table.appendChild(tbody);
-  contenedor.innerHTML = "";
-  contenedor.appendChild(table);
-}
+// ================== CARGA INICIAL ==================
+document.addEventListener("DOMContentLoaded", () => {
+  obtenerReservas();
+  obtenerChecklist();
+});
