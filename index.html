@@ -2,66 +2,149 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ALBALUZ - Alquiler de Vestidos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Albaluz - Alquiler de Vestidos</title>
   <link rel="stylesheet" href="styles.css" />
-  <script defer src="menu.js"></script>
+  <script src="menu.js" defer></script>
 </head>
 <body>
   <header>
-    <h1>ALBALUZ</h1>
     <nav>
-      <ul>
+      <ul class="menu">
         <li><a href="index.html">Inicio</a></li>
         <li><a href="catalogo.html">Catálogo</a></li>
-        <li><a href="checklist.html">Checklist</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="https://wa.me/59898256239" target="_blank">Reservas</a></li>
+        <li><a href="panel.html">Panel</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
-    <section class="aniversario">
-      <h2>🎉 ¡Cumplimos 2 años! 🎉</h2>
-      <p>Al hacer tu reserva, llevás un 10% de descuento. <br>Válido todo julio. Código: <strong>ALBALUZANIVERSARIO</strong></p>
+    <section id="agendar-whatsapp" class="agendar-whatsapp">
+      <h1>Agenda tu vestido con nosotros</h1>
+      <p>Habla con nosotras por WhatsApp para reservar tu cita o hacer consultas.</p>
+      <a href="https://wa.me/59898256239" target="_blank" rel="noopener" class="btn-whatsapp">Consultar por WhatsApp</a>
     </section>
 
-    <section class="intro">
-      <p>Más de <strong>150 vestidos</strong> disponibles, <strong>talles del XS al XXL</strong>.</p>
-      <p>Agenda tu cita para tener toda la tienda para vos. Contamos con <strong>asesoramiento personalizado</strong> y <strong>horarios extendidos</strong>.</p>
-      <p>Packaging <strong>eco friendly</strong> 🌱</p>
-      <a href="https://wa.me/59898256239" target="_blank" class="boton">Agendate por WhatsApp</a>
+    <section id="info-tienda" class="info-tienda">
+      <h2>Más de 150 vestidos</h2>
+      <p>Contamos con talles desde XS al XXL, asesoramiento personalizado y agenda para que tengas toda la tienda para vos.</p>
+      <p>Horarios extendidos para que consultes cuando quieras.</p>
+      <p><strong>Packaging eco friendly:</strong> cuidamos el planeta en cada alquiler.</p>
     </section>
 
-    <section class="galeria" id="nueva-coleccion">
-      <h2>Nueva Colección</h2>
-      <div class="slider" id="slider">
-        <!-- Se completa desde catalogo.js -->
+    <section id="nueva-coleccion" class="nueva-coleccion">
+      <h2>Nueva colección</h2>
+      <div id="slider" class="slider"></div>
+    </section>
+
+    <section id="preguntas-frecuentes" class="preguntas-frecuentes">
+      <h2>Preguntas frecuentes</h2>
+      <div class="faq-item">
+        <button class="faq-question">¿Cómo hago para reservar?</button>
+        <div class="faq-answer">Puedes contactarnos por WhatsApp y agendar tu cita personalizada.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">¿Cuánto cuesta el alquiler?</button>
+        <div class="faq-answer">Los precios varían según el vestido. Consultanos por WhatsApp para más info.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">¿Qué talles tienen?</button>
+        <div class="faq-answer">Desde XS hasta XXL, para que todas encuentren su vestido ideal.</div>
       </div>
     </section>
 
-    <section class="faq" id="faq">
-      <h2>Preguntas Frecuentes</h2>
-      <details>
-        <summary>¿Dónde están ubicados?</summary>
-        <p>Treinta y Tres 1121 bis, Dolores, Soriano, Uruguay.</p>
-      </details>
-      <details>
-        <summary>¿Cómo agendo una cita?</summary>
-        <p>Escribinos por WhatsApp y coordinamos tu horario personalizado.</p>
-      </details>
-      <details>
-        <summary>¿Puedo ir con alguien?</summary>
-        <p>¡Claro! Hasta dos acompañantes por cita.</p>
-      </details>
+    <section id="contacto" class="contacto">
+      <h2>Contacto</h2>
+      <ul class="contact-list">
+        <li>
+          <a href="https://wa.me/59898256239" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16.5 3.5a8.38 8.38 0 0 1 2.6 6 8.5 8.5 0 0 1-14.5 6 8.38 8.38 0 0 1 1-7L3 3l3 1a8.5 8.5 0 0 1 10.5-1z" />
+              <path d="M16 11.5a4 4 0 0 1-6 3" />
+            </svg>
+            +598 9825 6239
+          </a>
+        </li>
+        <li>
+          <a href="https://instagram.com/albaluz" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#E4405F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37a4 4 0 1 1-4.89-3.87" />
+              <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
+            </svg>
+            @albaluz
+          </a>
+        </li>
+        <li>
+          <a href="https://tiktok.com/@albaluz" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 3v12a3 3 0 1 0 3-3h3" />
+              <path d="M9 12h3v7a4 4 0 1 1-4-4" />
+            </svg>
+            @albaluz
+          </a>
+        </li>
+        <li>
+          <a href="https://facebook.com/albaluz" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#1877F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+            </svg>
+            Albaluz
+          </a>
+        </li>
+        <li>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#baab7f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8"/>
+            <rect x="3" y="6" width="18" height="12" rx="2" ry="2"/>
+          </svg>
+          Treinta y tres 1121 bis, Dolores, Soriano, Uruguay
+        </li>
+      </ul>
     </section>
   </main>
 
-  <footer>
-    <p>📍 Treinta y Tres 1121 bis - Dolores, Soriano</p>
-    <p>📞 +598 98 256 239 · 📧 domenechanaa@gmail.com</p>
-  </footer>
-  <script src="catalogo.js"></script>
+  <script>
+    // Preguntas frecuentes toggle
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const answer = button.nextElementSibling;
+        answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+      });
+    });
+
+    // Slider automática para nueva colección
+    document.addEventListener("DOMContentLoaded", () => {
+      const slider = document.getElementById("slider");
+      if (!slider) return;
+
+      const vestidos = [
+        "Vestido Negro XL Escote Espalda",
+        "Vestido Azul Satén L Corte Princesa",
+        "Vestido Plateado M Lentejuelas Manga Larga",
+        "Vestido Rojo XS Corto Espalda Abierta"
+      ];
+
+      vestidos.forEach(nombre => {
+        const archivo = nombre.replace(/\s+/g, "_").toLowerCase() + ".jpg";
+        const img = document.createElement("img");
+        img.src = `img/${archivo}`;
+        img.alt = nombre;
+        img.className = "vestido-slide";
+        img.addEventListener("click", () => {
+          window.open("https://wa.me/59898256239?text=Hola!%20Quiero%20consultar%20por%20el%20" + encodeURIComponent(nombre), "_blank");
+        });
+        slider.appendChild(img);
+      });
+
+      let idx = 0;
+      setInterval(() => {
+        const slides = document.querySelectorAll(".vestido-slide");
+        slides.forEach((s, i) => {
+          s.style.display = i === idx ? "block" : "none";
+        });
+        idx = (idx + 1) % vestidos.length;
+      }, 3000);
+    });
+  </script>
 </body>
 </html>
