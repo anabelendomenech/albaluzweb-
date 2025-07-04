@@ -39,7 +39,7 @@
   <!-- Nueva Colección con slider -->
   <section id="nueva-coleccion" class="contenido-seccion">
     <h2>Nueva Colección</h2>
-    <div id="slider" class="slider"></div>
+    <div class="slider-horizontal" id="galeria-nueva"></div>
   </section>
 
   <!-- Agendate -->
@@ -166,6 +166,35 @@
       mostrarSlide(idx);
     }, 3500);
   });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const galeria = document.getElementById("galeria-nueva");
+
+  const vestidos = [
+    "vestido-azul-brillos-unhombro.jpg",
+    "vestido-azul-corto-unamanga.jpg",
+    "vestido-azul-cruzado.jpg",
+    "vestido-azul-largo-brillos.jpg",
+    "vestido-bordo-corto-brillos.jpg",
+    "vestido-corset-celeste.jpg",
+    "vestido-terracota-corto.jpg",
+    "vestido-verde-brillos-unhombro.jpg",
+    "vestido-verde-cruzado.jpg",
+    "vestido-verde-unatira.jpg"
+  ];
+
+  vestidos.forEach(archivo => {
+    const img = document.createElement("img");
+    img.src = `img/${archivo}`;
+    img.alt = archivo.split('.')[0].replaceAll("-", " ");
+    img.addEventListener("click", () => {
+      const nombreVestido = archivo.replace(".jpg", "");
+      window.location.href = `catalogo.html?vestido=${nombreVestido}`;
+    });
+    galeria.appendChild(img);
+  });
+});
 </script>
 
 </body>
