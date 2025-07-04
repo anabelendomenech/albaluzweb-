@@ -40,3 +40,35 @@ function mostrarVestidos() {
 filtroColor.addEventListener('change', mostrarVestidos);
 
 window.addEventListener('DOMContentLoaded', cargarVestidos);
+
+// Código para mostrar la galería de nueva colección en index.html
+document.addEventListener('DOMContentLoaded', () => {
+  const slider = document.querySelector('.slider');
+
+  fetch('vestidos.json')
+    .then(res => res.json())
+    .then(vestidos => {
+      const nuevaColeccion = vestidos.slice(0, 10);
+
+      nuevaColeccion.forEach(v => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <img src="${v.url}" alt="${v.descripcion}" />
+          <h3>${v.nombre}</h3>
+          <p><strong>Talle:</strong> ${v.talle}</p>
+          <a href="https://wa.me/59898256239" target="_blank" class="btn-wsp">Consultar</a>
+        `;
+        slider.appendChild(div);
+      });
+
+      // Auto scroll simple para slider horizontal
+      let scrollPos = 0;
+      const maxScroll = slider.scrollWidth - slider.clientWidth;
+      setInterval(() => {
+        scrollPos += 1;
+        if (scrollPos > maxScroll) scrollPos = 0;
+        slider.scrollTo(scrollPos, 0);
+      }, 40);
+    });
+});
+
