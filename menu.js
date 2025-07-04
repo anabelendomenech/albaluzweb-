@@ -1,11 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // Por ejemplo, si tenés un menú hamburguesa, asegúrate que existan los elementos
-  const btnMenu = document.getElementById('btn-menu');
-  const menu = document.getElementById('menu');
-
-  if (!btnMenu || !menu) return;
-
-  btnMenu.addEventListener('click', () => {
-    menu.classList.toggle('activo');
-  });
+document.addEventListener("DOMContentLoaded", () => {
+  const menuToggle = document.getElementById("menu-toggle");
+  const nav = document.querySelector("nav ul");
+  if (menuToggle && nav) {
+    menuToggle.addEventListener("click", () => {
+      nav.classList.toggle("show");
+    });
+  }
 });
