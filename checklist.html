@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Checklist Alquileres - ALBALUZ</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <title>Checklist - Albaluz</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-    <h1>Checklist de Alquileres</h1>
-    <nav>
-      <ul>
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="catalogo.html">Catálogo</a></li>
-        <li><a href="checklist.html">Checklist</a></li>
-      </ul>
-    </nav>
-  </header>
+  <h1>Checklist del fin de semana</h1>
+  <div id="checklist-container"></div>
 
-  <main>
-    <section>
-      <p>Podés llevar este control desde tu Google Sheets directamente:  
-      <a href="https://docs.google.com/spreadsheets/d/1bRrBPeyILT5xAIkzjdKWqO06P40mptDttEk1pQWHMsQ/edit?usp=sharing" target="_blank">Ver hoja de control</a></p>
-    </section>
-  </main>
+  <script>
+    const apiKey = 'pat4Z3hm5lJaeSBxQ.568935dff179a1efd1d93ec53da2a523f432a391c248fbfc7da27e124da92f19';
+    const baseId = 'appraIuHWdh5tA4FU';
 
-  <footer>
-    <p>📍 Treinta y Tres 1121 bis - Dolores, Soriano</p>
-    <p>📞 +598 98 256 239 · 📧 domenechanaa@gmail.com</p>
-  </footer>
+    async function cargarChecklist() {
+      const res = await fetch(`https://api.airtable.com/v0/${baseId}/CHECKLIST`, {
+        headers: { Authorization: `Bearer ${apiKey}` }
+      });
+      const data = await res.json();
+      const container = document.getElementById("checklist-container");
+      data.records.forEach(item => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          <strong>${item.fields.Día || ''}</strong> - ${item.fields.Vestido || ''} - ${item.fields.Clienta || ''}<br>
+          Pagó: ${item.fields.Pagó ? "✔️" : "❌"} | Devuelto: ${item.fields.Devuelto ? "✔️" : "❌"}
+          <hr>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    cargarChecklist();
+  </script>
 </body>
 </html>
