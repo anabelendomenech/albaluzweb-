@@ -2,118 +2,66 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Albaluz - Alquiler de Vestidos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ALBALUZ - Alquiler de Vestidos</title>
   <link rel="stylesheet" href="styles.css" />
+  <script defer src="menu.js"></script>
 </head>
 <body>
+  <header>
+    <h1>ALBALUZ</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="catalogo.html">Catálogo</a></li>
+        <li><a href="checklist.html">Checklist</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="https://wa.me/59898256239" target="_blank">Reservas</a></li>
+      </ul>
+    </nav>
+  </header>
 
-<header>
-  <nav class="main-nav">
-    <ul>
-      <li><a href="index.html" class="activo">Inicio</a></li>
-      <li><a href="catalogo.html">Catálogo</a></li>
-      <li><a href="agendar.html">Agendar</a></li>
-      <li><a href="#contacto">Contáctanos</a></li>
-    </ul>
-  </nav>
-</header>
+  <main>
+    <section class="aniversario">
+      <h2>🎉 ¡Cumplimos 2 años! 🎉</h2>
+      <p>Al hacer tu reserva, llevás un 10% de descuento. <br>Válido todo julio. Código: <strong>ALBALUZANIVERSARIO</strong></p>
+    </section>
 
-<main>
+    <section class="intro">
+      <p>Más de <strong>150 vestidos</strong> disponibles, <strong>talles del XS al XXL</strong>.</p>
+      <p>Agenda tu cita para tener toda la tienda para vos. Contamos con <strong>asesoramiento personalizado</strong> y <strong>horarios extendidos</strong>.</p>
+      <p>Packaging <strong>eco friendly</strong> 🌱</p>
+      <a href="https://wa.me/59898256239" target="_blank" class="boton">Agendate por WhatsApp</a>
+    </section>
 
-  <!-- Nombre y cartel para agendar por WhatsApp -->
-  <section class="intro-principal">
-    <h1>Albaluz - Alquiler de Vestidos</h1>
-    <p class="cartel-whatsapp">
-      ¿Querés agendar tu cita? <a href="https://wa.me/59898256239" target="_blank" rel="noopener">Hablá con nosotros por WhatsApp</a>
-    </p>
-  </section>
+    <section class="galeria" id="nueva-coleccion">
+      <h2>Nueva Colección</h2>
+      <div class="slider" id="slider">
+        <!-- Se completa desde catalogo.js -->
+      </div>
+    </section>
 
-  <!-- Información general -->
-  <section class="info-principal">
-    <p>Contamos con más de <strong>150 vestidos</strong>, <strong>talles desde XS hasta XXL</strong>, y ofrecemos <strong>asesoramiento personalizado</strong> con agenda para que tengas toda la tienda para vos.</p>
-    <p>Horarios extendidos, consulte para reservar.</p>
-    <p>Packaging <strong>eco friendly</strong>, cuidamos el medio ambiente.</p>
-  </section>
+    <section class="faq" id="faq">
+      <h2>Preguntas Frecuentes</h2>
+      <details>
+        <summary>¿Dónde están ubicados?</summary>
+        <p>Treinta y Tres 1121 bis, Dolores, Soriano, Uruguay.</p>
+      </details>
+      <details>
+        <summary>¿Cómo agendo una cita?</summary>
+        <p>Escribinos por WhatsApp y coordinamos tu horario personalizado.</p>
+      </details>
+      <details>
+        <summary>¿Puedo ir con alguien?</summary>
+        <p>¡Claro! Hasta dos acompañantes por cita.</p>
+      </details>
+    </section>
+  </main>
 
-  <!-- Galería Nueva Colección -->
-  <section id="nueva-coleccion" class="galeria-nueva-coleccion">
-    <h2>Nueva Colección</h2>
-    <div class="slider">
-      <!-- Aquí se cargan con JS los vestidos -->
-    </div>
-  </section>
-
-  <!-- Consulta precios por WhatsApp -->
-  <section id="consulta-precio" class="consulta-precio">
-    <h2>Consulta precios por WhatsApp</h2>
-    <p>Para conocer los precios, envíanos un mensaje por WhatsApp haciendo click en el siguiente enlace:</p>
-    <a href="https://wa.me/59898256239" target="_blank" rel="noopener" class="btn-wsp">Consultar por WhatsApp</a>
-  </section>
-
-  <!-- Preguntas Frecuentes -->
-  <section id="faq" class="preguntas-frecuentes">
-    <h2>Preguntas Frecuentes</h2>
-    <details>
-      <summary>¿Cuánto dura el alquiler?</summary>
-      <p>El alquiler es por 3 días, incluyendo el día del evento.</p>
-    </details>
-    <details>
-      <summary>¿Se puede reservar con anticipación?</summary>
-      <p>Sí, recomendamos reservar con al menos 2 semanas de anticipación.</p>
-    </details>
-    <details>
-      <summary>¿Qué talles tienen disponibles?</summary>
-      <p>Disponemos desde XS hasta XXL.</p>
-    </details>
-    <!-- Agrega más preguntas si quieres -->
-  </section>
-
-</main>
-
-<footer id="contacto">
-  <p>📍 Treinta y tres 1121 bis, Dolores, Soriano, Uruguay</p>
-  <p>✉️ domenechanaa@gmail.com | 📱 +598 9825 6239</p>
-</footer>
-
-<script src="catalogo.js"></script>
-<script src="menu.js"></script>
-
-<script>
-  // Código para mostrar la galería de nueva colección con auto scroll
-  document.addEventListener('DOMContentLoaded', () => {
-    const slider = document.querySelector('.slider');
-    if (!slider) return;
-
-    fetch('vestidos.json')
-      .then(res => res.json())
-      .then(vestidos => {
-        const nuevaColeccion = vestidos.slice(0, 10); // primeros 10
-
-        nuevaColeccion.forEach(v => {
-          const div = document.createElement('div');
-          div.classList.add('slider-item');
-          div.innerHTML = `
-            <img src="${v.url}" alt="${v.descripcion}" />
-            <h3>${v.nombre}</h3>
-            <p><strong>Talle:</strong> ${v.talle}</p>
-            <a href="https://wa.me/59898256239" target="_blank" rel="noopener" class="btn-wsp">Consultar</a>
-          `;
-          slider.appendChild(div);
-        });
-
-        // Auto scroll simple para slider horizontal
-        let scrollPos = 0;
-        const maxScroll = slider.scrollWidth - slider.clientWidth;
-        setInterval(() => {
-          scrollPos += 1;
-          if (scrollPos > maxScroll) scrollPos = 0;
-          slider.scrollTo(scrollPos, 0);
-        }, 40);
-      })
-      .catch(err => console.error('Error cargando vestidos:', err));
-  });
-</script>
-
+  <footer>
+    <p>📍 Treinta y Tres 1121 bis - Dolores, Soriano</p>
+    <p>📞 +598 98 256 239 · 📧 domenechanaa@gmail.com</p>
+  </footer>
+  <script src="catalogo.js"></script>
 </body>
 </html>
