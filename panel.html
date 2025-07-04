@@ -3,56 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel Albaluz</title>
+  <title>Panel de Gestión - Albaluz</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div id="login-form">
+    <h2>Panel Privado</h2>
+    <input type="password" id="password" placeholder="Contraseña" />
+    <button onclick="login()">Ingresar</button>
+  </div>
 
-<div id="login">
-  <h2>Acceso al Panel</h2>
-  <input type="password" id="password" placeholder="Contraseña" />
-  <button onclick="login()">Ingresar</button>
-</div>
+  <main id="contenido-panel" style="display:none;">
+    <h1>Panel de Control</h1>
 
-<div id="panel" style="display:none">
-  <h1>PANEL ALBALUZ</h1>
+    <section id="reservas">
+      <h2>📅 Reservas</h2>
+      <div id="tabla-reservas"></div>
+    </section>
 
-  <section id="reservas-section">
-    <h2>📅 Reservas</h2>
-    <div id="reservas"></div>
-  </section>
+    <section id="clientas">
+      <h2>📕 Clientas</h2>
+      <div id="tabla-clientas"></div>
+    </section>
 
-  <section id="clientas-section">
-    <h2>📕 Clientas</h2>
-    <div id="clientas"></div>
-  </section>
+    <section id="vestidos">
+      <h2>👗 Vestidos</h2>
+      <div id="tabla-vestidos"></div>
+    </section>
 
-  <section id="vestidos-section">
-    <h2>👗 Vestidos</h2>
-    <div id="vestidos"></div>
-  </section>
+    <section id="checklist">
+      <h2>✅ Checklist</h2>
+      <div id="tabla-checklist"></div>
+    </section>
 
-  <section id="checklist-section">
-    <h2>✅ Checklist</h2>
-    <div id="checklist"></div>
-  </section>
+    <section id="finanzas">
+      <h2>💸 Finanzas</h2>
+      <div id="tabla-finanzas"></div>
+    </section>
 
-  <section id="finanzas-section">
-    <h2>💸 Finanzas</h2>
-    <div id="finanzas"></div>
-  </section>
+    <section id="horarios">
+      <h2>📆 Horarios Disponibles</h2>
+      <div id="tabla-horarios"></div>
+    </section>
+  </main>
 
-  <section id="horarios-section">
-    <h2>📆 Horarios Disponibles</h2>
-    <div id="horarios"></div>
-  </section>
-
-  <section id="stats">
-    <h2>📊 Estadísticas</h2>
-    <div id="estadisticas"></div>
-  </section>
-</div>
-
-<script type="module" src="panel.js"></script>
+  <script src="panel.js"></script>
 </body>
 </html>
