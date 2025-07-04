@@ -1,88 +1,88 @@
-import { API_KEY, BASE_ID, headers } from './airtableConfig.js';
+const API_KEY = "pat4Z3hm5lJaeSBxQ.568935dff179a1efd1d93ec53da2a523f432a391c248fbfc7da27e124da92f19";
+const BASE_ID = "appraIuHWdh5tA4FU";
 
-document.getElementById('password').addEventListener('keydown', e => {
-  if (e.key === 'Enter') login();
-});
+async function fetchAirtableData(tableName) {
+  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}`;
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${API_KEY}`
+    }
+  });
+
+  if (!response.ok) {
+    console.error(`Error al cargar la tabla ${tableName}`, response.status);
+    return [];
+  }
+
+  const data = await response.json();
+  return data.records;
+}
 
 function login() {
-  const pass = document.getElementById("password").value;
-  if (pass === "ALBALUZ2025") {
-    document.getElementById("login").style.display = "none";
-    document.getElementById("panel").style.display = "block";
-    cargarTodo();
+  const input = document.getElementById("password");
+  if (input.value === "ALBALUZ2025") {
+    document.getElementById("login-form").style.display = "none";
+    document.getElementById("contenido-panel").style.display = "block";
+    cargarDatos();
   } else {
     alert("Contraseña incorrecta");
   }
 }
 
-function fetchData(tabla) {
-  return fetch(`https://api.airtable.com/v0/${BASE_ID}/${tabla}`, { headers })
-    .then(r => r.json())
-    .then(data => data.records)
-    .catch(e => {
-      console.error(`Error en ${tabla}:`, e);
-      return [];
+async function cargarDatos() {
+  // RESERVAS
+  const reservas = await fetchAirtableData("RESERVAS");
+  mostrarTabla("tabla-reservas", reservas, ["Nombre", "Fecha de la reserva", "Hora", "Cantidad de personas", "Fecha del evento", "Comentarios"]);
+
+  // CLIENTAS
+  const clientas = await fetchAirtableData("CLIENTAS");
+  mostrarTabla("tabla-clientas", clientas, ["Nombre", "Celular", "Mail", "Historial de reservas", "Cuántas veces alquiló", "Cuándo fue la última vez"]);
+
+  // VESTIDOS
+  const vestidos = await fetchAirtableData("VESTIDOS");
+  mostrarTabla("tabla-vestidos", vestidos, ["Nombre", "Talle", "Color", "Foto", "Estado", "Veces alquilado"]);
+
+  // CHECKLIST
+  const checklist = await fetchAirtableData("CHECKLIST");
+  mostrarTabla("tabla-checklist", checklist, ["Día", "Vestidos a preparar", "Pagó", "Devuelto"]);
+
+  // FINANZAS
+  const finanzas = await fetchAirtableData("FINANZAS");
+  mostrarTabla("tabla-finanzas", finanzas, ["Fecha", "Tipo", "Monto", "Motivo", "Observaciones", "Saldo acumulado"]);
+
+  // HORARIOS
+  const horarios = await fetchAirtableData("HORARIOS DISPONIBLES");
+  mostrarTabla("tabla-horarios", horarios, ["Fecha", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"]);
+}
+
+function mostrarTabla(id, records, columnas) {
+  const contenedor = document.getElementById(id);
+  if (!contenedor) return;
+
+  const table = document.createElement("table");
+  const thead = document.createElement("thead");
+  const tbody = document.createElement("tbody");
+
+  const filaHeader = document.createElement("tr");
+  columnas.forEach(col => {
+    const th = document.createElement("th");
+    th.textContent = col;
+    filaHeader.appendChild(th);
+  });
+  thead.appendChild(filaHeader);
+
+  records.forEach(registro => {
+    const fila = document.createElement("tr");
+    columnas.forEach(col => {
+      const celda = document.createElement("td");
+      celda.textContent = registro.fields[col] || "";
+      fila.appendChild(celda);
     });
-}
-
-async function cargarTodo() {
-  const [reservas, clientas, vestidos, checklist, finanzas, horarios] = await Promise.all([
-    fetchData("RESERVAS"),
-    fetchData("CLIENTAS"),
-    fetchData("VESTIDOS"),
-    fetchData("CHECKLIST"),
-    fetchData("FINANZAS"),
-    fetchData("HORARIOS DISPONIBLES"),
-  ]);
-
-  renderizar(reservas, "reservas");
-  renderizar(clientas, "clientas");
-  renderizar(vestidos, "vestidos");
-  renderizar(checklist, "checklist");
-  renderizar(finanzas, "finanzas");
-  renderizarHorarios(horarios);
-
-  renderizarEstadisticas(reservas, clientas, vestidos, finanzas);
-}
-
-function renderizar(datos, contenedorID) {
-  const cont = document.getElementById(contenedorID);
-  cont.innerHTML = "";
-  datos.forEach(r => {
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = Object.entries(r.fields).map(([k, v]) => `<p><b>${k}:</b> ${v}</p>`).join("");
-    cont.appendChild(div);
+    tbody.appendChild(fila);
   });
-}
 
-function renderizarHorarios(horarios) {
-  const cont = document.getElementById("horarios");
-  cont.innerHTML = "";
-  horarios.forEach(r => {
-    const dia = r.fields["Fecha"];
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `<h3>${dia}</h3>`;
-    for (let hora of ["15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"]) {
-      const estado = r.fields[hora] === "✔️" ? "Ocupado" : "Libre";
-      const color = estado === "Ocupado" ? "#f88" : "#8f8";
-      div.innerHTML += `<p style="background:${color};padding:3px;border-radius:4px">${hora}: ${estado}</p>`;
-    }
-    cont.appendChild(div);
-  });
-}
-
-function renderizarEstadisticas(reservas, clientas, vestidos, finanzas) {
-  const cont = document.getElementById("estadisticas");
-  const ingresos = finanzas.filter(f => f.fields["Tipo"] === "Ingreso").reduce((a, b) => a + (b.fields["Monto"] || 0), 0);
-  const egresos = finanzas.filter(f => f.fields["Tipo"] === "Egreso").reduce((a, b) => a + (b.fields["Monto"] || 0), 0);
-  const saldo = ingresos - egresos;
-
-  cont.innerHTML = `
-    <p>👥 Total clientas: <b>${clientas.length}</b></p>
-    <p>📅 Total reservas: <b>${reservas.length}</b></p>
-    <p>👗 Vestidos registrados: <b>${vestidos.length}</b></p>
-    <p>💰 Ingresos: $${ingresos} / Egresos: $${egresos} / <b>Saldo: $${saldo}</b></p>
-  `;
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  contenedor.innerHTML = "";
+  contenedor.appendChild(table);
 }
