@@ -73,8 +73,8 @@ main {
 .inicio-columna.texto h1 {
   font-size: 3rem;
   margin-bottom: 0.2rem;
-  font-family: 'Georgia', serif;
-  color: #baab7f;
+  font-family: 'Livvic', serif;
+  color: #ba5970;
 }
 
 .subtitulo {
@@ -101,7 +101,7 @@ main {
 }
 
 .nota-descuento {
-  background-color: #fff3cd;
+  background-color: #ba5970;
   padding: 1rem;
   border-radius: 8px;
   text-align: center;
@@ -137,6 +137,14 @@ main {
 .slider-horizontal img:hover {
   transform: scale(1.05);
 }
+.agendar {
+
+  text-align: center;
+  
+}
+
+
+
 
 /* Sección de info en arcos */
 .arcos-seccion {
