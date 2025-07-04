@@ -1,86 +1,34 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const vestidos = [
-    "vestido-azul-brillos-unhombro",
-    "vestido-azul-corto-unamanga",
-    "vestido-azul-cruzado",
-    "vestido-azul-largo-brillos",
-    "vestido-bordo-corto-brillos",
-    "vestido-corset-celeste",
-    "vestido-terracota-corto",
-    "vestido-verde-brillos-unhombro",
-    "vestido-verde-cruzado",
-    "vestido-verde-unatira"
-  ];
+const apiKey = 'pat4Z3hm5lJaeSBxQ.568935dff179a1efd1d93ec53da2a523f432a391c248fbfc7da27e124da92f19';
+const baseId = 'appraIuHWdh5tA4FU';
 
-  const lista = document.getElementById("catalogo-lista");
-  const detalle = document.getElementById("detalle-vestido");
-
-  vestidos.forEach(nombre => {
-    const card = document.createElement("div");
-    card.className = "vestido-card";
-
-    const img = document.createElement("img");
-    img.src = `img/${nombre}.jpg`;
-    img.alt = nombre.replaceAll("-", " ");
-    img.className = "vestido-img";
-
-    const titulo = document.createElement("h3");
-    titulo.textContent = img.alt;
-
-    const btn = document.createElement("button");
-    btn.textContent = "Ver más";
-    btn.className = "button";
-    btn.onclick = () => mostrarDetalle(nombre);
-
-    card.appendChild(img);
-    card.appendChild(titulo);
-    card.appendChild(btn);
-    lista.appendChild(card);
+async function cargarCatalogo() {
+  const res = await fetch(`https://api.airtable.com/v0/${baseId}/VESTIDOS`, {
+    headers: { Authorization: `Bearer ${apiKey}` }
   });
 
-  function mostrarDetalle(nombre) {
-    lista.style.display = "none";
-    detalle.style.display = "block";
-    detalle.innerHTML = "";
+  const data = await res.json();
+  const contenedor = document.getElementById("catalogo");
 
-    const img = document.createElement("img");
-    img.src = `img/${nombre}.jpg`;
-    img.alt = nombre;
-    img.className = "detalle-img";
+  data.records.forEach(vestido => {
+    const nombre = vestido.fields.Nombre || "Vestido";
+    const talle = vestido.fields.Talle || "-";
+    const color = vestido.fields.Color || "-";
+    const estado = vestido.fields.Estado || "-";
+    const foto = vestido.fields.Foto && vestido.fields.Foto[0] && vestido.fields.Foto[0].url;
 
-    const nombreVestido = nombre.replaceAll("-", " ");
+    if (foto) {
+      const card = document.createElement("div");
+      card.className = "card-vestido";
+      card.innerHTML = `
+        <img src="${foto}" alt="${nombre}" />
+        <h3>${nombre}</h3>
+        <p><strong>Talle:</strong> ${talle}</p>
+        <p><strong>Color:</strong> ${color}</p>
+        <p><strong>Estado:</strong> ${estado}</p>
+      `;
+      contenedor.appendChild(card);
+    }
+  });
+}
 
-    const titulo = document.createElement("h2");
-    titulo.textContent = nombreVestido;
-
-    const desc = document.createElement("p");
-    desc.textContent = `Este vestido es ideal para tu próximo evento. Consultá disponibilidad y talle por WhatsApp.`;
-
-    const btnWhatsapp = document.createElement("a");
-    btnWhatsapp.href = `https://wa.me/59898256239?text=Hola!%20Quiero%20consultar%20por%20el%20vestido%20${encodeURIComponent(nombreVestido)}`;
-    btnWhatsapp.textContent = "Consultar por WhatsApp";
-    btnWhatsapp.className = "btn-whatsapp";
-    btnWhatsapp.target = "_blank";
-
-    const volver = document.createElement("button");
-    volver.textContent = "Volver al catálogo";
-    volver.className = "button";
-    volver.onclick = () => {
-      detalle.style.display = "none";
-      lista.style.display = "grid";
-    };
-
-    detalle.appendChild(titulo);
-    detalle.appendChild(img);
-    detalle.appendChild(desc);
-    detalle.appendChild(btnWhatsapp);
-    detalle.appendChild(volver);
-  }
-
-  // Si viene con ?vestido=...
-  const params = new URLSearchParams(window.location.search);
-  const vestidoParam = params.get("vestido");
-  if (vestidoParam && vestidos.includes(vestidoParam)) {
-    mostrarDetalle(vestidoParam);
-  }
-});
+cargarCatalogo();
