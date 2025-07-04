@@ -1,23 +1,42 @@
+const catalogoContainer = document.getElementById('catalogo');
+const filtroColor = document.getElementById('filtro-color');
+
+let vestidos = [];
+
 async function cargarVestidos() {
   try {
     const res = await fetch('vestidos.json');
-    todosVestidos = await res.json();
-    mostrarVestidos(todosVestidos);
+    vestidos = await res.json();
+    mostrarVestidos();
   } catch (e) {
-    document.getElementById('galeria').innerHTML = '<p>Error al cargar los vestidos.</p>';
+    console.error('Error al cargar vestidos:', e);
   }
 }
 
-function filtrarVestidos(tipo, color) {
-  let filtrados = [...todosVestidos];
+function mostrarVestidos() {
+  let colorSeleccionado = filtroColor.value;
 
-  if (tipo !== 'todos') {
-    filtrados = filtrados.filter(v => v.tipo.toLowerCase() === tipo.toLowerCase());
-  }
+  let vestidosFiltrados = vestidos.filter(v => colorSeleccionado === 'todos' || v.color === colorSeleccionado);
 
-  if (color !== 'todos') {
-    filtrados = filtrados.filter(v => v.color.toLowerCase() === color.toLowerCase());
-  }
+  catalogoContainer.innerHTML = '';
 
-  mostrarVestidos(filtrados);
+  vestidosFiltrados.forEach(vestido => {
+    const card = document.createElement('div');
+    card.className = 'vestido-card';
+
+    card.innerHTML = `
+      <img src="${vestido.url}" alt="${vestido.descripcion}" />
+      <h3>${vestido.nombre}</h3>
+      <p><strong>Talle:</strong> ${vestido.talle}</p>
+      <p><strong>Color:</strong> ${vestido.color}</p>
+      <p><strong>Precio:</strong> Consultar por WhatsApp</p>
+      <a href="https://wa.me/59898256239" target="_blank" class="btn-wsp">Consultar</a>
+    `;
+
+    catalogoContainer.appendChild(card);
+  });
 }
+
+filtroColor.addEventListener('change', mostrarVestidos);
+
+window.addEventListener('DOMContentLoaded', cargarVestidos);
