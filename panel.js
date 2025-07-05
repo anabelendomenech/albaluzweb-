@@ -1,4 +1,4 @@
-import { API_KEY, BASE_ID } from "./airtableConfig.js";
+import { AIRTABLE_API_KEY, BASE_ID } from "./airtableConfig.js";
 
 const contentArea = document.getElementById("content-area");
 const sidebarLinks = document.querySelectorAll(".sidebar a");
