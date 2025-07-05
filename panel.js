@@ -13,13 +13,15 @@ async function fetchAirtable(table) {
   const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}`;
   try {
     const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${API_KEY}` }
+      headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
     });
     if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
     const data = await res.json();
     return data.records;
   } catch (error) {
     console.error("Fetch Airtable error:", error);
+    console.log("Base ID:", BASE_ID);
+    console.log("API KEY:", AIRTABLE_API_KEY);
     return null;
   }
 }
