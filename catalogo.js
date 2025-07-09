@@ -70,7 +70,7 @@
 // }
 
 // cargarCatalogo();
-// catalogo.js
+
 import { AIRTABLE_API_KEY, BASE_ID } from './airtableConfig.js';
 
 const CATALOGO_CONTAINER = document.getElementById("catalogo-vestidos");
