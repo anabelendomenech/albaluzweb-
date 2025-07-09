@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -44,3 +44,108 @@
 
  
   
+ -->
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catálogo | Albaluz</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .filtros {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px;
+      align-items: center;
+    }
+
+    .filtros select, .filtros input[type="date"] {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    #catalogo-vestidos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .vestido-item {
+      background-color: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .vestido-item:hover {
+      transform: scale(1.02);
+    }
+
+    .vestido-item img {
+      width: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+      height: 300px;
+    }
+
+    .vestido-item h3 {
+      margin: 10px 0 5px;
+    }
+
+    .vestido-item button {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #baab7f;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .vestido-item button:hover {
+      background-color: #a99863;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 style="text-align: center; padding: 20px;">Catálogo de Vestidos</h1>
+  </header>
+
+  <section class="filtros">
+    <label for="fecha-consulta">📆 Fecha de consulta:</label>
+    <input type="date" id="fecha-consulta" />
+
+    <label for="filtro-color">🎨 Filtrar por color:</label>
+    <select id="filtro-color">
+      <option value="">Todos</option>
+      <option value="Rojo">Rojo</option>
+      <option value="Negro">Negro</option>
+      <option value="Azul">Azul</option>
+      <option value="Verde">Verde</option>
+      <option value="Blanco">Blanco</option>
+      <!-- Agregá más si querés -->
+    </select>
+
+    <label for="filtro-tipo">👗 Tipo:</label>
+    <select id="filtro-tipo">
+      <option value="">Todos</option>
+      <option value="Corto">Corto</option>
+      <option value="Largo">Largo</option>
+    </select>
+  </section>
+
+  <main id="catalogo-vestidos">
+    <!-- Aquí van los vestidos -->
+  </main>
+
+  <script type="module" src="catalogo.js"></script>
+</body>
+</html>
