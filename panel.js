@@ -257,7 +257,6 @@ function formatDate(d) {
   const date = new Date(d);
   return date.toLocaleDateString();
 }
-
 async function renderReservas() {
   const reservas = await fetchAirtable("RESERVAS");
   if (!reservas) {
@@ -271,14 +270,13 @@ async function renderReservas() {
     <input name="FechaReserva" type="date" required />
     <input name="Hora" placeholder="Hora (ej: 15:30)" required />
     <input name="Cantidad" type="number" placeholder="Personas" min="1" required />
-    <input name="FechaEvento" type="date" required />
     <input name="Comentarios" placeholder="Comentarios" />
     <button type="submit" style="grid-column: span 2;">Agregar Reserva</button>
   </form>
   <table>
     <thead>
       <tr>
-        <th>Nombre</th><th>Fecha Reserva</th><th>Hora</th><th>Personas</th><th>Fecha Evento</th><th>Comentarios</th>
+        <th>Nombre</th><th>Fecha Reserva</th><th>Hora</th><th>Personas</th><th>Comentarios</th>
       </tr>
     </thead><tbody>`;
 
@@ -289,7 +287,6 @@ async function renderReservas() {
       <td>${formatDate(f["Fecha de la reserva"])}</td>
       <td>${f.Hora || ''}</td>
       <td>${f["Cantidad de personas"] || ''}</td>
-      <td>${formatDate(f["Fecha del evento"])}</td>
       <td>${f.Comentarios || ''}</td>
     </tr>`;
   });
@@ -307,7 +304,6 @@ async function renderReservas() {
         "Fecha de la reserva": form.FechaReserva.value,
         "Hora": form.Hora.value,
         "Cantidad de personas": parseInt(form.Cantidad.value),
-        "Fecha del evento": form.FechaEvento.value,
         "Comentarios": form.Comentarios.value
       }
     };
@@ -324,20 +320,95 @@ async function renderReservas() {
 
       if (!res.ok) throw new Error("Error al guardar");
       alert("✅ Reserva guardada");
+      form.reset(); // ← limpia el formulario
       await renderReservas();
     } catch (err) {
       console.error(err);
-      alert("❌ Error al guardar la reserva");
+      alert("❌ Error al guardar la reserva. Verificá los nombres de campos en Airtable.");
     }
   });
 }
 
-async function renderClientas() {
-  const clientas = await fetchAirtable("CLIENTAS");
-  if (!clientas) {
-    contentArea.innerHTML = "<p>Error cargando clientas.</p>";
-    return;
-  }
+// async function renderReservas() {
+//   const reservas = await fetchAirtable("RESERVAS");
+//   if (!reservas) {
+//     contentArea.innerHTML = "<p>Error cargando reservas.</p>";
+//     return;
+//   }
+
+//   let html = `<h1>Reservas</h1>
+//   <form id="form-reserva" style="background:#fff; padding:16px; margin-bottom:20px; border-radius:8px; box-shadow:0 0 8px rgba(0,0,0,0.1); display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+//     <input name="Nombre" placeholder="Nombre" required />
+//     <input name="FechaReserva" type="date" required />
+//     <input name="Hora" placeholder="Hora (ej: 15:30)" required />
+//     <input name="Cantidad" type="number" placeholder="Personas" min="1" required />
+//     <input name="FechaEvento" type="date" required />
+//     <input name="Comentarios" placeholder="Comentarios" />
+//     <button type="submit" style="grid-column: span 2;">Agregar Reserva</button>
+//   </form>
+//   <table>
+//     <thead>
+//       <tr>
+//         <th>Nombre</th><th>Fecha Reserva</th><th>Hora</th><th>Personas</th><th>Fecha Evento</th><th>Comentarios</th>
+//       </tr>
+//     </thead><tbody>`;
+
+//   reservas.forEach(r => {
+//     const f = r.fields;
+//     html += `<tr>
+//       <td>${f.Nombre || ''}</td>
+//       <td>${formatDate(f["Fecha de la reserva"])}</td>
+//       <td>${f.Hora || ''}</td>
+//       <td>${f["Cantidad de personas"] || ''}</td>
+//       <td>${formatDate(f["Fecha del evento"])}</td>
+//       <td>${f.Comentarios || ''}</td>
+//     </tr>`;
+//   });
+
+//   html += "</tbody></table>";
+//   contentArea.innerHTML = html;
+
+//   // formulario
+//   document.getElementById("form-reserva").addEventListener("submit", async (e) => {
+//     e.preventDefault();
+//     const form = e.target;
+//     const data = {
+//       fields: {
+//         "Nombre": form.Nombre.value,
+//         "Fecha de la reserva": form.FechaReserva.value,
+//         "Hora": form.Hora.value,
+//         "Cantidad de personas": parseInt(form.Cantidad.value),
+//         "Fecha del evento": form.FechaEvento.value,
+//         "Comentarios": form.Comentarios.value
+//       }
+//     };
+
+//     try {
+//       const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/RESERVAS`, {
+//         method: "POST",
+//         headers: {
+//           Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+//           "Content-Type": "application/json"
+//         },
+//         body: JSON.stringify(data)
+//       });
+
+//       if (!res.ok) throw new Error("Error al guardar");
+//       alert("✅ Reserva guardada");
+//       await renderReservas();
+//     } catch (err) {
+//       console.error(err);
+//       alert("❌ Error al guardar la reserva");
+//     }
+//   });
+// }
+
+// async function renderClientas() {
+//   const clientas = await fetchAirtable("CLIENTAS");
+//   if (!clientas) {
+//     contentArea.innerHTML = "<p>Error cargando clientas.</p>";
+//     return;
+//   }
 
   let html = `<h1>Clientas</h1>
   <table>
