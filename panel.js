@@ -1,3 +1,231 @@
+// import { AIRTABLE_API_KEY, BASE_ID } from "./airtableConfig.js";
+
+// const contentArea = document.getElementById("content-area");
+// const sidebarLinks = document.querySelectorAll(".sidebar a");
+
+// function setActiveTab(tab) {
+//   sidebarLinks.forEach(link => {
+//     link.classList.toggle("active", link.dataset.tab === tab);
+//   });
+// }
+
+// async function fetchAirtable(table) {
+//   const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(table)}`;
+//   try {
+//     const res = await fetch(url, {
+//       headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
+//     });
+//     if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+//     const data = await res.json();
+//     return data.records;
+//   } catch (error) {
+//     console.error("Fetch Airtable error:", error);
+//     console.log("Base ID:", BASE_ID);
+//     console.log("API KEY:", AIRTABLE_API_KEY);
+//     return null;
+//   }
+// }
+
+// function formatDate(d) {
+//   if (!d) return "";
+//   const date = new Date(d);
+//   return date.toLocaleDateString();
+// }
+
+// async function renderReservas() {
+//   const reservas = await fetchAirtable("RESERVAS");
+//   if (!reservas) {
+//     contentArea.innerHTML = "<p>Error cargando reservas.</p>";
+//     return;
+//   }
+
+//   let html = `<h1>Reservas</h1>
+//   <table>
+//     <thead>
+//       <tr>
+//         <th>Nombre</th><th>Fecha Reserva</th><th>Hora</th><th>Personas</th><th>Fecha Evento</th><th>Comentarios</th>
+//       </tr>
+//     </thead><tbody>`;
+
+//   reservas.forEach(r => {
+//     const f = r.fields;
+//     html += `<tr>
+//       <td>${f.Nombre || ''}</td>
+//       <td>${formatDate(f["Fecha de la reserva"])}</td>
+//       <td>${f.Hora || ''}</td>
+//       <td>${f["Cantidad de personas"] || ''}</td>
+//       <td>${formatDate(f["Fecha del evento"])}</td>
+//       <td>${f.Comentarios || ''}</td>
+//     </tr>`;
+//   });
+
+//   html += "</tbody></table>";
+//   contentArea.innerHTML = html;
+// }
+
+// async function renderClientas() {
+//   const clientas = await fetchAirtable("CLIENTAS");
+//   if (!clientas) {
+//     contentArea.innerHTML = "<p>Error cargando clientas.</p>";
+//     return;
+//   }
+
+//   let html = `<h1>Clientas</h1>
+//   <table>
+//     <thead>
+//       <tr><th>Nombre</th><th>Celular</th><th>Mail</th><th>Reservas</th><th>Última Reserva</th></tr>
+//     </thead><tbody>`;
+
+//   clientas.forEach(c => {
+//     const f = c.fields;
+//     html += `<tr>
+//       <td>${f.Nombre || ''}</td>
+//       <td>${f.Celular || ''}</td>
+//       <td>${f.Mail || ''}</td>
+//       <td>${f["Historial de reservas"] || ''}</td>
+//       <td>${formatDate(f["Última reserva"])}</td>
+//     </tr>`;
+//   });
+
+//   html += "</tbody></table>";
+//   contentArea.innerHTML = html;
+// }
+
+// async function renderVestidos() {
+//   const vestidos = await fetchAirtable("VESTIDOS");
+//   if (!vestidos) {
+//     contentArea.innerHTML = "<p>Error cargando vestidos.</p>";
+//     return;
+//   }
+
+//   let html = `<h1>Vestidos</h1>
+//   <table>
+//     <thead>
+//       <tr><th>Nombre</th><th>Talle</th><th>Color</th><th>Estado</th><th>Veces alquilado</th></tr>
+//     </thead><tbody>`;
+
+//   vestidos.forEach(v => {
+//     const f = v.fields;
+//     html += `<tr>
+//       <td>${f.Nombre || ''}</td>
+//       <td>${f.Talle || ''}</td>
+//       <td>${f.Color || ''}</td>
+//       <td>${f.Estado || ''}</td>
+//       <td>${f["Veces alquilado"] || 0}</td>
+//     </tr>`;
+//   });
+
+//   html += "</tbody></table>";
+//   contentArea.innerHTML = html;
+// }
+
+// async function renderChecklist() {
+//   const checklist = await fetchAirtable("CHECKLIST");
+//   if (!checklist) {
+//     contentArea.innerHTML = "<p>Error cargando checklist.</p>";
+//     return;
+//   }
+
+//   let html = `<h1>Checklist (Fin de Semana)</h1>
+//   <table>
+//     <thead>
+//       <tr><th>Día</th><th>Vestido - Clienta</th><th>Pagó</th><th>Devuelto</th></tr>
+//     </thead><tbody>`;
+
+//   checklist.forEach(c => {
+//     const f = c.fields;
+//     html += `<tr>
+//       <td>${formatDate(f.Día)}</td>
+//       <td>${f["Vestidos a preparar"] || ''}</td>
+//       <td>${f.Pagó || ''}</td>
+//       <td>${f.Devuelto || ''}</td>
+//     </tr>`;
+//   });
+
+//   html += "</tbody></table>";
+//   contentArea.innerHTML = html;
+// }
+
+// async function renderFinanzas() {
+//   const finanzas = await fetchAirtable("FINANZAS");
+//   if (!finanzas) {
+//     contentArea.innerHTML = "<p>Error cargando finanzas.</p>";
+//     return;
+//   }
+
+//   let html = `<h1>Finanzas</h1>
+//   <table>
+//     <thead>
+//       <tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Motivo</th><th>Observaciones</th><th>Saldo</th></tr>
+//     </thead><tbody>`;
+
+//   finanzas.forEach(f => {
+//     const d = f.fields;
+//     html += `<tr>
+//       <td>${formatDate(d.Fecha)}</td>
+//       <td>${d.Tipo || ''}</td>
+//       <td>${d.Monto || ''}</td>
+//       <td>${d.Motivo || ''}</td>
+//       <td>${d.Observaciones || ''}</td>
+//       <td>${d["Saldo acumulado"] || ''}</td>
+//     </tr>`;
+//   });
+
+//   html += "</tbody></table>";
+//   contentArea.innerHTML = html;
+// }
+
+// async function renderHorarios() {
+//   const horarios = await fetchAirtable("HORARIOS DISPONIBLES");
+//   if (!horarios) {
+//     contentArea.innerHTML = "<p>Error cargando horarios disponibles.</p>";
+//     return;
+//   }
+
+//   let html = `<h1>Horarios Disponibles</h1>`;
+//   horarios.forEach(h => {
+//     const f = h.fields;
+//     html += `<h3>${formatDate(f.Fecha)}</h3>`;
+//     html += `<ul>`;
+//     for (const key in f) {
+//       if (key !== "Fecha" && f.hasOwnProperty(key)) {
+//         const estado = f[key] === true || f[key] === "✅" ? "Disponible" : "No disponible";
+//         html += `<li>${key}: ${estado}</li>`;
+//       }
+//     }
+//     html += `</ul>`;
+//   });
+
+//   contentArea.innerHTML = html;
+// }
+
+// const modules = {
+//   reservas: renderReservas,
+//   clientas: renderClientas,
+//   vestidos: renderVestidos,
+//   checklist: renderChecklist,
+//   finanzas: renderFinanzas,
+//   horarios: renderHorarios,
+// };
+
+// async function loadTab(tab) {
+//   setActiveTab(tab);
+//   if (modules[tab]) {
+//     contentArea.innerHTML = "<p>Cargando...</p>";
+//     await modules[tab]();
+//   } else {
+//     contentArea.innerHTML = "<p>Módulo no encontrado.</p>";
+//   }
+// }
+
+// loadTab("reservas");
+
+// sidebarLinks.forEach(link => {
+//   link.addEventListener("click", e => {
+//     e.preventDefault();
+//     loadTab(link.dataset.tab);
+//   });
+// });
 import { AIRTABLE_API_KEY, BASE_ID } from "./airtableConfig.js";
 
 const contentArea = document.getElementById("content-area");
@@ -20,8 +248,6 @@ async function fetchAirtable(table) {
     return data.records;
   } catch (error) {
     console.error("Fetch Airtable error:", error);
-    console.log("Base ID:", BASE_ID);
-    console.log("API KEY:", AIRTABLE_API_KEY);
     return null;
   }
 }
@@ -40,6 +266,15 @@ async function renderReservas() {
   }
 
   let html = `<h1>Reservas</h1>
+  <form id="form-reserva" style="background:#fff; padding:16px; margin-bottom:20px; border-radius:8px; box-shadow:0 0 8px rgba(0,0,0,0.1); display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+    <input name="Nombre" placeholder="Nombre" required />
+    <input name="FechaReserva" type="date" required />
+    <input name="Hora" placeholder="Hora (ej: 15:30)" required />
+    <input name="Cantidad" type="number" placeholder="Personas" min="1" required />
+    <input name="FechaEvento" type="date" required />
+    <input name="Comentarios" placeholder="Comentarios" />
+    <button type="submit" style="grid-column: span 2;">Agregar Reserva</button>
+  </form>
   <table>
     <thead>
       <tr>
@@ -61,6 +296,40 @@ async function renderReservas() {
 
   html += "</tbody></table>";
   contentArea.innerHTML = html;
+
+  // formulario
+  document.getElementById("form-reserva").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const data = {
+      fields: {
+        "Nombre": form.Nombre.value,
+        "Fecha de la reserva": form.FechaReserva.value,
+        "Hora": form.Hora.value,
+        "Cantidad de personas": parseInt(form.Cantidad.value),
+        "Fecha del evento": form.FechaEvento.value,
+        "Comentarios": form.Comentarios.value
+      }
+    };
+
+    try {
+      const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/RESERVAS`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (!res.ok) throw new Error("Error al guardar");
+      alert("✅ Reserva guardada");
+      await renderReservas();
+    } catch (err) {
+      console.error(err);
+      alert("❌ Error al guardar la reserva");
+    }
+  });
 }
 
 async function renderClientas() {
@@ -185,11 +454,10 @@ async function renderHorarios() {
   let html = `<h1>Horarios Disponibles</h1>`;
   horarios.forEach(h => {
     const f = h.fields;
-    html += `<h3>${formatDate(f.Fecha)}</h3>`;
-    html += `<ul>`;
+    html += `<h3>${formatDate(f.Fecha)}</h3><ul>`;
     for (const key in f) {
       if (key !== "Fecha" && f.hasOwnProperty(key)) {
-        const estado = f[key] === true || f[key] === "✅" ? "Disponible" : "No disponible";
+        const estado = f[key] === true || f[key] === "✅" ? "✅ Disponible" : "❌ Ocupado";
         html += `<li>${key}: ${estado}</li>`;
       }
     }
