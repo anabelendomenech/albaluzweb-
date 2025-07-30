@@ -80,11 +80,11 @@ async function vistaReservas() {
     const datos = Object.fromEntries(new FormData(form));
     try {
       await airtableCreate('RESERVAS', {
-        Nombre: datos.nombre,
+        "Nombre": datos.nombre,
         "Fecha de la reserva": datos.fecha,
-        Hora: datos.hora,
+        "Hora": datos.hora,
         "Cantidad de personas": parseInt(datos.personas),
-        Comentarios: datos.comentario
+        "Comentarios": datos.comentario
       });
       form.reset();
       mostrarMensaje('✅ Reserva guardada con éxito');
