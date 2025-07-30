@@ -1,6 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel de Gestión - Albaluz</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>🌟 Panel de Gestión - ALBALUZ</h1>
+    <nav class="tabs">
+      <button data-tab="reservas" class="active">📅 Reservas</button>
+      <button data-tab="alquileres">👗 Alquileres</button>
+      <button data-tab="clientas">👩‍🦰 Clientas</button>
+      <button data-tab="vestidos">🧵 Vestidos</button>
+      <button data-tab="checklist">✅ Checklist</button>
+      <button data-tab="horarios">📆 Horarios</button>
+    </nav>
+  </header>
+
+  <main id="content">
+    <!-- Se carga dinámicamente -->
+  </main>
+
+  <footer>
+    <p>Hecho con 💛 por ALBALUZ ALQUILER DE VESTIDOS</p>
+  </footer>
+
+  <script type="module" src="panel.js"></script>
+</body>
+</html>
+<!-- <!-- <!DOCTYPE html>
+<html lang="es">
+<head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Panel Albaluz - Gestión Unificada</title>
@@ -109,152 +141,7 @@
 <main>
 
   <!-- RESERVAR UNA CITA -->
-  <section class="section" id="section-reservas">
-    <h2>🔶 Reservar una cita</h2>
-    <form id="form-reserva">
-      <label for="reserva-nombre">Nombre</label>
-      <input id="reserva-nombre" name="Nombre" type="text" required />
-
-      <label for="reserva-fecha">Fecha de la reserva</label>
-      <input id="reserva-fecha" name="Fecha de la reserva" type="date" required />
-
-      <label for="reserva-hora">Hora</label>
-      <input id="reserva-hora" name="Hora" type="time" required />
-
-      <label for="reserva-personas">Cantidad de personas</label>
-      <input id="reserva-personas" name="Cantidad de personas" type="number" min="1" required />
-
-      <label for="reserva-comentarios">Comentarios</label>
-      <textarea id="reserva-comentarios" name="Comentarios" placeholder="Opcional"></textarea>
-
-      <button type="submit">Reservar</button>
-      <div id="msg-reserva" class="msg"></div>
-    </form>
-
-    <h3>Reservas recientes</h3>
-    <table id="tabla-reservas">
-      <thead>
-        <tr><th>Nombre</th><th>Fecha</th><th>Hora</th><th>Personas</th><th>Comentarios</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <!-- REGISTRAR ALQUILER -->
-  <section class="section" id="section-alquiler">
-    <h2>🔷 Registrar alquiler</h2>
-    <form id="form-alquiler">
-      <label for="alquiler-clienta-existente">¿Clienta existente?</label>
-      <select id="alquiler-clienta-existente" name="ClientaId" required>
-        <option value="">-- Selecciona una clienta --</option>
-      </select>
-      <div id="cliente-nuevo-fields" class="hidden">
-        <label for="cliente-nuevo-nombre">Nombre</label>
-        <input id="cliente-nuevo-nombre" type="text" />
-
-        <label for="cliente-nuevo-celular">Celular</label>
-        <input id="cliente-nuevo-celular" type="tel" />
-
-        <label for="cliente-nuevo-mail">Mail</label>
-        <input id="cliente-nuevo-mail" type="email" />
-
-        <label for="cliente-nuevo-cumple">Cumpleaños</label>
-        <input id="cliente-nuevo-cumple" type="date" />
-      </div>
-
-      <label for="alquiler-vestido">Vestido alquilado</label>
-      <select id="alquiler-vestido" name="VestidoId" required>
-        <option value="">-- Selecciona un vestido --</option>
-      </select>
-
-      <label for="alquiler-fecha-evento">Fecha del evento</label>
-      <input id="alquiler-fecha-evento" name="Fecha del evento" type="date" required />
-
-      <label for="alquiler-pago">Pagó</label>
-      <select id="alquiler-pago" name="Pagó" required>
-        <option value="Sí">Sí</option>
-        <option value="No">No</option>
-      </select>
-
-      <label for="alquiler-devuelto">Devuelto</label>
-      <select id="alquiler-devuelto" name="Devuelto" required>
-        <option value="Sí">Sí</option>
-        <option value="No">No</option>
-      </select>
-
-      <button type="submit">Registrar alquiler</button>
-      <div id="msg-alquiler" class="msg"></div>
-    </form>
-
-    <h3>Alquileres recientes</h3>
-    <table id="tabla-alquileres">
-      <thead>
-        <tr><th>Clienta</th><th>Vestido</th><th>Fecha evento</th><th>Pagó</th><th>Devuelto</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <!-- AGREGAR VESTIDO -->
-  <section class="section" id="section-vestidos">
-    <h2>🟡 Catálogo / Agregar vestido</h2>
-    <form id="form-vestido" enctype="multipart/form-data">
-      <label for="vestido-nombre">Nombre</label>
-      <input id="vestido-nombre" name="Nombre" type="text" required />
-
-      <label for="vestido-talle">Talle</label>
-      <input id="vestido-talle" name="Talle" type="text" required />
-
-      <label for="vestido-color">Color</label>
-      <input id="vestido-color" name="Color" type="text" required />
-
-      <label for="vestido-estado">Estado</label>
-      <select id="vestido-estado" name="Estado" required>
-        <option value="Disponible">Disponible</option>
-        <option value="Alquilado">Alquilado</option>
-        <option value="Reservado">Reservado</option>
-        <option value="En reparación">En reparación</option>
-      </select>
-
-      <label for="vestido-imagen">Imagen</label>
-      <input id="vestido-imagen" name="Imagen" type="file" accept="image/*" />
-
-      <button type="submit">Guardar vestido</button>
-      <div id="msg-vestido" class="msg"></div>
-    </form>
-
-    <h3>Vestidos en catálogo</h3>
-    <table id="tabla-vestidos">
-      <thead>
-        <tr><th>Imagen</th><th>Nombre</th><th>Talle</th><th>Color</th><th>Estado</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <!-- CHECKLIST FIN DE SEMANA -->
-  <section class="section" id="section-checklist">
-    <h2>🟢 Checklist del fin de semana (Automático)</h2>
-    <table id="tabla-checklist">
-      <thead>
-        <tr><th>Día</th><th>Clienta</th><th>Vestido</th><th>Pagó</th><th>Devuelto</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <!-- HORARIOS DISPONIBLES -->
-  <section class="section" id="section-horarios">
-    <h2>📅 Horarios disponibles (Calendario)</h2>
-    <div class="calendar" id="calendar"></div>
-    <div id="agenda-dia" class="horario-list"></div>
-  </section>
-
-</main>
-
-<script type="module" src="panel.js"></script>
-</body>
-</html>
+<!--  ÷ -->
 <!-- <!DOCTYPE html>
 <html lang="es">
 <head>
