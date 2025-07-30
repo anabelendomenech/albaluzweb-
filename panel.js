@@ -345,7 +345,7 @@ async function vistaVestidos() {
     crearInput('Talle', 'text', 'talle'),
     crearInput('Color', 'text', 'color'),
     crearInput('Estado', 'text', 'estado'),
-    crearInput('Imagen (URL)', 'url', 'imagen', false),
+    crearInput('Foto (URL)', 'url', 'imagen', false),
   );
 
   const btn = document.createElement('button');
@@ -362,7 +362,7 @@ async function vistaVestidos() {
         Talle: datos.talle,
         Color: datos.color,
         Estado: datos.estado,
-        Imagen: imagen
+        Foto: imagen
       });
       form.reset();
       mostrarMensaje('✅ Vestido guardado');
