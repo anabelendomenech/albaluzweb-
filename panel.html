@@ -5,7 +5,155 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Panel de Gestión - Albaluz</title>
   <link rel="stylesheet" href="styles.css" />
-</head>
+
+  <style>
+    body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f8f4;
+  color: #3b3b3b;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  background-color: #baab7f;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+nav.tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 15px;
+  gap: 10px;
+}
+
+nav.tabs button {
+  background-color: white;
+  border: 2px solid #baab7f;
+  color: #5b5b5b;
+  padding: 10px 18px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+nav.tabs button.active,
+nav.tabs button:hover {
+  background-color: #baab7f;
+  color: white;
+}
+
+main#content {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+form {
+  background: white;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+form h2 {
+  margin-top: 0;
+  color: #5a503f;
+}
+
+form label {
+  display: block;
+  margin: 12px 0 4px;
+  font-weight: 600;
+}
+
+form input, form select, form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+form button {
+  margin-top: 16px;
+  background-color: #baab7f;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+form button:hover {
+  background-color: #9a8f6e;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+table th, table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+table th {
+  background-color: #f2ede2;
+  color: #5a503f;
+  font-weight: 600;
+}
+
+img.preview {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.message {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.message.success {
+  color: green;
+}
+
+.message.error {
+  color: crimson;
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  background: #f4f1e9;
+  font-size: 0.9rem;
+  color: #777;
+}
+</style>
+  </head>
 <body>
   <header>
     <h1>🌟 Panel de Gestión - ALBALUZ</h1>
