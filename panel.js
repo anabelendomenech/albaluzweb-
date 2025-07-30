@@ -118,6 +118,88 @@ async function vistaReservas() {
   content.appendChild(tabla);
 }
 
+
+
+
+reservas.sort((a, b) => {
+  const fechaA = new Date(a.fields["Fecha de la reserva"]);
+  const fechaB = new Date(b.fields["Fecha de la reserva"]);
+
+  // Extra: ordenar hora como "15:30"
+  const horaA = a.fields.Hora || "";
+  const horaB = b.fields.Hora || "";
+
+  return fechaA - fechaB || horaA.localeCompare(horaB);
+});
+document.getElementById("filtroFecha").addEventListener("input", e => {
+  const fechaSeleccionada = e.target.value;
+  if (!fechaSeleccionada) {
+    renderReservas(); // vuelve a mostrar todo
+    return;
+  }
+
+  const reservasFiltradas = reservas.filter(r => {
+    const fecha = new Date(r.fields["Fecha de la reserva"]).toISOString().split("T")[0];
+    return fecha === fechaSeleccionada;
+  });
+
+  renderizarTablaReservas(reservasFiltradas);
+});
+function renderizarTablaReservas(reservas) {
+  let html = `<h2>Reservas</h2>
+  <label for="filtroFecha">Filtrar por fecha: </label>
+  <input type="date" id="filtroFecha" />
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Personas</th>
+        <th>Comentarios</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  reservas.forEach(r => {
+    const f = r.fields;
+    html += `<tr>
+      <td>${f.Nombre || ''}</td>
+      <td>${formatDate(f["Fecha de la reserva"])}</td>
+      <td>${f.Hora || ''}</td>
+      <td>${f["Cantidad de personas"] || ''}</td>
+      <td>${f.Comentarios || ''}</td>
+    </tr>`;
+  });
+
+  html += "</tbody></table>";
+  contentArea.innerHTML = html;
+
+  // volvemos a agregar el listener del filtro
+  document.getElementById("filtroFecha").addEventListener("input", e => {
+    const fechaSeleccionada = e.target.value;
+    if (!fechaSeleccionada) {
+      renderReservas(); // todo de nuevo
+      return;
+    }
+
+    const reservasFiltradas = reservas.filter(r => {
+      const fecha = new Date(r.fields["Fecha de la reserva"]).toISOString().split("T")[0];
+      return fecha === fechaSeleccionada;
+    });
+
+    renderizarTablaReservas(reservasFiltradas);
+  });
+}
+
+
+
+
+
+
+
+
+
 async function vistaClientas() {
   content.innerHTML = '';
 
