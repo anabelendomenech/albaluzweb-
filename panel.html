@@ -1,375 +1,239 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Panel de Gestión - Albaluz</title>
-  <style>
-    body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9f8f4;
-  color: #3b3b3b;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-header {
-  background-color: #baab7f;
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 1.8rem;
-}
-
-nav.tabs {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 15px;
-  gap: 10px;
-}
-
-nav.tabs button {
-  background-color: white;
-  border: 2px solid #baab7f;
-  color: #5b5b5b;
-  padding: 10px 18px;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-nav.tabs button.active,
-nav.tabs button:hover {
-  background-color: #baab7f;
-  color: white;
-}
-
-main#content {
-  flex-grow: 1;
-  padding: 20px;
-}
-
-form {
-  background: white;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-form h2 {
-  margin-top: 0;
-  color: #5a503f;
-}
-
-form label {
-  display: block;
-  margin: 12px 0 4px;
-  font-weight: 600;
-}
-
-form input, form select, form textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 0.95rem;
-}
-
-form button {
-  margin-top: 16px;
-  background-color: #baab7f;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  font-weight: bold;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-form button:hover {
-  background-color: #9a8f6e;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-table th, table td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  text-align: left;
-}
-
-table th {
-  background-color: #f2ede2;
-  color: #5a503f;
-  font-weight: 600;
-}
-
-img.preview {
-  max-width: 100px;
-  max-height: 100px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-top: 10px;
-}
-
-.message {
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-.message.success {
-  color: green;
-}
-
-.message.error {
-  color: crimson;
-}
-
-footer {
-  text-align: center;
-  padding: 15px;
-  background: #f4f1e9;
-  font-size: 0.9rem;
-  color: #777;
-}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Panel Albaluz - Gestión Completa</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f6f1;
+    margin: 0; padding: 0;
+  }
+  .container {
+    max-width: 1100px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 0 15px #ccc;
+  }
+  h1 {
+    color: #5a503f; margin-bottom: 30px; text-align: center;
+  }
+  nav.tabs {
+    display: flex; justify-content: center; gap: 15px; margin-bottom: 25px;
+  }
+  nav.tabs button {
+    background: #baab7f; border: none; padding: 12px 20px; color: white; font-weight: 700; cursor: pointer; border-radius: 8px;
+    transition: background-color 0.3s;
+  }
+  nav.tabs button.active,
+  nav.tabs button:hover {
+    background: #9a8f6e;
+  }
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
+  form {
+    background: #fdfcf5; padding: 20px; border-radius: 10px; box-shadow: 0 0 7px #d9d3b4; margin-bottom: 30px;
+  }
+  label {
+    font-weight: 600; display: block; margin-top: 15px;
+  }
+  input, select, textarea {
+    width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; margin-top: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+  textarea { resize: vertical; min-height: 60px;}
+  button.submit-btn {
+    margin-top: 20px; background: #baab7f; border: none; padding: 12px 24px; color: white; font-weight: 700; border-radius: 8px; cursor: pointer;
+  }
+  button.submit-btn:hover {
+    background: #9a8f6e;
+  }
+  .btn-pdf {
+    background: #5a503f; color: white; padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .btn-pdf:hover {
+    background: #403828;
+  }
+  table {
+    width: 100%; border-collapse: collapse; box-shadow: 0 0 10px #ccc;
+  }
+  th, td {
+    border: 1px solid #ddd; padding: 10px; text-align: left;
+  }
+  th {
+    background: #f0ebd8; color: #5a503f;
+  }
+  .form-grid {
+    display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 18px;
+  }
+  /* Scroll para tablas en pantallas pequeñas */
+  .table-wrapper {
+    overflow-x: auto; margin-top: 15px;
+  }
+  /* Mensajes */
+  .msg {
+    padding: 12px; margin-bottom: 15px; border-radius: 8px; font-weight: 700;
+  }
+  .msg.success {
+    background: #d3e6c5; color: #3c662d;
+  }
+  .msg.error {
+    background: #f4c6c6; color: #7f1a1a;
+  }
 </style>
-  </head>
-  <!DOCTYPE html>
-
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel Albaluz</title>
-  <link rel="stylesheet" href="styles.css" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9f6f1;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    h1, h2, h3 {
-      color: #5a503f;
-    }
-    button {
-      background: #baab7f;
-      border: none;
-      padding: 10px 16px;
-      color: white;
-      font-weight: 700;
-      cursor: pointer;
-      border-radius: 6px;
-      margin-top: 10px;
-    }
-    button:hover {
-      background: #9a8f6e;
-    }
-    section {
-      background: white;
-      padding: 20px;
-      margin-bottom: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-    input, select, textarea {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      width: 100%;
-      margin-bottom: 10px;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-    .form-inline {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .table-container {
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background-color: #eee;
-    }
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-  </style>
 </head>
 <body>
-  
-<!-- Sección 1: Reservas -->
-<section id="reservas">
-  <div class="section-title">
-    <h2>📅 Reservar una Cita</h2>
-    <button onclick="generarPDFAgenda()">📄 Imprimir Agenda</button>
+  <div class="container">
+    <h1>🧡 Panel de Gestión Albaluz</h1>
+
+    <nav class="tabs" role="tablist">
+      <button type="button" class="active" data-tab="reservas" role="tab" aria-selected="true" aria-controls="reservas-section" id="tab-reservas">Reservas</button>
+      <button type="button" data-tab="alquileres" role="tab" aria-selected="false" aria-controls="alquileres-section" id="tab-alquileres">Alquileres</button>
+      <button type="button" data-tab="clientas" role="tab" aria-selected="false" aria-controls="clientas-section" id="tab-clientas">Clientas</button>
+      <button type="button" data-tab="vestidos" role="tab" aria-selected="false" aria-controls="vestidos-section" id="tab-vestidos">Vestidos</button>
+      <button type="button" data-tab="finanzas" role="tab" aria-selected="false" aria-controls="finanzas-section" id="tab-finanzas">Finanzas</button>
+    </nav>
+
+    <!-- RESERVAS -->
+    <section id="reservas-section" class="active" role="tabpanel" tabindex="0" aria-labelledby="tab-reservas">
+      <button class="btn-pdf" id="btnPDFAgenda">📄 Imprimir Agenda</button>
+      <form id="formReserva">
+        <div class="form-grid">
+          <div>
+            <label for="reservaNombre">Nombre</label>
+            <input type="text" id="reservaNombre" name="Nombre" required />
+          </div>
+          <div>
+            <label for="reservaFecha">Fecha de la cita</label>
+            <input type="date" id="reservaFecha" name="Fecha de la reserva" required />
+          </div>
+          <div>
+            <label for="reservaHora">Hora</label>
+            <input type="time" id="reservaHora" name="Hora" required />
+          </div>
+          <div>
+            <label for="reservaPersonas">Cantidad de personas</label>
+            <input type="number" id="reservaPersonas" name="Cantidad de personas" min="1" required />
+          </div>
+          <div>
+            <label for="reservaComentarios">Comentarios</label>
+            <textarea id="reservaComentarios" name="Comentarios"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn">Reservar</button>
+      </form>
+
+      <div class="table-wrapper">
+        <table id="tablaReservas" aria-label="Listado de reservas">
+          <thead><tr><th>Nombre</th><th>Fecha</th><th>Hora</th><th>Personas</th><th>Comentarios</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ALQUILERES -->
+    <section id="alquileres-section" role="tabpanel" tabindex="0" aria-labelledby="tab-alquileres">
+      <button class="btn-pdf" id="btnPDFChecklist">📄 Imprimir Checklist</button>
+      <form id="formAlquiler">
+        <div class="form-grid">
+          <div>
+            <label for="alquilerClienta">Clienta (seleccionar o agregar)</label>
+            <select id="alquilerClienta" name="Clienta"></select>
+            <input type="text" id="alquilerClientaNueva" name="ClientaNueva" placeholder="Nuevo nombre (si no está)" style="margin-top:8px;" />
+          </div>
+          <div>
+            <label for="alquilerCelular">Celular</label>
+            <input type="tel" id="alquilerCelular" name="Celular" placeholder="Opcional si se crea clienta nueva" />
+          </div>
+          <div>
+            <label for="alquilerMail">Email</label>
+            <input type="email" id="alquilerMail" name="Mail" placeholder="Opcional si se crea clienta nueva" />
+          </div>
+          <div>
+            <label for="alquilerVestido">Vestido</label>
+            <select id="alquilerVestido" name="Vestido" required></select>
+          </div>
+          <div>
+            <label for="alquilerFechaEvento">Fecha del evento</label>
+            <input type="date" id="alquilerFechaEvento" name="Fecha evento" required />
+          </div>
+          <div>
+            <label for="alquilerSaldo">Saldo pendiente</label>
+            <input type="number" id="alquilerSaldo" name="Saldo" min="0" step="0.01" />
+          </div>
+          <div>
+            <label for="alquilerComentario">Comentario</label>
+            <textarea id="alquilerComentario" name="Comentario"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn">Registrar Alquiler</button>
+      </form>
+
+      <div class="table-wrapper">
+        <table id="tablaAlquileres" aria-label="Listado de alquileres">
+          <thead><tr><th>Clienta</th><th>Celular</th><th>Vestido</th><th>Fecha Evento</th><th>Saldo</th><th>Comentario</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CLIENTAS -->
+    <section id="clientas-section" role="tabpanel" tabindex="0" aria-labelledby="tab-clientas">
+      <h2>Clientas Registradas</h2>
+      <div class="table-wrapper">
+        <table id="tablaClientas" aria-label="Listado de clientas">
+          <thead><tr><th>Nombre</th><th>Celular</th><th>Email</th><th>Cumpleaños</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VESTIDOS -->
+    <section id="vestidos-section" role="tabpanel" tabindex="0" aria-labelledby="tab-vestidos">
+      <form id="formVestido">
+        <div class="form-grid">
+          <div>
+            <label for="vestidoNombre">Nombre</label>
+            <input type="text" id="vestidoNombre" name="Nombre" required />
+</div>
+<div>
+<label for="vestidoTalle">Talle</label>
+<input type="text" id="vestidoTalle" name="Talle" />
+</div>
+<div>
+<label for="vestidoColor">Color</label>
+<input type="text" id="vestidoColor" name="Color" />
+</div>
+<div>
+<label for="vestidoEstado">Estado</label>
+<input type="text" id="vestidoEstado" name="Estado" />
+</div>
+<div>
+<label for="vestidoImagen">Imagen</label>
+<input type="file" id="vestidoImagen" name="Imagen" />
+</div>
+</div>
+<button type="submit" class="submit-btn">Guardar vestido</button>
+</form>
+  <div class="table-wrapper">
+    <table id="tablaVestidos" aria-label="Listado de vestidos">
+      <thead><tr><th>Nombre</th><th>Talle</th><th>Color</th><th>Estado</th></tr></thead>
+      <tbody></tbody>
+    </table>
   </div>
-  <form id="formReserva">
-    <div class="form-grid">
-      <div>
-        <label for="reservaNombre">Nombre</label>
-        <input id="reservaNombre" name="Nombre" required>
-      </div>
-      <div>
-        <label for="reservaFecha">Fecha de la cita</label>
-        <input type="date" id="reservaFecha" name="Fecha de la reserva" required>
-      </div>
-      <div>
-        <label for="reservaHora">Hora</label>
-        <input id="reservaHora" name="Hora" required>
-      </div>
-      <div>
-        <label for="reservaPersonas">Cantidad de personas</label>
-        <input type="number" id="reservaPersonas" name="Cantidad de personas" min="1" required>
-      </div>
-      <div>
-        <label for="reservaComentarios">Comentarios</label>
-        <textarea id="reservaComentarios" name="Comentarios"></textarea>
-      </div>
-    </div>
-    <button type="submit">Reservar</button>
-  </form>
-  <div id="filtroReservas">
-    <label for="filtroFecha">Filtrar por día</label>
-    <input type="date" id="filtroFecha" onchange="filtrarReservasPorFecha()" />
-  </div>
-  <div id="tablaReservas"></div>
 </section>
 
-<!-- Sección 2: Alquileres -->
-<section id="alquileres">
-  <div class="section-title">
-    <h2>👗 Registrar Alquiler</h2>
-    <button onclick="generarPDFChecklist()">📄 Imprimir Checklist</button>
-  </div>
-  <form id="formAlquiler">
-    <div class="form-grid">
-      <div>
-        <label for="clienteNombre">Nombre de clienta</label>
-        <input id="clienteNombre" name="Nombre" required>
-      </div>
-      <div>
-        <label for="clienteCelular">Celular</label>
-        <input id="clienteCelular" name="Celular">
-      </div>
-      <div>
-        <label for="clienteMail">Email</label>
-        <input type="email" id="clienteMail" name="Mail">
-      </div>
-      <div>
-        <label for="clienteCumple">Cumpleaños</label>
-        <input type="date" id="clienteCumple" name="Cumpleaños">
-      </div>
-      <div>
-        <label for="alquilerVestido">Vestido</label>
-        <select id="alquilerVestido" name="Vestido" required></select>
-      </div>
-      <div>
-        <label for="alquilerFechaEvento">Fecha del evento</label>
-        <input type="date" id="alquilerFechaEvento" name="Fecha evento" required>
-      </div>
-      <div>
-        <label for="alquilerSaldo">Saldo pendiente</label>
-        <input type="number" id="alquilerSaldo" name="Saldo">
-      </div>
-      <div>
-        <label for="alquilerComentario">Comentario</label>
-        <textarea id="alquilerComentario" name="Comentario"></textarea>
-      </div>
-    </div>
-    <button type="submit">Registrar Alquiler</button>
-  </form>
-  <div id="tablaAlquileres"></div>
-</section>
-
-<!-- Sección 3: Vestidos -->
-<section id="vestidos">
-  <h2>🟡 Catálogo / Agregar Vestido</h2>
-  <form id="formVestido">
-    <div class="form-grid">
-      <div>
-        <label for="vestidoNombre">Nombre</label>
-        <input id="vestidoNombre" name="Nombre" required>
-      </div>
-      <div>
-        <label for="vestidoTalle">Talle</label>
-        <input id="vestidoTalle" name="Talle">
-      </div>
-      <div>
-        <label for="vestidoColor">Color</label>
-        <input id="vestidoColor" name="Color">
-      </div>
-      <div>
-        <label for="vestidoEstado">Estado</label>
-        <input id="vestidoEstado" name="Estado">
-      </div>
-      <div>
-        <label for="vestidoImagen">Subir Imagen</label>
-        <input type="file" id="vestidoImagen" name="Imagen">
-      </div>
-    </div>
-    <button type="submit">Guardar vestido</button>
-  </form>
-  <div id="tablaVestidos"></div>
-</section>
-
-<!-- Sección 4: Clientas -->
-<section id="clientas">
-  <h2>🧑‍🤝‍🧑 Clientas</h2>
-  <div id="tablaClientas"></div>
-</section>
-
-<!-- Sección 5: Finanzas -->
-<section id="finanzas">
-  <h2>💸 Finanzas</h2>
+<!-- FINANZAS -->
+<section id="finanzas-section" role="tabpanel" tabindex="0" aria-labelledby="tab-finanzas">
   <form id="formFinanzas">
     <div class="form-grid">
       <div>
         <label for="finanzaFecha">Fecha</label>
-        <input type="date" id="finanzaFecha" name="Fecha" required>
+        <input type="date" id="finanzaFecha" name="Fecha" required />
       </div>
       <div>
         <label for="finanzaTipo">Tipo</label>
@@ -380,230 +244,25 @@ footer {
       </div>
       <div>
         <label for="finanzaMonto">Monto</label>
-        <input type="number" id="finanzaMonto" name="Monto" required>
+        <input type="number" id="finanzaMonto" name="Monto" required />
       </div>
       <div>
         <label for="finanzaMotivo">Motivo</label>
-        <input id="finanzaMotivo" name="Motivo">
+        <input type="text" id="finanzaMotivo" name="Motivo" />
       </div>
       <div>
         <label for="finanzaObservaciones">Observaciones</label>
         <textarea id="finanzaObservaciones" name="Observaciones"></textarea>
       </div>
     </div>
-    <button type="submit">Registrar</button>
+    <button type="submit" class="submit-btn">Registrar</button>
   </form>
-  <div id="tablaFinanzas"></div>
-</section>
-```
 
+  <div class="table-wrapper">
+    <table id="tablaFinanzas" aria-label="Listado de movimientos">
+      <thead><tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Motivo</th><th>Observaciones</th></tr></thead>
+      <tbody></tbody>
+    </table>
   </div>
-  <script type="module" src="panel.js"></script>
-</body>
-</html>
-
-<!-- <body>
-  <header>
-    <h1>🌟 Panel de Gestión - ALBALUZ</h1>
-    <nav class="tabs">
-      <button data-tab="reservas" class="active">📅 Reservas</button>
-      <button data-tab="alquileres">👗 Alquileres</button>
-      <button data-tab="clientas">👩‍🦰 Clientas</button>
-      <button data-tab="vestidos">🧵 Vestidos</button>
-      <button data-tab="checklist">✅ Checklist</button>
-      <button data-tab="horarios">📆 Horarios</button>
-    </nav>
-  </header>
-
-  <main id="content">
-    <!-- Se carga dinámicamente -->
-<!--   </main>
-
-  <footer>
-    <p>Hecho con 💛 por ALBALUZ ALQUILER DE VESTIDOS</p>
-  </footer>
-
-  <script type="module" src="panel.js"></script>
-</body>
-</html>
- -->
-<!-- <!-- <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Panel Albaluz - Gestión Unificada</title>
-<link rel="stylesheet" href="styles.css" />
-<style>
-  body {
-    margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f4f1e9; color: #5a503f;
-  }
-  main {
-    max-width: 1100px; margin: 20px auto; padding: 20px;
-    background: white; box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    border-radius: 8px;
-  }
-  h2 {
-    border-bottom: 2px solid #baab7f; padding-bottom: 6px;
-    margin-top: 30px; margin-bottom: 15px;
-  }
-  label {
-    display: block; margin: 10px 0 4px;
-    font-weight: 600;
-  }
-  input, select, textarea {
-    width: 100%; max-width: 350px;
-    padding: 8px; border: 1px solid #ccc;
-    border-radius: 4px; font-size: 1rem;
-  }
-  textarea { resize: vertical; min-height: 60px; }
-  button {
-    background: #baab7f; border: none; padding: 10px 20px;
-    color: white; font-weight: 700; font-size: 1rem;
-    border-radius: 5px; cursor: pointer; margin-top: 15px;
-    transition: background-color 0.3s;
-  }
-  button:hover {
-    background: #9a8f6e;
-  }
-  .section {
-    margin-bottom: 40px;
-  }
-  table {
-    width: 100%; border-collapse: collapse; margin-top: 15px;
-    box-shadow: 0 0 8px rgba(0,0,0,0.08);
-  }
-  th, td {
-    padding: 10px; border: 1px solid #ddd; text-align: left;
-  }
-  th {
-    background: #baab7f; color: white;
-  }
-  .msg {
-    margin-top: 10px; font-weight: 700;
-  }
-  .success {
-    color: green;
-  }
-  .error {
-    color: red;
-  }
-  .inline-flex {
-    display: flex; align-items: center; gap: 10px;
-  }
-  .hidden {
-    display: none !important;
-  }
-  .img-thumb {
-    max-width: 60px; max-height: 60px; object-fit: cover; border-radius: 4px;
-  }
-  .calendar {
-    max-width: 350px;
-  }
-  .calendar table {
-    width: 100%;
-    border: 1px solid #baab7f;
-    border-radius: 6px;
-  }
-  .calendar th, .calendar td {
-    padding: 8px; text-align: center;
-    border: 1px solid #baab7f;
-    cursor: pointer;
-  }
-  .calendar td:hover {
-    background: #f0e9d2;
-  }
-  .calendar .selected {
-    background: #baab7f; color: white;
-  }
-  .horario-list {
-    max-width: 350px;
-    margin-top: 10px;
-  }
-  .horario-item {
-    display: flex; justify-content: space-between; align-items: center;
-    margin: 4px 0;
-  }
-  .horario-item span {
-    font-weight: 600;
-  }
-  .horario-item button {
-    background: #9a8f6e; padding: 4px 8px; font-size: 0.9rem;
-  }
-</style>
-</head>
-<body>
-
-<main>
-
-  <!-- RESERVAR UNA CITA -->
-<!--  ÷ -->
-<!-- <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Panel Albaluz - Gestión</title>
-<link rel="stylesheet" href="styles.css" />
-<style>
-  body {
-    margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex; min-height: 100vh; background: #f4f1e9;
-  }
-  nav.sidebar {
-    width: 220px; background: #baab7f; color: #fff; padding-top: 20px;
-    display: flex; flex-direction: column; gap: 12px;
-  }
-  nav.sidebar a {
-    color: #fff; text-decoration: none; padding: 12px 20px; display: block; font-weight: 600;
-    border-left: 5px solid transparent;
-    transition: background-color 0.3s, border-color 0.3s;
-  }
-  nav.sidebar a.active, nav.sidebar a:hover {
-    background-color: #9a8f6e; border-left-color: #fff;
-  }
-  main#content-area {
-    flex-grow: 1; padding: 20px; overflow-y: auto;
-  }
-  table {
-    width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 0 8px rgba(0,0,0,0.1);
-  }
-  th, td {
-    padding: 10px; border: 1px solid #ddd; text-align: left;
-  }
-  h1 {
-    color: #5a503f; margin-bottom: 12px;
-  }
-  button {
-    background: #baab7f; border: none; padding: 10px 16px; color: white; font-weight: 700;
-    cursor: pointer; border-radius: 4px;
-  }
-  button:hover {
-    background: #9a8f6e;
-  }
-  /* Scrollbar for content area */
-  main#content-area::-webkit-scrollbar {
-    width: 8px;
-  }
-  main#content-area::-webkit-scrollbar-thumb {
-    background-color: #baab7f;
-    border-radius: 4px;
-  }
-</style>
-</head>
-<body>
-
-<nav class="sidebar">
-  <a href="#" data-tab="reservas" class="active">📅 Reservas</a>
-  <a href="#" data-tab="clientas">📕 Clientas</a>
-  <a href="#" data-tab="vestidos">👗 Vestidos</a>
-  <a href="#" data-tab="checklist">✅ Checklist</a>
-  <a href="#" data-tab="finanzas">💸 Finanzas</a>
-  <a href="#" data-tab="horarios">📆 Horarios Disponibles</a>
-</nav>
-
-<main id="content-area">
-  Aquí cargará el contenido -->
-
- -->
+</section>
+</div> <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <script type="module"> </script> </body> </html> 
