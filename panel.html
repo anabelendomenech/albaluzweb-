@@ -152,7 +152,257 @@ footer {
 }
 </style>
   </head>
+  <!DOCTYPE html>
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Albaluz</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f6f1;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #5a503f;
+    }
+    button {
+      background: #baab7f;
+      border: none;
+      padding: 10px 16px;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #9a8f6e;
+    }
+    section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    input, select, textarea {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .form-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #eee;
+    }
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
 <body>
+  
+<!-- Sección 1: Reservas -->
+<section id="reservas">
+  <div class="section-title">
+    <h2>📅 Reservar una Cita</h2>
+    <button onclick="generarPDFAgenda()">📄 Imprimir Agenda</button>
+  </div>
+  <form id="formReserva">
+    <div class="form-grid">
+      <div>
+        <label for="reservaNombre">Nombre</label>
+        <input id="reservaNombre" name="Nombre" required>
+      </div>
+      <div>
+        <label for="reservaFecha">Fecha de la cita</label>
+        <input type="date" id="reservaFecha" name="Fecha de la reserva" required>
+      </div>
+      <div>
+        <label for="reservaHora">Hora</label>
+        <input id="reservaHora" name="Hora" required>
+      </div>
+      <div>
+        <label for="reservaPersonas">Cantidad de personas</label>
+        <input type="number" id="reservaPersonas" name="Cantidad de personas" min="1" required>
+      </div>
+      <div>
+        <label for="reservaComentarios">Comentarios</label>
+        <textarea id="reservaComentarios" name="Comentarios"></textarea>
+      </div>
+    </div>
+    <button type="submit">Reservar</button>
+  </form>
+  <div id="filtroReservas">
+    <label for="filtroFecha">Filtrar por día</label>
+    <input type="date" id="filtroFecha" onchange="filtrarReservasPorFecha()" />
+  </div>
+  <div id="tablaReservas"></div>
+</section>
+
+<!-- Sección 2: Alquileres -->
+<section id="alquileres">
+  <div class="section-title">
+    <h2>👗 Registrar Alquiler</h2>
+    <button onclick="generarPDFChecklist()">📄 Imprimir Checklist</button>
+  </div>
+  <form id="formAlquiler">
+    <div class="form-grid">
+      <div>
+        <label for="clienteNombre">Nombre de clienta</label>
+        <input id="clienteNombre" name="Nombre" required>
+      </div>
+      <div>
+        <label for="clienteCelular">Celular</label>
+        <input id="clienteCelular" name="Celular">
+      </div>
+      <div>
+        <label for="clienteMail">Email</label>
+        <input type="email" id="clienteMail" name="Mail">
+      </div>
+      <div>
+        <label for="clienteCumple">Cumpleaños</label>
+        <input type="date" id="clienteCumple" name="Cumpleaños">
+      </div>
+      <div>
+        <label for="alquilerVestido">Vestido</label>
+        <select id="alquilerVestido" name="Vestido" required></select>
+      </div>
+      <div>
+        <label for="alquilerFechaEvento">Fecha del evento</label>
+        <input type="date" id="alquilerFechaEvento" name="Fecha evento" required>
+      </div>
+      <div>
+        <label for="alquilerSaldo">Saldo pendiente</label>
+        <input type="number" id="alquilerSaldo" name="Saldo">
+      </div>
+      <div>
+        <label for="alquilerComentario">Comentario</label>
+        <textarea id="alquilerComentario" name="Comentario"></textarea>
+      </div>
+    </div>
+    <button type="submit">Registrar Alquiler</button>
+  </form>
+  <div id="tablaAlquileres"></div>
+</section>
+
+<!-- Sección 3: Vestidos -->
+<section id="vestidos">
+  <h2>🟡 Catálogo / Agregar Vestido</h2>
+  <form id="formVestido">
+    <div class="form-grid">
+      <div>
+        <label for="vestidoNombre">Nombre</label>
+        <input id="vestidoNombre" name="Nombre" required>
+      </div>
+      <div>
+        <label for="vestidoTalle">Talle</label>
+        <input id="vestidoTalle" name="Talle">
+      </div>
+      <div>
+        <label for="vestidoColor">Color</label>
+        <input id="vestidoColor" name="Color">
+      </div>
+      <div>
+        <label for="vestidoEstado">Estado</label>
+        <input id="vestidoEstado" name="Estado">
+      </div>
+      <div>
+        <label for="vestidoImagen">Subir Imagen</label>
+        <input type="file" id="vestidoImagen" name="Imagen">
+      </div>
+    </div>
+    <button type="submit">Guardar vestido</button>
+  </form>
+  <div id="tablaVestidos"></div>
+</section>
+
+<!-- Sección 4: Clientas -->
+<section id="clientas">
+  <h2>🧑‍🤝‍🧑 Clientas</h2>
+  <div id="tablaClientas"></div>
+</section>
+
+<!-- Sección 5: Finanzas -->
+<section id="finanzas">
+  <h2>💸 Finanzas</h2>
+  <form id="formFinanzas">
+    <div class="form-grid">
+      <div>
+        <label for="finanzaFecha">Fecha</label>
+        <input type="date" id="finanzaFecha" name="Fecha" required>
+      </div>
+      <div>
+        <label for="finanzaTipo">Tipo</label>
+        <select id="finanzaTipo" name="Tipo">
+          <option value="Ingreso">Ingreso</option>
+          <option value="Egreso">Egreso</option>
+        </select>
+      </div>
+      <div>
+        <label for="finanzaMonto">Monto</label>
+        <input type="number" id="finanzaMonto" name="Monto" required>
+      </div>
+      <div>
+        <label for="finanzaMotivo">Motivo</label>
+        <input id="finanzaMotivo" name="Motivo">
+      </div>
+      <div>
+        <label for="finanzaObservaciones">Observaciones</label>
+        <textarea id="finanzaObservaciones" name="Observaciones"></textarea>
+      </div>
+    </div>
+    <button type="submit">Registrar</button>
+  </form>
+  <div id="tablaFinanzas"></div>
+</section>
+```
+
+  </div>
+  <script type="module" src="panel.js"></script>
+</body>
+</html>
+
+<!-- <body>
   <header>
     <h1>🌟 Panel de Gestión - ALBALUZ</h1>
     <nav class="tabs">
@@ -167,7 +417,7 @@ footer {
 
   <main id="content">
     <!-- Se carga dinámicamente -->
-  </main>
+<!--   </main>
 
   <footer>
     <p>Hecho con 💛 por ALBALUZ ALQUILER DE VESTIDOS</p>
@@ -176,6 +426,7 @@ footer {
   <script type="module" src="panel.js"></script>
 </body>
 </html>
+ -->
 <!-- <!-- <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -355,3 +606,4 @@ footer {
 <main id="content-area">
   Aquí cargará el contenido -->
 
+ -->
