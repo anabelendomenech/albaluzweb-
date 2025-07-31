@@ -101,7 +101,29 @@
     <!-- RESERVAS -->
     <section id="reservas-section" class="active" role="tabpanel" tabindex="0" aria-labelledby="tab-reservas">
       <button class="btn-pdf" id="btnPDFAgenda">📄 Imprimir Agenda</button>
-      <form id="formReserva">
+      <form id="form-reserva">
+  <label>Nombre:
+    <input type="text" id="reserva-nombre" required>
+  </label><br>
+  <label>Fecha:
+    <input type="date" id="reserva-fecha" required>
+  </label><br>
+  <label>Hora:
+    <input type="time" id="reserva-hora" required>
+  </label><br>
+  <label>Evento:
+    <input type="text" id="reserva-evento">
+  </label><br>
+  <label>Cantidad de personas:
+    <input type="number" id="reserva-personas">
+  </label><br>
+  <label>Mensaje:
+    <textarea id="reserva-mensaje"></textarea>
+  </label><br>
+  <button type="submit">Guardar reserva</button>
+</form>
+
+<!--       <form id="formReserva">
         <div class="form-grid">
           <div>
             <label for="reservaNombre">Nombre</label>
@@ -125,7 +147,7 @@
           </div>
         </div>
         <button type="submit" class="submit-btn">Reservar</button>
-      </form>
+      </form> -->
 
       <div class="table-wrapper">
         <table id="tablaReservas" aria-label="Listado de reservas">
