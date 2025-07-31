@@ -1,9 +1,10 @@
-const API_KEY = 'TU_API_KEY';
-const BASE_ID = 'appraIuHWdh5tA4FU';
+import { AIRTABLE_API_KEY, BASE_ID } from "./airtableconfig.js";
+
+
 
 async function airtableFetch(tabla) {
   const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${tabla}`, {
-    headers: { Authorization: `Bearer ${API_KEY}` }
+    headers: { Authorization: `Bearer ${AIRTABLE_API_KEY,}` }
   });
   if (!res.ok) throw new Error(`Error al cargar ${tabla}`);
   const data = await res.json();
@@ -14,7 +15,7 @@ async function airtableCreate(tabla, fields) {
   const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${tabla}`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${API_KEY}`,
+      Authorization: `Bearer ${AIRTABLE_API_KEY,}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ fields })
