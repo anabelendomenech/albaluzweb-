@@ -1,258 +1,172 @@
 import { AIRTABLE_API_KEY, BASE_ID } from "./airtableconfig.js";
 
+const headers = {
+  Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+  "Content-Type": "application/json",
+};
 
+async function airtableFetch(tabla, method = "GET", data = null) {
+  const url = `https://api.airtable.com/v0/${BASE_ID}/${tabla}`;
+  const options = {
+    method,
+    headers,
+  };
+  if (data) options.body = JSON.stringify(data);
 
-async function airtableFetch(tabla) {
-  const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${tabla}`, {
-    headers: { Authorization: `Bearer ${AIRTABLE_API_KEY,}` }
-  });
-  if (!res.ok) throw new Error(`Error al cargar ${tabla}`);
-  const data = await res.json();
-  return data.records;
-}
-
-async function airtableCreate(tabla, fields) {
-  const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${tabla}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${AIRTABLE_API_KEY,}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ fields })
-  });
+  const res = await fetch(url, options);
   if (!res.ok) {
-    const error = await res.json();
-    console.error("Error al crear en", tabla, error);
-    throw new Error(error?.error?.message || 'Error al guardar');
+    throw new Error(`Error al cargar ${tabla}`);
   }
   return await res.json();
 }
 
-// ========== RESERVAS ==========
-document.getElementById("formReserva").addEventListener("submit", async e => {
-  e.preventDefault();
-  const form = e.target;
-  const data = {
-    "Nombre": form.reservaNombre.value,
-    "Fecha de la reserva": form.reservaFecha.value,
-    "Hora": form.reservaHora.value,
-    "Cantidad de personas": parseInt(form.reservaPersonas.value),
-    "Comentarios": form.reservaComentarios.value
-  };
+// ----------- CLIENTAS -----------
+async function cargarClientas() {
   try {
-    await airtableCreate("RESERVAS", data);
-    alert("Reserva guardada ✅");
-    form.reset();
-    cargarReservas();
-  } catch (err) {
-    alert("❌ Error al guardar reserva");
+    const data = await airtableFetch("CLIENTAS");
+    const tabla = document.getElementById("tabla-clientas");
+    tabla.innerHTML = `
+      <tr><th>Nombre</th><th>Celular</th><th>Email</th></tr>
+      ${data.records
+        .map(
+          (r) => `
+        <tr>
+          <td>${r.fields.Nombre || ""}</td>
+          <td>${r.fields.Celular || ""}</td>
+          <td>${r.fields.Email || ""}</td>
+        </tr>`
+        )
+        .join("")}
+    `;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+document.getElementById("form-clienta").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const nombre = document.getElementById("nombre").value;
+  const celular = document.getElementById("celular").value;
+  const email = document.getElementById("email").value;
+
+  try {
+    await airtableFetch("CLIENTAS", "POST", {
+      fields: { Nombre: nombre, Celular: celular, Email: email },
+    });
+    await cargarClientas();
+    e.target.reset();
+  } catch (error) {
+    alert("Error al guardar la clienta");
   }
 });
 
+// ----------- RESERVAS -----------
 async function cargarReservas() {
-  const cont = document.getElementById("tablaReservas");
-  cont.innerHTML = "";
-  const reservas = await airtableFetch("RESERVAS");
-  const tabla = document.createElement("table");
-  tabla.innerHTML = `
-    <tr>
-      <th>Nombre</th><th>Fecha</th><th>Hora</th><th>Personas</th><th>Comentarios</th>
-    </tr>
-  `;
-  reservas.sort((a, b) => new Date(a.fields["Fecha de la reserva"]) - new Date(b.fields["Fecha de la reserva"]))
-    .forEach(r => {
-    const f = r.fields;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${f.Nombre || ""}</td>
-      <td>${f["Fecha de la reserva"]?.split("T")[0]}</td>
-      <td>${f.Hora}</td>
-      <td>${f["Cantidad de personas"] || ""}</td>
-      <td>${f.Comentarios || ""}</td>
+  try {
+    const data = await airtableFetch("RESERVAS");
+    const tabla = document.getElementById("tabla-reservas");
+    tabla.innerHTML = `
+      <tr><th>Nombre</th><th>Fecha</th><th>Horario</th><th>Evento</th><th>Personas</th><th>Mensaje</th></tr>
+      ${data.records
+        .map(
+          (r) => `
+        <tr>
+          <td>${r.fields.Nombre || ""}</td>
+          <td>${r.fields.Cita || ""}</td>
+          <td>${r.fields.Horario || ""}</td>
+          <td>${r.fields.Evento || ""}</td>
+          <td>${r.fields.Personas || ""}</td>
+          <td>${r.fields.Mensaje || ""}</td>
+        </tr>`
+        )
+        .join("")}
     `;
-    tabla.appendChild(tr);
-  });
-  cont.appendChild(tabla);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-// ========== ALQUILERES ==========
-document.getElementById("formAlquiler").addEventListener("submit", async e => {
-  e.preventDefault();
-  const f = e.target;
-  const nombre = f.clienteNombre.value.trim();
-  const fecha = f.alquilerFechaEvento.value;
-  const vestido = f.alquilerVestido.value;
-
-  // Verificar si ya existe alquiler para ese día y vestido
-  const alquileres = await airtableFetch("ALQUILERES");
-  const yaAlquilado = alquileres.some(a =>
-    a.fields["Vestido"] === vestido && a.fields["Fecha evento"] === fecha
-  );
-  if (yaAlquilado) return alert("⚠️ Ese vestido ya está alquilado ese día.");
-
-  // Guardar clienta
-  await airtableCreate("CLIENTAS", {
-    "Nombre": nombre,
-    "Celular": f.clienteCelular.value,
-    "Mail": f.clienteMail.value,
-    "Cumpleaños": f.clienteCumple.value
-  });
-
-  // Registrar alquiler
-  await airtableCreate("ALQUILERES", {
-    "Nombre": nombre,
-    "Vestido": vestido,
-    "Fecha evento": fecha,
-    "Saldo": parseFloat(f.alquilerSaldo.value || 0),
-    "Comentario": f.alquilerComentario.value
-  });
-
-  alert("Alquiler registrado ✅");
-  f.reset();
-  cargarAlquileres();
-});
-
+// ----------- ALQUILERES -----------
 async function cargarAlquileres() {
-  const cont = document.getElementById("tablaAlquileres");
-  cont.innerHTML = "";
-  const data = await airtableFetch("ALQUILERES");
-  const tabla = document.createElement("table");
-  tabla.innerHTML = `
-    <tr><th>Nombre</th><th>Vestido</th><th>Fecha</th><th>Saldo</th><th>Comentario</th></tr>
-  `;
-  data.forEach(a => {
-    const f = a.fields;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${f.Nombre}</td>
-      <td>${f.Vestido}</td>
-      <td>${f["Fecha evento"]}</td>
-      <td>${f.Saldo || 0}</td>
-      <td>${f.Comentario || ""}</td>
+  try {
+    const data = await airtableFetch("ALQUILERES");
+    const tabla = document.getElementById("tabla-alquileres");
+    tabla.innerHTML = `
+      <tr><th>Nombre</th><th>Vestido</th><th>Fecha Evento</th><th>Precio</th><th>Pagó</th></tr>
+      ${data.records
+        .map(
+          (r) => `
+        <tr>
+          <td>${r.fields.Nombre || ""}</td>
+          <td>${r.fields.Vestido || ""}</td>
+          <td>${r.fields["Fecha evento"] || ""}</td>
+          <td>${r.fields.Precio || ""}</td>
+          <td>${r.fields.Pagó ? "✔️" : "❌"}</td>
+        </tr>`
+        )
+        .join("")}
     `;
-    tabla.appendChild(tr);
-  });
-  cont.appendChild(tabla);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-// ========== CLIENTAS ==========
-async function cargarClientas() {
-  const cont = document.getElementById("tablaClientas");
-  cont.innerHTML = "";
-  const data = await airtableFetch("CLIENTAS");
-  const tabla = document.createElement("table");
-  tabla.innerHTML = `<tr><th>Nombre</th><th>Celular</th><th>Mail</th><th>Cumpleaños</th></tr>`;
-  data.forEach(c => {
-    const f = c.fields;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${f.Nombre}</td>
-      <td>${f.Celular || ""}</td>
-      <td>${f.Mail || ""}</td>
-      <td>${f.Cumpleaños || ""}</td>
-    `;
-    tabla.appendChild(tr);
-  });
-  cont.appendChild(tabla);
-}
-
-// ========== VESTIDOS ==========
-document.getElementById("formVestido").addEventListener("submit", async e => {
-  e.preventDefault();
-  const f = e.target;
-  await airtableCreate("VESTIDOS", {
-    "Nombre": f.vestidoNombre.value,
-    "Talle": f.vestidoTalle.value,
-    "Color": f.vestidoColor.value,
-    "Estado": f.vestidoEstado.value
-  });
-  alert("Vestido agregado ✅");
-  f.reset();
-  cargarVestidos();
-});
-
+// ----------- VESTIDOS -----------
 async function cargarVestidos() {
-  const cont = document.getElementById("tablaVestidos");
-  cont.innerHTML = "";
-  const data = await airtableFetch("VESTIDOS");
-  const tabla = document.createElement("table");
-  tabla.innerHTML = `<tr><th>Nombre</th><th>Talle</th><th>Color</th><th>Estado</th></tr>`;
-  data.forEach(v => {
-    const f = v.fields;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${f.Nombre}</td>
-      <td>${f.Talle}</td>
-      <td>${f.Color}</td>
-      <td>${f.Estado}</td>
+  try {
+    const data = await airtableFetch("VESTIDOS");
+    const tabla = document.getElementById("tabla-vestidos");
+    tabla.innerHTML = `
+      <tr><th>Nombre</th><th>Talle</th><th>Color</th><th>Tipo</th></tr>
+      ${data.records
+        .map(
+          (r) => `
+        <tr>
+          <td>${r.fields.Nombre || ""}</td>
+          <td>${r.fields.Talle || ""}</td>
+          <td>${r.fields.Color || ""}</td>
+          <td>${r.fields.Tipo || ""}</td>
+        </tr>`
+        )
+        .join("")}
     `;
-    tabla.appendChild(tr);
-  });
-  cont.appendChild(tabla);
-
-  // También actualiza el select de alquiler
-  const select = document.getElementById("alquilerVestido");
-  select.innerHTML = "";
-  data.forEach(v => {
-    const f = v.fields;
-    const opt = document.createElement("option");
-    opt.value = f.Nombre;
-    opt.textContent = f.Nombre;
-    select.appendChild(opt);
-  });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-// ========== FINANZAS ==========
-document.getElementById("formFinanzas").addEventListener("submit", async e => {
-  e.preventDefault();
-  const f = e.target;
-  await airtableCreate("FINANZAS", {
-    "Fecha": f.finanzaFecha.value,
-    "Tipo": f.finanzaTipo.value,
-    "Monto": parseFloat(f.finanzaMonto.value),
-    "Motivo": f.finanzaMotivo.value,
-    "Observaciones": f.finanzaObservaciones.value
-  });
-  alert("Movimiento registrado ✅");
-  f.reset();
+// ----------- FINANZAS -----------
+async function cargarFinanzas() {
+  try {
+    const data = await airtableFetch("FINANZAS");
+    const tabla = document.getElementById("tabla-finanzas");
+    tabla.innerHTML = `
+      <tr><th>Fecha</th><th>Detalle</th><th>Monto</th></tr>
+      ${data.records
+        .map(
+          (r) => `
+        <tr>
+          <td>${r.fields.Fecha || ""}</td>
+          <td>${r.fields.Detalle || ""}</td>
+          <td>${r.fields.Monto || ""}</td>
+        </tr>`
+        )
+        .join("")}
+    `;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// ----------- CARGA INICIAL -----------
+document.addEventListener("DOMContentLoaded", () => {
+  cargarClientas();
+  cargarReservas();
+  cargarAlquileres();
+  cargarVestidos();
   cargarFinanzas();
 });
 
-async function cargarFinanzas() {
-  const cont = document.getElementById("tablaFinanzas");
-  cont.innerHTML = "";
-  const data = await airtableFetch("FINANZAS");
-  const tabla = document.createElement("table");
-  tabla.innerHTML = `<tr><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Motivo</th><th>Observaciones</th></tr>`;
-  data.forEach(m => {
-    const f = m.fields;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${f.Fecha}</td>
-      <td>${f.Tipo}</td>
-      <td>${f.Monto}</td>
-      <td>${f.Motivo}</td>
-      <td>${f.Observaciones}</td>
-    `;
-    tabla.appendChild(tr);
-  });
-  cont.appendChild(tabla);
-}
-
-// ========== PDF ==========
-window.generarPDFAgenda = () => {
-  alert("🖨️ Aquí se generará el PDF de agenda (pendiente)");
-};
-window.generarPDFChecklist = () => {
-  alert("🖨️ Aquí se generará el PDF del checklist (pendiente)");
-};
-
-// ========== INICIALIZAR ==========
-cargarReservas();
-cargarAlquileres();
-cargarVestidos();
-cargarClientas();
-cargarFinanzas();
 // import { AIRTABLE_API_KEY, BASE_ID } from './airtableConfig.js';
 
 // const content = document.getElementById('content');
