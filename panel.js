@@ -158,8 +158,46 @@ async function cargarFinanzas() {
   }
 }
 
-// ----------- CARGA INICIAL -----------
+// // ----------- CARGA INICIAL -----------
+// document.addEventListener("DOMContentLoaded", () => {
+//   cargarClientas();
+//   cargarReservas();
+//   cargarAlquileres();
+//   cargarVestidos();
+//   cargarFinanzas();
+
 document.addEventListener("DOMContentLoaded", () => {
+  // Verificamos si existe el formulario antes de usarlo
+  const formReserva = document.getElementById("form-reserva");
+  if (formReserva) {
+    formReserva.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("reserva-nombre").value;
+      const fecha = document.getElementById("reserva-fecha").value;
+      const hora = document.getElementById("reserva-hora").value;
+      const evento = document.getElementById("reserva-evento").value;
+      const personas = document.getElementById("reserva-personas").value;
+      const mensaje = document.getElementById("reserva-mensaje").value;
+
+      try {
+        await airtableFetch("RESERVAS", "POST", {
+          fields: {
+            Nombre: nombre,
+            Cita: fecha,
+            Horario: hora,
+            Evento: evento,
+            Personas: personas,
+            Mensaje: mensaje,
+          },
+        });
+        await cargarReservas();
+        formReserva.reset();
+      } catch (err) {
+        alert("Error al guardar la reserva");
+      }
+    });
+  }
+
   cargarClientas();
   cargarReservas();
   cargarAlquileres();
