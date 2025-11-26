@@ -46,30 +46,17 @@ body{
 .tabla td{ padding:12px; border-bottom:1px solid #eee; }
 
 /* MODAL */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.4);
-  justify-content: center;
+.modal{ display:none; position:fixed; top:0; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;  justify-content: center;
   align-items: center;
   padding: 20px;
   overflow-y: auto;
-  z-index: 9999;
-}
+  z-index: 9999;}
+.modal-content{ background:#fff; padding:20px; width:100%; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.18); max-width: 450px;  overflow-y: auto; max-height: 90vh;  box-sizing: border-box;}
+.input{ width:100%;height: 100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
+.btn-guardar{ background:var(--alba); color:white; width:100%; padding:12px; border:none; border-radius:8px; cursor:pointer; margin-top:8px; }
+.btn-cerrar{ background:#ddd; color:#222; width:100%; padding:10px; border:none; border-radius:8px; cursor:pointer; margin-top:8px; }
 
-.modal-content {
-  width: 100%;
-  max-width: 450px;
-  max-height: 90vh;
-  overflow-y: auto;
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-sizing: border-box;
+
 }
 
 /* RESPONSIVE */
