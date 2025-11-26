@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ALBALUZ · ALQUILER DE VESTIDOS</title>
+  <link rel="stylesheet" href="styles-panel.css" />
+</head>
+<body class="login-body">
+
+  <div class="login-box">
+    <h1>Panel ALBALUZ</h1>
+    <p class="login-sub">Acceso privado</p>
+
+    <input type="password" id="password" placeholder="Contraseña" class="input-login" />
+    <button id="btnLogin" class="btn-login">Ingresar</button>
+
+    <p id="error" class="error-msg"></p>
+  </div>
+
+  <script>
+    // Cambiá la contraseña si querés
+    const PASSWORD = "albaluz2025";
+
+    document.getElementById("btnLogin").addEventListener("click", () => {
+      const pass = document.getElementById("password").value;
+      if (pass === PASSWORD) {
+        localStorage.setItem("albaluzPanel", "ok");
+        location.href = "index.html";
+      } else {
+        document.getElementById("error").innerText = "Contraseña incorrecta";
+      }
+    });
+
+    // Si ya está logueada, ir al panel
+    if (localStorage.getItem("albaluzPanel") === "ok") {
+      location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
