@@ -94,6 +94,8 @@ function renderTabla(data) {
   if (!tbody) return;
 
   const filtro = document.getElementById("filtro") ? document.getElementById("filtro").value : "todos";
+  const busqueda = document.getElementById("buscador") ? document.getElementById("buscador").value.toLowerCase() : "";
+
   const hoy = new Date();
   const treintaDias = new Date();
   treintaDias.setDate(hoy.getDate() + 30);
@@ -101,22 +103,36 @@ function renderTabla(data) {
   const filas = data.filter(item => {
     const retiro = item["Retiro"] || item["retiro"] || item["Fecha de retiro"] || "";
     const devolucion = item["Devolución"] || item["devolucion"] || "";
+    const cliente = (item["Cliente"] || item["cliente"] || "").toLowerCase();
+    const vestido = (item["Vestido"] || item["vestido"] || "").toLowerCase();
     const estado = calcularEstado(retiro, devolucion);
 
+    /* === FILTRO POR BUSCADOR === */
+    if (busqueda) {
+      if (!cliente.includes(busqueda) && !vestido.includes(busqueda)) {
+        return false;
+      }
+    }
+
+    /* === FILTRO POR SELECT === */
     if (filtro === "todos") return true;
+
     if (filtro === "proximos") {
       if (!retiro) return false;
       const r = new Date(retiro);
       return r >= hoy && r <= treintaDias;
     }
+
     if (filtro === "hoy") {
       if (!retiro) return false;
       const r = new Date(retiro);
       return r.toDateString() === hoy.toDateString();
     }
+
     if (filtro === "devueltos") {
       return estado === "Devuelto";
     }
+
     return true;
   });
 
@@ -149,6 +165,7 @@ function renderTabla(data) {
 
   tbody.innerHTML = html;
 }
+
 
 /* ======== UTILIDADES ======== */
 function calcularEstado(retiroStr, devolucionStr) {
