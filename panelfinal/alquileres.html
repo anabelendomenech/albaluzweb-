@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Alquileres · ALBALUZ</title>
+  <link rel="stylesheet" href="styles-panel.css" />
+</head>
+<body>
+  <script src="menu.js"></script>
+
+  <div class="panel-layout">
+    <aside id="sideMenu"></aside>
+
+    <main class="content">
+      <h1 class="title">Alquileres</h1>
+
+      <div style="display:flex; gap:12px; align-items:center; margin-bottom:16px;">
+        <button class="btn-agregar" onclick="abrirModal()">+ Agregar Alquiler</button>
+
+        <label style="margin-left:8px;">Filtro:
+          <select id="filtro" onchange="aplicarFiltro()">
+            <option value="todos">Todos</option>
+            <option value="proximos">Próximos 30 días</option>
+            <option value="hoy">Hoy</option>
+            <option value="devueltos">Devueltos</option>
+          </select>
+        </label>
+      </div>
+
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Fecha creación</th>
+            <th>Cliente</th>
+            <th>Vestido</th>
+            <th>Retiro</th>
+            <th>Devolución</th>
+            <th>Precio</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tablaAlquileres">
+          <!-- llenado dinámico -->
+        </tbody>
+      </table>
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h2>Nuevo Alquiler</h2>
+
+      <input id="cliente" placeholder="Cliente (nombre)" class="input" />
+      <input id="vestido" placeholder="Vestido (nombre/talle)" class="input" />
+      <label>Fecha de retiro</label>
+      <input id="retiro" type="date" class="input" />
+      <label>Fecha de devolución</label>
+      <input id="devolucion" type="date" class="input" />
+      <input id="precio" placeholder="Precio $" class="input" type="number" />
+      <textarea id="notas" placeholder="Notas (opcional)" class="input"></textarea>
+
+      <button onclick="guardarAlquiler()" class="btn-guardar">Guardar</button>
+      <button onclick="cerrarModal()" class="btn-cerrar">Cancelar</button>
+    </div>
+  </div>
+
+  <script src="alquileres.js"></script>
+</body>
+</html>
