@@ -296,3 +296,111 @@ cargarAlquileres();
 if (location.pathname.endsWith("/panelfinal/index.html") || location.pathname.endsWith("/panelfinal/")) {
   setInterval(cargarAlquileres, 90000);
 }
+function abrirBuscadorCliente() {
+  document.getElementById("buscadorClientes").style.display = "block";
+  document.getElementById("clienteNuevoBox").style.display = "none";
+}
+
+function toggleClienteNuevo() {
+  const box = document.getElementById("clienteNuevoBox");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+  document.getElementById("buscadorClientes").style.display = "none";
+}
+let CLIENTES = []; // luego te conecto tu Google Sheet
+
+function filtrarClientes() {
+  const q = document.getElementById("buscarCliente").value.toLowerCase();
+  const lista = document.getElementById("listaClientes");
+
+  const filtrados = CLIENTES.filter(c =>
+    c.nombre.toLowerCase().includes(q) ||
+    c.apellido.toLowerCase().includes(q)
+  );
+
+  lista.innerHTML = filtrados
+    .map(c => `<div class="cliente-item" onclick="seleccionarCliente('${c.id}')">
+                ${c.nombre} ${c.apellido} · ${c.celular}
+               </div>`)
+    .join("");
+}
+
+function seleccionarCliente(id) {
+  const c = CLIENTES.find(x => x.id === id);
+  document.getElementById("clienteSeleccionado").value =
+    `${c.nombre} ${c.apellido} (${c.celular})`;
+
+  document.getElementById("buscadorClientes").style.display = "none";
+}
+let VESTIDOS = {};
+
+fetch("vestidos.json")
+  .then(r => r.json())
+  .then(j => VESTIDOS = j);
+
+function buscarVestidoPorID() {
+  const id = document.getElementById("vestidoID").value.trim();
+  const info = VESTIDOS[id];
+
+  if (!info) {
+    document.getElementById("infoVestido").style.display = "none";
+    return;
+  }
+
+  document.getElementById("vestidoNombre").innerText = info.nombre;
+  document.getElementById("vestidoPrecio").innerText = info.precio;
+  document.getElementById("precioBase").value = info.precio;
+  document.getElementById("precioFinal").value = info.precio;
+  document.getElementById("infoVestido").style.display = "block";
+}
+function calcularDevolucionDefault() {
+  const retiro = document.getElementById("retiro").value;
+  if (!retiro) return;
+
+  const r = new Date(retiro);
+  let dev = new Date(r);
+
+  const dia = r.getDay(); // 0=domingo 6=sábado
+
+  if (dia === 5 || dia === 6 || dia === 0) {
+    // viernes sábado domingo → lunes
+    dev.setDate(r.getDate() + (8 - dia));
+  } else {
+    // días de semana → +3 días
+    dev.setDate(r.getDate() + 3);
+  }
+
+  document.getElementById("devolucion").value =
+    dev.toISOString().split("T")[0];
+}
+function calcularPrecioFinal() {
+  const base = Number(document.getElementById("precioBase").value || 0);
+  const desc = Number(document.getElementById("descuento").value || 0);
+
+  const final = base - (base * (desc / 100));
+  document.getElementById("precioFinal").value = Math.round(final);
+}
+async function guardarAlquiler() {
+
+  const cliente = document.getElementById("clienteSeleccionado").value.trim();
+  const vestidoID = document.getElementById("vestidoID").value.trim();
+  const retiro = document.getElementById("retiro").value;
+  const devolucion = document.getElementById("devolucion").value;
+  const precio = document.getElementById("precioFinal").value;
+  const notas = document.getElementById("notas").value.trim();
+
+  if (!cliente || !vestidoID || !retiro || !devolucion || !precio) {
+    alert("Faltan datos.");
+    return;
+  }
+
+  const payload = {
+    cliente,
+    vestidoID,
+    retiro,
+    devolucion,
+    precio,
+    notas
+  };
+
+  // tu POST queda igual…
+}
