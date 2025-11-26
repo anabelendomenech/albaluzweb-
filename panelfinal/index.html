@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ALBALUZ · Panel</title>
+  <link rel="stylesheet" href="styles-panel.css" />
+</head>
+<body>
+  <script src="menu.js"></script>
+
+  <div class="panel-layout">
+    <aside id="sideMenu"></aside>
+
+    <main class="content">
+      <h1 class="title">Dashboard</h1>
+
+      <div class="widgets">
+        <div class="widget">
+          <h3>Alquilados próximo finde</h3>
+          <p id="finDeSemanaCount">0</p>
+          <small id="finDeSemanaList"></small>
+        </div>
+
+        <div class="widget">
+          <h3>Reservas esta semana</h3>
+          <p id="reservasSemana">0</p>
+        </div>
+
+        <div class="widget">
+          <h3>Ingresos del mes</h3>
+          <p id="ingresosMes">$0</p>
+        </div>
+
+        <div class="widget">
+          <h3>Gastos del mes</h3>
+          <p id="gastosMes">$0</p>
+        </div>
+      </div>
+
+      <section style="margin-top:30px;">
+        <h2 style="margin-bottom:14px;">Últimos alquileres</h2>
+        <div id="ultimosAlq"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Evita entrar sin login
+    if (localStorage.getItem("albaluzPanel") !== "ok") {
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <script src="alquileres.js"></script>
+</body>
+</html>
