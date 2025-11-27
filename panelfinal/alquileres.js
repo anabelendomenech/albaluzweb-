@@ -1,5 +1,5 @@
 /* ======== Config ======== */
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbweT6obhgGTDXhtgiYZrvPmNBA7gEtb1FpBR1Q0tkD8iftcb5OCvukMJ1uVwR3PBJ8vjA/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxoGWZrN0-ym1YE-aAqMy2Q_hlQwuzN9cPz3jtY-H33oEaq0Y-Kyxg6T18GNTajFNG3cg/exec";
 
 /* ======== Estado local ======== */
 let ALQUILERES_DATA = [];
