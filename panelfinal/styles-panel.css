@@ -65,3 +65,13 @@ body{
   #sideMenu{ display:none; }
   .panel-layout{ flex-direction:column; }
 }
+/* boton pequeño */
+.btn-agregar-small {
+  background: white;
+  border: 1px solid #ccc;
+  padding:8px 10px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+
