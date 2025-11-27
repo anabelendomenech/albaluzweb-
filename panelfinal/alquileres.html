@@ -53,63 +53,69 @@
   </div>
 
   <!-- MODAL -->
- <div id="modal" class="modal">
+ <!-- MODAL -->
+<div id="modal" class="modal">
   <div class="modal-content">
     <h2>Nuevo Alquiler</h2>
 
-    <!-- SECCIÓN CLIENTE -->
-    <label class="subtitulo">Cliente</label>
-
-    <div style="display:flex; gap:10px; margin-bottom:10px;">
-      <button class="btn-buscar" onclick="abrirBuscadorCliente()">🔍 Buscar cliente existente</button>
-      <button class="btn-agregar" onclick="toggleClienteNuevo()">➕ Agregar cliente nuevo</button>
+    <!-- Cliente: buscador + boton agregar -->
+    <div style="display:flex; gap:8px; align-items:center;">
+      <input id="buscarCliente" placeholder="🔍 Buscar cliente existente..." class="input" />
+      <button id="btnAgregarClienteNuevo" class="btn-agregar-small">➕ Agregar cliente nuevo</button>
     </div>
 
-    <!-- BUSCADOR CLIENTES -->
-    <div id="buscadorClientes" style="display:none; margin-bottom:10px;">
-      <input id="buscarCliente" class="input" placeholder="Buscar por nombre o apellido..." oninput="filtrarClientes()" />
-      <div id="listaClientes" class="lista-clientes"></div>
+    <!-- Panel desplegable para crear cliente -->
+    <div id="panelNuevoCliente" style="display:none; margin-top:8px; background:#fafafa; padding:10px; border-radius:8px;">
+      <input id="nuevoNombre" placeholder="Nombre" class="input" />
+      <input id="nuevoApellido" placeholder="Apellido" class="input" />
+      <input id="nuevoCelular" placeholder="Celular" class="input" />
+      <textarea id="nuevoNotas" placeholder="Notas cliente (opcional)" class="input"></textarea>
+      <button id="guardarClienteBtn" class="btn-guardar">Guardar Cliente</button>
     </div>
 
-    <!-- CREAR CLIENTE NUEVO -->
-    <div id="clienteNuevoBox" style="display:none; margin-bottom:10px;">
-      <input id="nuevoNombre" class="input" placeholder="Nombre" />
-      <input id="nuevoApellido" class="input" placeholder="Apellido" />
-      <input id="nuevoCelular" class="input" placeholder="Celular" />
-      <textarea id="nuevoNotas" class="input" placeholder="Notas"></textarea>
-    </div>
+    <!-- Hidden field to store selected client ID -->
+    <input id="clienteId" type="hidden" />
 
-    <!-- CLIENTE SELECCIONADO -->
-    <input id="clienteSeleccionado" class="input" placeholder="Cliente seleccionado" readonly />
+    <hr style="margin:12px 0;" />
 
-    <!-- SECCIÓN VESTIDO -->
-    <label class="subtitulo">Vestido</label>
-    <input id="vestidoID" class="input" placeholder="ID del vestido" oninput="buscarVestidoPorID()" />
+    <!-- Vestido por ID -->
+    <label>ID del vestido</label>
+    <input id="vestidoId" placeholder="Ej: 12" class="input" />
+    <div id="vestidoInfo" style="font-size:13px; color:#333; margin-bottom:6px;">(ingresá ID para ver nombre y precio)</div>
 
-    <div id="infoVestido" style="display:none; background:#f5f5f5; padding:8px; border-radius:6px; margin-bottom:10px;">
-      <p><strong>Nombre:</strong> <span id="vestidoNombre"></span></p>
-      <p><strong>Precio base:</strong> $<span id="vestidoPrecio"></span></p>
-    </div>
-
-    <!-- FECHAS -->
     <label>Fecha de retiro</label>
-    <input id="retiro" type="date" class="input" onchange="calcularDevolucionDefault()" />
+    <input id="retiro" type="date" class="input" />
 
     <label>Fecha de devolución</label>
     <input id="devolucion" type="date" class="input" />
 
-    <!-- PRECIO -->
-    <label class="subtitulo">Precio</label>
-    <input id="precioBase" class="input" placeholder="Precio base" readonly />
-    <input id="descuento" class="input" type="number" placeholder="Descuento (opcional %)" oninput="calcularPrecioFinal()" />
-    <input id="precioFinal" class="input" type="number" placeholder="Precio final" readonly />
+    <!-- Precio automático + descuento -->
+    <div style="display:flex; gap:8px; align-items:center;">
+      <div style="flex:1">
+        <label>Precio base</label>
+        <input id="precioBase" class="input" readonly />
+      </div>
+      <div style="width:120px;">
+        <label>Descuento (%)</label>
+        <input id="descuento" type="number" min="0" max="100" class="input" value="0" />
+      </div>
+      <div style="width:140px;">
+        <label>Precio final</label>
+        <input id="precioFinal" class="input" readonly />
+      </div>
+    </div>
 
-    <!-- NOTAS -->
-    <label>Notas</label>
-    <textarea id="notas" class="input"></textarea>
+    <label>Debe $</label>
+    <input id="debe" type="number" class="input" placeholder="0" />
 
-    <button onclick="guardarAlquiler()" class="btn-guardar">Guardar</button>
-    <button onclick="cerrarModal()" class="btn-cerrar">Cancelar</button>
+    <label>Notas (opcional)</label>
+    <textarea id="notas" placeholder="Notas (opcional)" class="input"></textarea>
+
+    <div style="display:flex; gap:8px; margin-top:10px;">
+      <button onclick="guardarAlquiler()" class="btn-guardar">Guardar</button>
+      <button onclick="cerrarModal()" class="btn-cerrar">Cancelar</button>
+    </div>
   </div>
 </div>
+
   <script src="./alquileres.js"></script> <script src="./menu.js" defer></script> </body>
