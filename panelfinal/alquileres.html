@@ -67,19 +67,20 @@
 
     <!-- BUSCADOR CLIENTES -->
     <div id="buscadorClientes" style="display:none; margin-bottom:10px;">
-      <input id="buscarCliente" class="input" placeholder="Buscar cliente existente" oninput="filtrarClientes()" />
+      <input id="buscarCliente" class="input" placeholder="Buscar por nombre o apellido..." oninput="filtrarClientes()" />
       <div id="listaClientes" class="lista-clientes"></div>
     </div>
 
-    <!-- Panel desplegable para crear cliente -->
-    <div id="panelNuevoCliente" style="display:none; margin-top:8px; background:#fafafa; padding:10px; border-radius:8px;">
-      <input id="nuevoNombre" placeholder="Nombre" class="input" />
-      <input id="nuevoApellido" placeholder="Apellido" class="input" />
-      <input id="nuevoCelular" placeholder="Celular" class="input" />
-      <textarea id="nuevoNotas" placeholder="Notas cliente (opcional)" class="input"></textarea>
-      <button id="guardarClienteBtn" class="btn-guardar">Guardar Cliente</button>
+    <!-- CREAR CLIENTE NUEVO -->
+    <div id="clienteNuevoBox" style="display:none; margin-bottom:10px;">
+      <input id="nuevoNombre" class="input" placeholder="Nombre" />
+      <input id="nuevoApellido" class="input" placeholder="Apellido" />
+      <input id="nuevoCelular" class="input" placeholder="Celular" />
+      <textarea id="nuevoNotas" class="input" placeholder="Notas"></textarea>
     </div>
 
+    <!-- CLIENTE SELECCIONADO -->
+    <input id="clienteSeleccionado" class="input" placeholder="Cliente seleccionado" readonly />
 
     <!-- SECCIÓN VESTIDO -->
     <label class="subtitulo">Vestido</label>
@@ -102,8 +103,7 @@
     <input id="precioBase" class="input" placeholder="Precio base" readonly />
     <input id="descuento" class="input" type="number" placeholder="Descuento (opcional %)" oninput="calcularPrecioFinal()" />
     <input id="precioFinal" class="input" type="number" placeholder="Precio final" readonly />
-    <label>Debe $</label>
-    <input id="debe" type="number" class="input" placeholder="0" />
+
     <!-- NOTAS -->
     <label>Notas</label>
     <textarea id="notas" class="input"></textarea>
