@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vestidos · ALBALUZ</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="mobilebar">
+  <div class="brand">👗 ALBALUZ</div>
+  <select id="mobileNav" onchange="location.href=this.value">
+    <option value="index.html">Inicio</option>
+    <option value="vestidos.html">Vestidos</option>
+    <option value="alquileres.html">Alquileres</option>
+    <option value="clientes.html">Clientes</option>
+  </select>
+</div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">👗 ALBALUZ</div>
+    <nav>
+      <a href="index.html" data-nav="index.html">🏠 Inicio</a>
+      <a href="vestidos.html" data-nav="vestidos.html">🪡 Vestidos</a>
+      <a href="alquileres.html" data-nav="alquileres.html">📅 Alquileres</a>
+      <a href="clientes.html" data-nav="clientes.html">👥 Clientes</a>
+    </nav>
+    <div class="tag">Alquiler de vestidos<br>Panel de gestión</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Vestidos</h1>
+        <p>Catálogo de tu stock</p>
+      </div>
+      <button class="btn gold" onclick="abrirNuevo()">+ Agregar vestido</button>
+    </div>
+
+    <div class="search-row">
+      <input id="buscador" placeholder="Buscar por número, descripción o tipo…" oninput="render()">
+      <div class="chip active" data-f="Todos" onclick="filtrar(this)">Todos</div>
+      <div class="chip" data-f="Disponible" onclick="filtrar(this)">Disponibles</div>
+      <div class="chip" data-f="Alquilado" onclick="filtrar(this)">Alquilados</div>
+    </div>
+
+    <div id="grid" class="grid"></div>
+  </main>
+</div>
+
+<!-- Modal: nuevo / editar vestido -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">Nuevo vestido</h2>
+    <form id="form">
+      <div class="field">
+        <label>Foto</label>
+        <input type="file" id="foto" accept="image/*">
+        <img id="preview" style="display:none;margin-top:8px;max-height:160px;border-radius:10px">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Tipo</label>
+          <select id="tipo">
+            <option>CORTO</option>
+            <option>LARGO</option>
+            <option>HOMBRE</option>
+            <option>OTRO</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Precio</label>
+          <input type="number" id="precio" placeholder="700">
+        </div>
+      </div>
+      <div class="field">
+        <label>Descripción</label>
+        <input id="descripcion" placeholder="Ej: Rosa viejo asimétrico raso" required>
+      </div>
+      <div class="field">
+        <label>Detalle (opcional)</label>
+        <input id="detalle" placeholder="Ej: Talle L, menos 2cm cada lado">
+      </div>
+      <input type="hidden" id="editId">
+      <div class="modal-actions">
+        <button type="submit" class="btn gold" style="flex:1">Guardar</button>
+        <button type="button" class="btn ghost" onclick="cerrarModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+let vestidos = [];
+let filtroEstado = 'Todos';
+
+async function cargar() {
+  const res = await apiGet('getVestidos');
+  vestidos = res.data || [];
+  render();
+}
+
+function filtrar(el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filtroEstado = el.dataset.f;
+  render();
+}
+
+function render() {
+  const q = document.getElementById('buscador').value.trim().toLowerCase();
+  const grid = document.getElementById('grid');
+
+  let lista = vestidos.filter(v => {
+    const okEstado = filtroEstado === 'Todos' || v.Estado === filtroEstado;
+    const texto = `${v.ID} ${v.Descripcion} ${v.Tipo}`.toLowerCase();
+    const okTexto = !q || texto.includes(q);
+    return okEstado && okTexto;
+  });
+
+  if (!lista.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><h3>Sin resultados</h3><p>Probá con otra búsqueda o agregá un vestido nuevo.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = lista.map(v => `
+    <div class="dress" onclick='abrirEditar(${JSON.stringify(v).replace(/'/g,"&#39;")})'>
+      <div class="ph">
+        <span class="num">#${v.ID}</span>
+        <span class="badge ${v.Estado === 'Alquilado' ? 'alquilado' : 'disponible'}">${v.Estado || 'Disponible'}</span>
+        ${v.Foto ? `<img src="${v.Foto}" loading="lazy">` : '🧵'}
+      </div>
+      <div class="info">
+        <div class="desc">${v.Descripcion || ''}</div>
+        <div class="price">${fmtMoney(v.Precio)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function abrirNuevo() {
+  document.getElementById('modalTitle').textContent = 'Nuevo vestido';
+  document.getElementById('form').reset();
+  document.getElementById('preview').style.display = 'none';
+  document.getElementById('editId').value = '';
+  document.getElementById('overlay').classList.add('open');
+}
+
+function abrirEditar(v) {
+  document.getElementById('modalTitle').textContent = 'Vestido #' + v.ID;
+  document.getElementById('editId').value = v.ID;
+  document.getElementById('tipo').value = v.Tipo || 'CORTO';
+  document.getElementById('precio').value = v.Precio || '';
+  document.getElementById('descripcion').value = v.Descripcion || '';
+  document.getElementById('detalle').value = v.Detalle || '';
+  const prev = document.getElementById('preview');
+  if (v.Foto) { prev.src = v.Foto; prev.style.display = 'block'; } else { prev.style.display = 'none'; }
+  document.getElementById('overlay').classList.add('open');
+}
+
+function cerrarModal() {
+  document.getElementById('overlay').classList.remove('open');
+}
+
+document.getElementById('foto').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const prev = document.getElementById('preview');
+  prev.src = URL.createObjectURL(file);
+  prev.style.display = 'block';
+});
+
+document.getElementById('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.disabled = true; btn.textContent = 'Guardando…';
+  try {
+    let fotoUrl;
+    const file = document.getElementById('foto').files[0];
+    if (file) {
+      const base64 = await fileToBase64(file);
+      const up = await apiPost('uploadFoto', { base64, mimeType: file.type, filename: file.name });
+      if (up.ok) fotoUrl = up.url;
+    }
+
+    const editId = document.getElementById('editId').value;
+    const payload = {
+      tipo: document.getElementById('tipo').value,
+      precio: document.getElementById('precio').value,
+      descripcion: document.getElementById('descripcion').value,
+      detalle: document.getElementById('detalle').value
+    };
+    if (fotoUrl) payload.foto = fotoUrl;
+
+    if (editId) {
+      await apiPost('updateVestido', { id: editId, ...payload });
+      toast('Vestido actualizado');
+    } else {
+      await apiPost('addVestido', payload);
+      toast('Vestido agregado');
+    }
+    cerrarModal();
+    await cargar();
+  } catch (err) {
+    toast('Error al guardar. Intentá de nuevo.');
+    console.error(err);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Guardar';
+  }
+});
+
+cargar();
+</script>
+</body>
+</html>
