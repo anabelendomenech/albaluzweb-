@@ -106,6 +106,12 @@
       <h3 style="margin-bottom:14px">Próximos retiros</h3>
       <div id="proximos">Cargando…</div>
     </div>
+
+    <div style="height:24px"></div>
+    <div class="card">
+      <h3 style="margin-bottom:14px">🧵 Vestidos para arreglar</h3>
+      <div id="arreglos">Cargando…</div>
+    </div>
   </main>
 </div>
 
@@ -140,6 +146,18 @@ async function cargar() {
         <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)">
           <div><strong>${a.Cliente}</strong> · ${a.VestidoDesc || ('Vestido #' + a.VestidoID)}</div>
           <div class="hint">${fmtDate(a.FechaRetiro)}</div>
+        </div>`).join('');
+    }
+
+    const arreglos = (alquileres.data || []).filter(a => a.ParaArreglar === 'SI');
+    const boxArreglos = document.getElementById('arreglos');
+    if (!arreglos.length) {
+      boxArreglos.innerHTML = '<p class="hint">No hay vestidos marcados para arreglar. Desde Alquileres podés marcar uno con el botón "🧵 Arreglo".</p>';
+    } else {
+      boxArreglos.innerHTML = arreglos.map(a => `
+        <div style="padding:10px 0;border-bottom:1px solid var(--line)">
+          <div><strong>#${a.VestidoID} · ${a.VestidoDesc || ''}</strong> <span class="hint">— ${a.Cliente}</span></div>
+          <div class="hint">${a.NotaArreglo || ''}</div>
         </div>`).join('');
     }
   } catch (err) {
