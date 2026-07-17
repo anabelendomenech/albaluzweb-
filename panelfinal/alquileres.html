@@ -1,124 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Alquileres · ALBALUZ</title>
-  <link rel="stylesheet" href="./styles-panel.css" />
-</head>
-<body>
-  <script src="menu.js"></script>
-
-  <div class="panel-layout">
-    <aside id="sideMenu"></aside>
-
-    <main class="content">
-      <h1 class="title">Alquileres</h1>
-
-      <div style="display:flex; gap:12px; align-items:center; margin-bottom:16px;">
-        <button class="btn-agregar" onclick="abrirModal()">+ Agregar Alquiler</button>
-
-        <label style="margin-left:8px;">Filtro:
-          <select id="filtro" onchange="aplicarFiltro()">
-            <option value="todos">Todos</option>
-            <option value="proximos">Próximos 30 días</option>
-            <option value="hoy">Hoy</option>
-            <option value="devueltos">Devueltos</option>
-          </select>
-        </label>
-        <input id="buscador" class="input" 
-       placeholder="Buscar cliente o vestido…" 
-       oninput="aplicarFiltro()" 
-       style="max-width: 220px;" />
-
-      </div>
-
-      <table class="tabla">
-        <thead>
-          <tr>
-            <th>Fecha creación</th>
-            <th>Cliente</th>
-            <th>Vestido</th>
-            <th>Retiro</th>
-            <th>Devolución</th>
-            <th>Precio</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody id="tablaAlquileres">
-           llenado dinámico 
-        </tbody>
-      </table>
-    </main>
-  </div>
-
-  <!-- MODAL -->
- <!-- MODAL 
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <h2>Nuevo Alquiler</h2>
-
-    <!-- Cliente: buscador + boton agregar 
-    <div style="display:flex; gap:8px; align-items:center;">
-      <input id="buscarCliente" placeholder="🔍 Buscar cliente existente..." class="input" />
-      <button id="btnAgregarClienteNuevo" class="btn-agregar-small">➕ Agregar cliente nuevo</button>
-    </div>
-
-    <!-- Panel desplegable para crear cliente 
-    <div id="panelNuevoCliente" style="display:none; margin-top:8px; background:#fafafa; padding:10px; border-radius:8px;">
-      <input id="nuevoNombre" placeholder="Nombre" class="input" />
-      <input id="nuevoApellido" placeholder="Apellido" class="input" />
-      <input id="nuevoCelular" placeholder="Celular" class="input" />
-      <textarea id="nuevoNotas" placeholder="Notas cliente (opcional)" class="input"></textarea>
-      <button id="guardarClienteBtn" class="btn-guardar">Guardar Cliente</button>
-    </div>
-
-    <!-- Hidden field to store selected client ID 
-    <input id="clienteId" type="hidden" />
-
-    <hr style="margin:12px 0;" />
-
-    <!-- Vestido por ID 
-    <label>ID del vestido</label>
-    <input id="vestidoId" placeholder="Ej: 12" class="input" />
-    <div id="vestidoInfo" style="font-size:13px; color:#333; margin-bottom:6px;">(ingresá ID para ver nombre y precio)</div>
-
-    <label>Fecha de retiro</label>
-    <input id="retiro" type="date" class="input" />
-
-    <label>Fecha de devolución</label>
-    <input id="devolucion" type="date" class="input" />
-
-    <!-- Precio automático + descuento 
-    <div style="display:flex; gap:8px; align-items:center;">
-      <div style="flex:1">
-        <label>Precio base</label>
-        <input id="precioBase" class="input" readonly />
-      </div>
-      <div style="width:120px;">
-        <label>Descuento (%)</label>
-        <input id="descuento" type="number" min="0" max="100" class="input" value="0" />
-      </div>
-      <div style="width:140px;">
-        <label>Precio final</label>
-        <input id="precioFinal" class="input" readonly />
-      </div>
-    </div>
-
-    <label>Debe $</label>
-    <input id="debe" type="number" class="input" placeholder="0" />
-
-    <label>Notas (opcional)</label>
-    <textarea id="notas" placeholder="Notas (opcional)" class="input"></textarea>
-
-    <div style="display:flex; gap:8px; margin-top:10px;">
-      <button onclick="guardarAlquiler()" class="btn-guardar">Guardar</button>
-      <button onclick="cerrarModal()" class="btn-cerrar">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-  <script src="./alquileres.js"></script> <script src="./menu.js" defer></script> </body> -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -163,7 +42,10 @@
       <div class="chip active" data-f="Todos" onclick="filtrar(this)">Todos</div>
       <div class="chip" data-f="30dias" onclick="filtrar(this)">Próximos 30 días</div>
       <div class="chip" data-f="hoy" onclick="filtrar(this)">Hoy</div>
+      <div class="chip" data-f="Reservado" onclick="filtrar(this)">Pronto a retirar</div>
+      <div class="chip" data-f="Retirado" onclick="filtrar(this)">Retirados</div>
       <div class="chip" data-f="Devuelto" onclick="filtrar(this)">Devueltos</div>
+      <div class="chip" data-f="arreglo" onclick="filtrar(this)">🧵 Para arreglar</div>
     </div>
 
     <div style="overflow-x:auto">
@@ -192,25 +74,25 @@
         <input id="telefono" placeholder="09X XXX XXX">
       </div>
 
+      <div class="row">
+        <div class="field">
+          <label>Fecha de retiro</label>
+          <input type="date" id="fechaRetiro" required onchange="revisarDisponibilidad()">
+        </div>
+        <div class="field">
+          <label>Fecha de devolución</label>
+          <input type="date" id="fechaDevolucion" required onchange="revisarDisponibilidad()">
+        </div>
+      </div>
+
       <div class="field autocomplete">
         <label>Vestido</label>
-        <input id="vestidoBuscar" autocomplete="off" placeholder="Buscar por número o descripción…" required>
+        <input id="vestidoBuscar" autocomplete="off" placeholder="Primero elegí las fechas, después buscá el vestido…" required>
         <div class="ac-list" id="acVestido" style="display:none"></div>
         <div class="hint" id="vestidoInfo"></div>
       </div>
       <input type="hidden" id="vestidoId">
       <input type="hidden" id="vestidoDesc">
-
-      <div class="row">
-        <div class="field">
-          <label>Fecha de retiro</label>
-          <input type="date" id="fechaRetiro" required>
-        </div>
-        <div class="field">
-          <label>Fecha de devolución</label>
-          <input type="date" id="fechaDevolucion" required>
-        </div>
-      </div>
       <div class="row">
         <div class="field">
           <label>Precio base</label>
@@ -238,6 +120,25 @@
       <div class="modal-actions">
         <button type="submit" class="btn gold" style="flex:1">Guardar</button>
         <button type="button" class="btn ghost" onclick="cerrarModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: enviar a arreglar -->
+<div class="overlay" id="overlayArreglo">
+  <div class="modal">
+    <h2>🧵 Enviar a arreglar</h2>
+    <form id="formArreglo">
+      <p class="hint" id="arregloInfo" style="margin-bottom:14px"></p>
+      <div class="field">
+        <label>¿Qué hay que hacerle?</label>
+        <textarea id="notaArreglo" rows="3" placeholder="Ej: descoser bastilla, falta un broche…" required></textarea>
+      </div>
+      <input type="hidden" id="arregloAlquilerId">
+      <div class="modal-actions">
+        <button type="submit" class="btn gold" style="flex:1">Guardar</button>
+        <button type="button" class="btn ghost" onclick="cerrarModalArreglo()">Cancelar</button>
       </div>
     </form>
   </div>
@@ -271,7 +172,10 @@ function render() {
 
   lista = lista.filter(a => {
     const retiro = a.FechaRetiro ? new Date(a.FechaRetiro) : null;
+    if (filtroEstado === 'arreglo') return a.ParaArreglar === 'SI';
     if (filtroEstado === 'Devuelto') return a.Estado === 'Devuelto';
+    if (filtroEstado === 'Retirado') return a.Estado === 'Retirado';
+    if (filtroEstado === 'Reservado') return a.Estado === 'Reservado';
     if (filtroEstado === 'hoy') return retiro && retiro.toDateString() === hoy.toDateString();
     if (filtroEstado === '30dias') return retiro && retiro >= hoy && retiro <= en30 && a.Estado !== 'Devuelto';
     return true;
@@ -283,7 +187,17 @@ function render() {
     return;
   }
 
-  tbody.innerHTML = lista.map(a => `
+  tbody.innerHTML = lista.map(a => {
+    let accionEstado = '';
+    if (a.Estado === 'Reservado') {
+      accionEstado = `<button class="btn ghost sm" onclick="cambiarEstado(${a.ID},'Retirado')">Marcar retirado</button>`;
+    } else if (a.Estado === 'Retirado') {
+      accionEstado = `<button class="btn ghost sm" onclick="cambiarEstado(${a.ID},'Devuelto')">Marcar devuelto</button>`;
+    }
+    const btnArreglo = a.ParaArreglar === 'SI'
+      ? `<span class="pill arreglo" title="${(a.NotaArreglo || '').replace(/"/g,'&quot;')}">🧵 Para arreglar</span>`
+      : `<button class="btn ghost sm" onclick="abrirArreglo(${a.ID})">🧵 Arreglo</button>`;
+    return `
     <tr>
       <td><strong>${a.Cliente}</strong>${a.Telefono ? `<br><span class="hint">${a.Telefono}</span>` : ''}</td>
       <td>#${a.VestidoID} · ${a.VestidoDesc || ''}</td>
@@ -292,15 +206,34 @@ function render() {
       <td>${fmtMoney(a.PrecioFinal)}</td>
       <td>${Number(a.Debe) > 0 ? `<span style="color:var(--warn);font-weight:600">${fmtMoney(a.Debe)}</span>` : '—'}</td>
       <td><span class="pill ${a.Estado}">${a.Estado}</span></td>
-      <td>${a.Estado !== 'Devuelto' ? `<button class="btn ghost sm" onclick="marcarDevuelto(${a.ID})">Marcar devuelto</button>` : ''}</td>
-    </tr>`).join('');
+      <td style="display:flex;gap:6px;flex-wrap:wrap">${accionEstado}${btnArreglo}</td>
+    </tr>`;
+  }).join('');
 }
 
-async function marcarDevuelto(id) {
-  await apiPost('updateAlquiler', { id, estado: 'Devuelto' });
-  toast('Marcado como devuelto');
+async function cambiarEstado(id, estado) {
+  await apiPost('updateAlquiler', { id, estado });
+  toast(estado === 'Retirado' ? 'Marcado como retirado' : 'Marcado como devuelto');
   cargar();
 }
+
+function abrirArreglo(id) {
+  document.getElementById('arregloAlquilerId').value = id;
+  const a = alquileres.find(x => String(x.ID) === String(id));
+  document.getElementById('arregloInfo').textContent = a ? `${a.Cliente} · #${a.VestidoID} ${a.VestidoDesc || ''}` : '';
+  document.getElementById('notaArreglo').value = '';
+  document.getElementById('overlayArreglo').classList.add('open');
+}
+function cerrarModalArreglo() { document.getElementById('overlayArreglo').classList.remove('open'); }
+
+document.getElementById('formArreglo').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('arregloAlquilerId').value;
+  await apiPost('updateAlquiler', { id, paraArreglar: 'SI', notaArreglo: document.getElementById('notaArreglo').value });
+  toast('Vestido marcado para arreglar');
+  cerrarModalArreglo();
+  cargar();
+});
 
 function abrirNuevo() {
   document.getElementById('form').reset();
@@ -316,14 +249,24 @@ vestidoInput.addEventListener('input', () => {
   const q = vestidoInput.value.trim().toLowerCase();
   const box = document.getElementById('acVestido');
   document.getElementById('vestidoId').value = '';
+  const retiro = document.getElementById('fechaRetiro').value;
+  const devolucion = document.getElementById('fechaDevolucion').value;
+  if (!retiro || !devolucion) {
+    box.innerHTML = `<div class="ac-item"><span class="hint">Elegí primero las fechas de retiro y devolución.</span></div>`;
+    box.style.display = 'block';
+    return;
+  }
   if (!q) { box.style.display = 'none'; return; }
   const res = vestidos.filter(v => `${v.ID} ${v.Descripcion}`.toLowerCase().includes(q)).slice(0, 8);
   if (!res.length) { box.style.display = 'none'; return; }
-  box.innerHTML = res.map(v => `
-    <div class="ac-item" onclick='elegirVestido(${JSON.stringify(v).replace(/'/g,"&#39;")})'>
+  box.innerHTML = res.map(v => {
+    const ocupa = alquilerQueOcupa(v.ID, retiro, devolucion, alquileres);
+    const estadoTxt = ocupa ? `🔴 ocupado hasta ${fmtDate(ocupa.FechaDevolucion)}` : `🟢 libre esas fechas · ${fmtMoney(v.Precio)}`;
+    return `<div class="ac-item" onclick='elegirVestido(${JSON.stringify(v).replace(/'/g,"&#39;")})'>
       <span>#${v.ID} — ${v.Descripcion}</span>
-      <small>${v.Estado === 'Alquilado' ? '🔴 alquilado' : fmtMoney(v.Precio)}</small>
-    </div>`).join('');
+      <small>${estadoTxt}</small>
+    </div>`;
+  }).join('');
   box.style.display = 'block';
 });
 
@@ -333,10 +276,21 @@ function elegirVestido(v) {
   document.getElementById('vestidoDesc').value = v.Descripcion;
   document.getElementById('precioBase').value = v.Precio || 0;
   document.getElementById('acVestido').style.display = 'none';
-  document.getElementById('vestidoInfo').textContent = v.Estado === 'Alquilado'
-    ? '⚠️ Este vestido figura como alquilado en otra fecha — revisá disponibilidad.'
-    : '';
+  revisarDisponibilidad();
   calcular();
+}
+
+function revisarDisponibilidad() {
+  const info = document.getElementById('vestidoInfo');
+  const vestidoId = document.getElementById('vestidoId').value;
+  if (!vestidoId) { info.textContent = ''; return; }
+  const retiro = document.getElementById('fechaRetiro').value;
+  const devolucion = document.getElementById('fechaDevolucion').value;
+  if (!retiro || !devolucion) { info.textContent = ''; return; }
+  const ocupa = alquilerQueOcupa(vestidoId, retiro, devolucion, alquileres);
+  info.innerHTML = ocupa
+    ? `<span style="color:var(--warn);font-weight:600">⚠️ Este vestido ya está reservado del ${fmtDate(ocupa.FechaRetiro)} al ${fmtDate(ocupa.FechaDevolucion)} — elegí otras fechas u otro vestido.</span>`
+    : `<span style="color:var(--ok)">✓ Disponible para esas fechas</span>`;
 }
 
 // ---- autocompletar cliente ----
@@ -373,6 +327,14 @@ document.getElementById('form').addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!document.getElementById('vestidoId').value) {
     toast('Elegí un vestido de la lista');
+    return;
+  }
+  const vestidoId = document.getElementById('vestidoId').value;
+  const retiro = document.getElementById('fechaRetiro').value;
+  const devolucion = document.getElementById('fechaDevolucion').value;
+  const ocupa = alquilerQueOcupa(vestidoId, retiro, devolucion, alquileres);
+  if (ocupa) {
+    toast('Ese vestido ya está reservado en esas fechas');
     return;
   }
   const btn = e.target.querySelector('button[type=submit]');
