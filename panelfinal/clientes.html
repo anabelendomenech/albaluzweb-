@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -26,3 +26,111 @@
         </thead>
       
   <script src="./alquileres.js"></script> <script src="./menu.js" defer></script> </body>
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clientes · ALBALUZ</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="mobilebar">
+  <div class="brand">👗 ALBALUZ</div>
+  <select id="mobileNav" onchange="location.href=this.value">
+    <option value="index.html">Inicio</option>
+    <option value="vestidos.html">Vestidos</option>
+    <option value="alquileres.html">Alquileres</option>
+    <option value="clientes.html">Clientes</option>
+  </select>
+</div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">👗 ALBALUZ</div>
+    <nav>
+      <a href="index.html" data-nav="index.html">🏠 Inicio</a>
+      <a href="vestidos.html" data-nav="vestidos.html">🪡 Vestidos</a>
+      <a href="alquileres.html" data-nav="alquileres.html">📅 Alquileres</a>
+      <a href="clientes.html" data-nav="clientes.html">👥 Clientes</a>
+    </nav>
+    <div class="tag">Alquiler de vestidos<br>Panel de gestión</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Clientes</h1>
+        <p>Se agregan solos cada vez que hacés un alquiler nuevo</p>
+      </div>
+      <button class="btn gold" onclick="abrirNuevo()">+ Agregar cliente</button>
+    </div>
+
+    <div class="search-row">
+      <input id="buscador" placeholder="Buscar por nombre…" oninput="render()">
+    </div>
+
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Nombre</th><th>Teléfono</th><th>Alquileres</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2>Nuevo cliente</h2>
+    <form id="form">
+      <div class="field"><label>Nombre</label><input id="nombre" required></div>
+      <div class="field"><label>Teléfono</label><input id="telefono"></div>
+      <div class="modal-actions">
+        <button type="submit" class="btn gold" style="flex:1">Guardar</button>
+        <button type="button" class="btn ghost" onclick="cerrarModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+let clientes = [], alquileres = [];
+
+async function cargar() {
+  const [c, a] = await Promise.all([apiGet('getClientes'), apiGet('getAlquileres')]);
+  clientes = c.data || [];
+  alquileres = a.data || [];
+  render();
+}
+
+function render() {
+  const q = document.getElementById('buscador').value.trim().toLowerCase();
+  const lista = clientes.filter(c => !q || (c.Nombre || '').toLowerCase().includes(q));
+  const tbody = document.getElementById('tbody');
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="3"><div class="empty"><h3>Sin clientes todavía</h3><p>Aparecen automáticamente al crear un alquiler.</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = lista.map(c => {
+    const n = alquileres.filter(a => a.Cliente === c.Nombre).length;
+    return `<tr><td><strong>${c.Nombre}</strong></td><td>${c.Telefono || '—'}</td><td>${n}</td></tr>`;
+  }).join('');
+}
+
+function abrirNuevo() { document.getElementById('form').reset(); document.getElementById('overlay').classList.add('open'); }
+function cerrarModal() { document.getElementById('overlay').classList.remove('open'); }
+
+document.getElementById('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  await apiPost('addCliente', { nombre: document.getElementById('nombre').value, telefono: document.getElementById('telefono').value });
+  toast('Cliente agregado');
+  cerrarModal();
+  cargar();
+});
+
+cargar();
+</script>
+</body>
+</html>
