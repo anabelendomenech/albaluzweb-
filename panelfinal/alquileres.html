@@ -45,6 +45,7 @@
       <div class="chip" data-f="Reservado" onclick="filtrar(this)">Pronto a retirar</div>
       <div class="chip" data-f="Retirado" onclick="filtrar(this)">Retirados</div>
       <div class="chip" data-f="Devuelto" onclick="filtrar(this)">Devueltos</div>
+      <div class="chip" data-f="Anulado" onclick="filtrar(this)">Anulados</div>
       <div class="chip" data-f="arreglo" onclick="filtrar(this)">🧵 Para arreglar</div>
     </div>
 
@@ -62,8 +63,9 @@
 <!-- Modal: nuevo alquiler -->
 <div class="overlay" id="overlay">
   <div class="modal">
-    <h2>Nuevo alquiler</h2>
+    <h2 id="modalTitleAlquiler">Nuevo alquiler</h2>
     <form id="form">
+      <input type="hidden" id="editId">
       <div class="field autocomplete">
         <label>Cliente</label>
         <input id="cliente" autocomplete="off" placeholder="Nombre del cliente" required>
@@ -121,6 +123,9 @@
         <button type="submit" class="btn gold" style="flex:1">Guardar</button>
         <button type="button" class="btn ghost" onclick="cerrarModal()">Cancelar</button>
       </div>
+      <div id="zonaAnular" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+        <button type="button" class="btn ghost" style="width:100%;justify-content:center;color:#a44343;border-color:#e8c6c6" onclick="anularAlquiler()">Anular este alquiler</button>
+      </div>
     </form>
   </div>
 </div>
@@ -174,6 +179,7 @@ function render() {
     const retiro = a.FechaRetiro ? new Date(a.FechaRetiro) : null;
     if (filtroEstado === 'arreglo') return a.ParaArreglar === 'SI';
     if (filtroEstado === 'Devuelto') return a.Estado === 'Devuelto';
+    if (filtroEstado === 'Anulado') return a.Estado === 'Anulado';
     if (filtroEstado === 'Retirado') return a.Estado === 'Retirado';
     if (filtroEstado === 'Reservado') return a.Estado === 'Reservado';
     if (filtroEstado === 'hoy') return retiro && retiro.toDateString() === hoy.toDateString();
@@ -190,23 +196,23 @@ function render() {
   tbody.innerHTML = lista.map(a => {
     let accionEstado = '';
     if (a.Estado === 'Reservado') {
-      accionEstado = `<button class="btn ghost sm" onclick="cambiarEstado(${a.ID},'Retirado')">Marcar retirado</button>`;
+      accionEstado = `<button class="btn ghost sm" onclick="event.stopPropagation();cambiarEstado(${a.ID},'Retirado')">Marcar retirado</button>`;
     } else if (a.Estado === 'Retirado') {
-      accionEstado = `<button class="btn ghost sm" onclick="cambiarEstado(${a.ID},'Devuelto')">Marcar devuelto</button>`;
+      accionEstado = `<button class="btn ghost sm" onclick="event.stopPropagation();cambiarEstado(${a.ID},'Devuelto')">Marcar devuelto</button>`;
     }
     const btnArreglo = a.ParaArreglar === 'SI'
       ? `<span class="pill arreglo" title="${(a.NotaArreglo || '').replace(/"/g,'&quot;')}">🧵 Para arreglar</span>`
-      : `<button class="btn ghost sm" onclick="abrirArreglo(${a.ID})">🧵 Arreglo</button>`;
+      : `<button class="btn ghost sm" onclick="event.stopPropagation();abrirArreglo(${a.ID})">🧵 Arreglo</button>`;
     return `
-    <tr>
-      <td><strong>${a.Cliente}</strong>${a.Telefono ? `<br><span class="hint">${a.Telefono}</span>` : ''}</td>
-      <td>#${a.VestidoID} · ${a.VestidoDesc || ''}</td>
-      <td>${fmtDate(a.FechaRetiro)}</td>
-      <td>${fmtDate(a.FechaDevolucion)}</td>
-      <td>${fmtMoney(a.PrecioFinal)}</td>
-      <td>${Number(a.Debe) > 0 ? `<span style="color:var(--warn);font-weight:600">${fmtMoney(a.Debe)}</span>` : '—'}</td>
-      <td><span class="pill ${a.Estado}">${a.Estado}</span></td>
-      <td style="display:flex;gap:6px;flex-wrap:wrap">${accionEstado}${btnArreglo}</td>
+    <tr onclick="abrirEditar(${a.ID})" style="cursor:pointer">
+      <td data-label="Cliente"><strong>${a.Cliente}</strong>${a.Telefono ? `<br><span class="hint">${a.Telefono}</span>` : ''}</td>
+      <td data-label="Vestido">#${a.VestidoID} · ${a.VestidoDesc || ''}</td>
+      <td data-label="Retiro">${fmtDate(a.FechaRetiro)}</td>
+      <td data-label="Devolución">${fmtDate(a.FechaDevolucion)}</td>
+      <td data-label="Precio">${fmtMoney(a.PrecioFinal)}</td>
+      <td data-label="Debe">${Number(a.Debe) > 0 ? `<span style="color:var(--warn);font-weight:600">${fmtMoney(a.Debe)}</span>` : '—'}</td>
+      <td data-label="Estado"><span class="pill ${a.Estado}">${a.Estado}</span></td>
+      <td class="acciones" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${accionEstado}${btnArreglo}</td>
     </tr>`;
   }).join('');
 }
@@ -237,11 +243,46 @@ document.getElementById('formArreglo').addEventListener('submit', async (e) => {
 
 function abrirNuevo() {
   document.getElementById('form').reset();
+  document.getElementById('editId').value = '';
   document.getElementById('vestidoId').value = '';
   document.getElementById('vestidoInfo').textContent = '';
+  document.getElementById('modalTitleAlquiler').textContent = 'Nuevo alquiler';
+  document.getElementById('zonaAnular').style.display = 'none';
   document.getElementById('overlay').classList.add('open');
 }
 function cerrarModal() { document.getElementById('overlay').classList.remove('open'); }
+
+function abrirEditar(id) {
+  const a = alquileres.find(x => String(x.ID) === String(id));
+  if (!a) return;
+  document.getElementById('editId').value = a.ID;
+  document.getElementById('cliente').value = a.Cliente || '';
+  document.getElementById('telefono').value = a.Telefono || '';
+  document.getElementById('fechaRetiro').value = (a.FechaRetiro || '').slice(0, 10);
+  document.getElementById('fechaDevolucion').value = (a.FechaDevolucion || '').slice(0, 10);
+  document.getElementById('vestidoBuscar').value = a.VestidoID ? `#${a.VestidoID} — ${a.VestidoDesc || ''}` : '';
+  document.getElementById('vestidoId').value = a.VestidoID || '';
+  document.getElementById('vestidoDesc').value = a.VestidoDesc || '';
+  document.getElementById('precioBase').value = a.PrecioBase || 0;
+  document.getElementById('descuento').value = a.Descuento || 0;
+  document.getElementById('precioFinal').value = a.PrecioFinal || 0;
+  document.getElementById('debe').value = a.Debe || 0;
+  document.getElementById('notas').value = a.Notas || '';
+  document.getElementById('modalTitleAlquiler').textContent = `Editar alquiler · ${a.Cliente}`;
+  document.getElementById('zonaAnular').style.display = a.Estado === 'Anulado' ? 'none' : 'block';
+  revisarDisponibilidad();
+  document.getElementById('overlay').classList.add('open');
+}
+
+async function anularAlquiler() {
+  const id = document.getElementById('editId').value;
+  if (!id) return;
+  if (!confirm('¿Anular este alquiler? El vestido queda liberado para esas fechas.')) return;
+  await apiPost('updateAlquiler', { id, estado: 'Anulado' });
+  toast('Alquiler anulado');
+  cerrarModal();
+  cargar();
+}
 
 // ---- autocompletar vestido ----
 const vestidoInput = document.getElementById('vestidoBuscar');
@@ -257,10 +298,11 @@ vestidoInput.addEventListener('input', () => {
     return;
   }
   if (!q) { box.style.display = 'none'; return; }
+  const editId = document.getElementById('editId').value;
   const res = vestidos.filter(v => `${v.ID} ${v.Descripcion}`.toLowerCase().includes(q)).slice(0, 8);
   if (!res.length) { box.style.display = 'none'; return; }
   box.innerHTML = res.map(v => {
-    const ocupa = alquilerQueOcupa(v.ID, retiro, devolucion, alquileres);
+    const ocupa = alquilerQueOcupa(v.ID, retiro, devolucion, alquileres, editId);
     const estadoTxt = ocupa ? `🔴 ocupado hasta ${fmtDate(ocupa.FechaDevolucion)}` : `🟢 libre esas fechas · ${fmtMoney(v.Precio)}`;
     return `<div class="ac-item" onclick='elegirVestido(${JSON.stringify(v).replace(/'/g,"&#39;")})'>
       <span>#${v.ID} — ${v.Descripcion}</span>
@@ -287,7 +329,8 @@ function revisarDisponibilidad() {
   const retiro = document.getElementById('fechaRetiro').value;
   const devolucion = document.getElementById('fechaDevolucion').value;
   if (!retiro || !devolucion) { info.textContent = ''; return; }
-  const ocupa = alquilerQueOcupa(vestidoId, retiro, devolucion, alquileres);
+  const editId = document.getElementById('editId').value;
+  const ocupa = alquilerQueOcupa(vestidoId, retiro, devolucion, alquileres, editId);
   info.innerHTML = ocupa
     ? `<span style="color:var(--warn);font-weight:600">⚠️ Este vestido ya está reservado del ${fmtDate(ocupa.FechaRetiro)} al ${fmtDate(ocupa.FechaDevolucion)} — elegí otras fechas u otro vestido.</span>`
     : `<span style="color:var(--ok)">✓ Disponible para esas fechas</span>`;
@@ -329,10 +372,11 @@ document.getElementById('form').addEventListener('submit', async (e) => {
     toast('Elegí un vestido de la lista');
     return;
   }
+  const editId = document.getElementById('editId').value;
   const vestidoId = document.getElementById('vestidoId').value;
   const retiro = document.getElementById('fechaRetiro').value;
   const devolucion = document.getElementById('fechaDevolucion').value;
-  const ocupa = alquilerQueOcupa(vestidoId, retiro, devolucion, alquileres);
+  const ocupa = alquilerQueOcupa(vestidoId, retiro, devolucion, alquileres, editId);
   if (ocupa) {
     toast('Ese vestido ya está reservado en esas fechas');
     return;
@@ -340,7 +384,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
   const btn = e.target.querySelector('button[type=submit]');
   btn.disabled = true; btn.textContent = 'Guardando…';
   try {
-    await apiPost('addAlquiler', {
+    const payload = {
       cliente: document.getElementById('cliente').value,
       telefono: document.getElementById('telefono').value,
       vestidoId: document.getElementById('vestidoId').value,
@@ -352,8 +396,14 @@ document.getElementById('form').addEventListener('submit', async (e) => {
       precioFinal: document.getElementById('precioFinal').value,
       debe: document.getElementById('debe').value,
       notas: document.getElementById('notas').value
-    });
-    toast('Alquiler guardado');
+    };
+    if (editId) {
+      await apiPost('updateAlquiler', { id: editId, ...payload });
+      toast('Alquiler actualizado');
+    } else {
+      await apiPost('addAlquiler', payload);
+      toast('Alquiler guardado');
+    }
     cerrarModal();
     await cargar();
   } catch (err) {
