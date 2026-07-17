@@ -42,7 +42,7 @@
       <input id="buscador" placeholder="Buscar por número, descripción o tipo…" oninput="render()">
       <div class="chip active" data-f="Todos" onclick="filtrar(this)">Todos</div>
       <div class="chip" data-f="Disponible" onclick="filtrar(this)">Disponibles</div>
-      <div class="chip" data-f="Alquilado" onclick="filtrar(this)">Alquilados</div>
+      <div class="chip" data-f="Alquilado" onclick="filtrar(this)">Ocupados ahora</div>
     </div>
 
     <div id="grid" class="grid"></div>
@@ -94,11 +94,13 @@
 <script src="common.js"></script>
 <script>
 let vestidos = [];
+let alquileres = [];
 let filtroEstado = 'Todos';
 
 async function cargar() {
-  const res = await apiGet('getVestidos');
-  vestidos = res.data || [];
+  const [rv, ra] = await Promise.all([apiGet('getVestidos'), apiGet('getAlquileres')]);
+  vestidos = rv.data || [];
+  alquileres = ra.data || [];
   render();
 }
 
@@ -114,7 +116,11 @@ function render() {
   const grid = document.getElementById('grid');
 
   let lista = vestidos.filter(v => {
-    const okEstado = filtroEstado === 'Todos' || v.Estado === filtroEstado;
+    const ocupacion = proximaOcupacion(v.ID, alquileres);
+    const estaOcupadoHoy = !!ocupacion;
+    const okEstado = filtroEstado === 'Todos'
+      || (filtroEstado === 'Disponible' && !estaOcupadoHoy)
+      || (filtroEstado === 'Alquilado' && estaOcupadoHoy);
     const texto = `${v.ID} ${v.Descripcion} ${v.Tipo}`.toLowerCase();
     const okTexto = !q || texto.includes(q);
     return okEstado && okTexto;
@@ -125,18 +131,24 @@ function render() {
     return;
   }
 
-  grid.innerHTML = lista.map(v => `
+  grid.innerHTML = lista.map(v => {
+    const ocupacion = proximaOcupacion(v.ID, alquileres);
+    const badge = ocupacion
+      ? `<span class="badge ocupado">Ocupado hasta ${fmtDate(ocupacion.FechaDevolucion)}</span>`
+      : `<span class="badge disponible">Disponible</span>`;
+    return `
     <div class="dress" onclick='abrirEditar(${JSON.stringify(v).replace(/'/g,"&#39;")})'>
       <div class="ph">
         <span class="num">#${v.ID}</span>
-        <span class="badge ${v.Estado === 'Alquilado' ? 'alquilado' : 'disponible'}">${v.Estado || 'Disponible'}</span>
+        ${badge}
         ${v.Foto ? `<img src="${v.Foto}" loading="lazy">` : '🧵'}
       </div>
       <div class="info">
         <div class="desc">${v.Descripcion || ''}</div>
         <div class="price">${fmtMoney(v.Precio)}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function abrirNuevo() {
