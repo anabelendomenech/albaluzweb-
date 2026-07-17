@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html> 
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -52,5 +52,102 @@
 
   <script src="./menu.js" defer></script>
   <script src="./alquileres.js" defer></script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALBALUZ · Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="mobilebar">
+  <div class="brand">👗 ALBALUZ</div>
+  <select id="mobileNav" onchange="location.href=this.value">
+    <option value="index.html">Inicio</option>
+    <option value="vestidos.html">Vestidos</option>
+    <option value="alquileres.html">Alquileres</option>
+    <option value="clientes.html">Clientes</option>
+  </select>
+</div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">👗 ALBALUZ</div>
+    <nav>
+      <a href="index.html" data-nav="index.html">🏠 Inicio</a>
+      <a href="vestidos.html" data-nav="vestidos.html">🪡 Vestidos</a>
+      <a href="alquileres.html" data-nav="alquileres.html">📅 Alquileres</a>
+      <a href="clientes.html" data-nav="clientes.html">👥 Clientes</a>
+    </nav>
+    <div class="tag">Alquiler de vestidos<br>Panel de gestión</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Inicio</h1>
+        <p>Resumen de tu semana</p>
+      </div>
+    </div>
+
+    <div class="stats" id="stats">
+      <div class="stat"><div class="n">…</div><div class="l">Alquilados próximo finde</div></div>
+      <div class="stat"><div class="n">…</div><div class="l">Reservas este mes</div></div>
+      <div class="stat"><div class="n">…</div><div class="l">Ingresos del mes</div></div>
+      <div class="stat"><div class="n">…</div><div class="l">Vestidos en catálogo</div></div>
+    </div>
+
+    <div style="height:24px"></div>
+    <div class="card">
+      <h3 style="margin-bottom:14px">Próximos retiros</h3>
+      <div id="proximos">Cargando…</div>
+    </div>
+  </main>
+</div>
+
+<script src="common.js"></script>
+<script>
+async function cargar() {
+  const statsBox = document.getElementById('stats');
+  try {
+    const [dash, vestidos, alquileres] = await Promise.all([
+      apiGet('getDashboard'),
+      apiGet('getVestidos'),
+      apiGet('getAlquileres')
+    ]);
+
+    const cards = statsBox.querySelectorAll('.stat .n');
+    cards[0].textContent = dash.alquiladosProxFinde ?? 0;
+    cards[1].textContent = dash.reservasMes ?? 0;
+    cards[2].textContent = fmtMoney(dash.ingresosMes);
+    cards[3].textContent = (vestidos.data || []).length;
+
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const en7 = new Date(hoy.getTime() + 7*24*60*60*1000);
+    const proximos = (alquileres.data || [])
+      .filter(a => a.Estado !== 'Devuelto' && a.FechaRetiro && new Date(a.FechaRetiro) >= hoy && new Date(a.FechaRetiro) <= en7)
+      .sort((a,b) => new Date(a.FechaRetiro) - new Date(b.FechaRetiro));
+
+    const box = document.getElementById('proximos');
+    if (!proximos.length) {
+      box.innerHTML = '<p class="hint">No hay retiros en los próximos 7 días.</p>';
+    } else {
+      box.innerHTML = proximos.map(a => `
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)">
+          <div><strong>${a.Cliente}</strong> · ${a.VestidoDesc || ('Vestido #' + a.VestidoID)}</div>
+          <div class="hint">${fmtDate(a.FechaRetiro)}</div>
+        </div>`).join('');
+    }
+  } catch (err) {
+    statsBox.innerHTML = `<div class="card" style="grid-column:1/-1"><p class="hint">No se pudo conectar con la planilla. Revisá que API_URL esté configurada en common.js (ver README).</p></div>`;
+    console.error(err);
+  }
+}
+cargar();
+</script>
 </body>
 </html>
