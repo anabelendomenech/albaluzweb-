@@ -1,32 +1,3 @@
-<!--<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Alquileres · ALBALUZ</title>
-  <link rel="stylesheet" href="./styles-panel.css" />
-</head>
-<body>
-  <script src="menu.js"></script>
-
-  <div class="panel-layout">
-    <aside id="sideMenu"></aside>
-
-    <main class="content">
-      <h1 class="title">Clientes</h1>
-
-     
-      <table class="tabla">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-          
-          </tr>
-        </thead>
-      
-  <script src="./alquileres.js"></script> <script src="./menu.js" defer></script> </body>
--->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -73,7 +44,7 @@
 
     <div style="overflow-x:auto">
       <table>
-        <thead><tr><th>Nombre</th><th>Teléfono</th><th>Alquileres</th></tr></thead>
+        <thead><tr><th>Nombre</th><th>Teléfono</th><th>Alquileres</th><th>Última vez</th><th></th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
@@ -94,6 +65,36 @@
   </div>
 </div>
 
+<!-- Modal: ficha del cliente -->
+<div class="overlay" id="overlayFicha">
+  <div class="modal" style="max-width:560px">
+    <h2 id="fichaNombre">Cliente</h2>
+    <p class="hint" id="fichaTelefono" style="margin-bottom:16px"></p>
+
+    <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
+      <div class="stat" style="padding:14px">
+        <div class="n" style="font-size:1.5rem" id="fichaTotal">0</div>
+        <div class="l">Alquileres</div>
+      </div>
+      <div class="stat" style="padding:14px">
+        <div class="n" style="font-size:1.5rem" id="fichaFrecuencia">—</div>
+        <div class="l">Frecuencia</div>
+      </div>
+      <div class="stat" style="padding:14px">
+        <div class="n" style="font-size:1.5rem" id="fichaUltima">—</div>
+        <div class="l">Última vez</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;margin-bottom:10px">Historial</h3>
+    <div id="fichaHistorial"></div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" style="flex:1" onclick="cerrarModalFicha()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <script src="common.js"></script>
 <script>
 let clientes = [], alquileres = [];
@@ -110,14 +111,72 @@ function render() {
   const lista = clientes.filter(c => !q || (c.Nombre || '').toLowerCase().includes(q));
   const tbody = document.getElementById('tbody');
   if (!lista.length) {
-    tbody.innerHTML = `<tr><td colspan="3"><div class="empty"><h3>Sin clientes todavía</h3><p>Aparecen automáticamente al crear un alquiler.</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><h3>Sin clientes todavía</h3><p>Aparecen automáticamente al crear un alquiler.</p></div></td></tr>`;
     return;
   }
   tbody.innerHTML = lista.map(c => {
-    const n = alquileres.filter(a => a.Cliente === c.Nombre).length;
-    return `<tr><td><strong>${c.Nombre}</strong></td><td>${c.Telefono || '—'}</td><td>${n}</td></tr>`;
+    const propios = alquileres.filter(a => a.Cliente === c.Nombre && a.Estado !== 'Anulado');
+    const ultima = propios.length
+      ? propios.reduce((max, a) => (!max || new Date(a.FechaRetiro) > new Date(max.FechaRetiro)) ? a : max, null)
+      : null;
+    return `<tr onclick="abrirFicha('${c.Nombre.replace(/'/g,"\\'")}')" style="cursor:pointer">
+      <td data-label="Nombre"><strong>${c.Nombre}</strong></td>
+      <td data-label="Teléfono">${c.Telefono || '—'}</td>
+      <td data-label="Alquileres">${propios.length}</td>
+      <td data-label="Última vez">${ultima ? fmtDate(ultima.FechaRetiro) : '—'}</td>
+      <td class="acciones"><span class="hint">Ver ficha →</span></td>
+    </tr>`;
   }).join('');
 }
+
+function abrirFicha(nombre) {
+  const c = clientes.find(x => x.Nombre === nombre);
+  const propios = alquileres
+    .filter(a => a.Cliente === nombre && a.Estado !== 'Anulado')
+    .sort((a, b) => new Date(b.FechaRetiro) - new Date(a.FechaRetiro));
+
+  document.getElementById('fichaNombre').textContent = nombre;
+  document.getElementById('fichaTelefono').textContent = (c && c.Telefono) || 'Sin teléfono registrado';
+  document.getElementById('fichaTotal').textContent = propios.length;
+
+  const ultima = propios[0];
+  document.getElementById('fichaUltima').textContent = ultima ? fmtDate(ultima.FechaRetiro) : '—';
+
+  // Frecuencia: promedio de días entre alquileres consecutivos (ordenados del más viejo al más nuevo)
+  let frecTxt = '—';
+  if (propios.length >= 2) {
+    const ordenAsc = [...propios].sort((a, b) => new Date(a.FechaRetiro) - new Date(b.FechaRetiro));
+    let totalDias = 0, pares = 0;
+    for (let i = 1; i < ordenAsc.length; i++) {
+      const dias = (new Date(ordenAsc[i].FechaRetiro) - new Date(ordenAsc[i-1].FechaRetiro)) / 86400000;
+      if (dias >= 0) { totalDias += dias; pares++; }
+    }
+    const promedio = pares ? Math.round(totalDias / pares) : null;
+    if (promedio !== null) {
+      frecTxt = promedio <= 45 ? `Cada ~${promedio} días` : `Cada ~${Math.round(promedio/30)} meses`;
+    }
+  } else if (propios.length === 1) {
+    frecTxt = 'Primera vez';
+  }
+  document.getElementById('fichaFrecuencia').textContent = frecTxt;
+
+  const hist = document.getElementById('fichaHistorial');
+  if (!propios.length) {
+    hist.innerHTML = '<p class="hint">Todavía no tiene alquileres registrados.</p>';
+  } else {
+    hist.innerHTML = propios.map(a => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);gap:10px">
+        <div>
+          <div><strong>#${a.VestidoID} · ${a.VestidoDesc || ''}</strong></div>
+          <div class="hint">${fmtDate(a.FechaRetiro)} → ${fmtDate(a.FechaDevolucion)} · ${fmtMoney(a.PrecioFinal)}</div>
+        </div>
+        <span class="pill ${a.Estado}">${a.Estado}</span>
+      </div>`).join('');
+  }
+
+  document.getElementById('overlayFicha').classList.add('open');
+}
+function cerrarModalFicha() { document.getElementById('overlayFicha').classList.remove('open'); }
 
 function abrirNuevo() { document.getElementById('form').reset(); document.getElementById('overlay').classList.add('open'); }
 function cerrarModal() { document.getElementById('overlay').classList.remove('open'); }
