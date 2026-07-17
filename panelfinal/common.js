@@ -1,5 +1,5 @@
 // ⚠️ Pegá acá la URL de tu Web App de Google Apps Script (ver README.md paso 4)
-const API_URL = 'https://script.google.com/macros/s/AKfycbzn_KzFf9f7dHM36fNMHsaYvOYTaX45THz29dydMDDlRjGtwm477nlXGzbkuRHONXMvTg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyoEJSjK9X0UlUGD2g11StJt4DQhENY2uhzp5JiewhMlvuXrw0AGWDeTxqxMyOW6qacEw/exec';
 
 async function apiGet(action, params = {}) {
   const qs = new URLSearchParams({ action, ...params }).toString();
@@ -60,3 +60,30 @@ function setActiveNav() {
   if (sel) sel.value = page;
 }
 document.addEventListener('DOMContentLoaded', setActiveNav);
+
+// ---- Disponibilidad real por fechas ----
+// Dos rangos se solapan si el inicio de uno es antes o igual al fin del otro, en ambas direcciones.
+function rangosSeSolapan(inicioA, finA, inicioB, finB) {
+  if (!inicioA || !finA || !inicioB || !finB) return false;
+  return new Date(inicioA) <= new Date(finB) && new Date(inicioB) <= new Date(finA);
+}
+
+// Devuelve el alquiler activo (no devuelto) que ocupa ese vestido en esas fechas, o null si está libre.
+// excludeId sirve para no chocar contra el propio alquiler cuando se edita uno existente.
+function alquilerQueOcupa(vestidoId, fechaRetiro, fechaDevolucion, alquileres, excludeId) {
+  return alquileres.find(a =>
+    String(a.VestidoID) === String(vestidoId) &&
+    a.Estado !== 'Devuelto' &&
+    (!excludeId || String(a.ID) !== String(excludeId)) &&
+    rangosSeSolapan(fechaRetiro, fechaDevolucion, a.FechaRetiro, a.FechaDevolucion)
+  );
+}
+
+// Próximo alquiler activo (hoy o futuro) de un vestido, para mostrar "Ocupado hasta..." en el catálogo.
+function proximaOcupacion(vestidoId, alquileres) {
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const activos = alquileres
+    .filter(a => String(a.VestidoID) === String(vestidoId) && a.Estado !== 'Devuelto' && a.FechaDevolucion && new Date(a.FechaDevolucion) >= hoy)
+    .sort((a, b) => new Date(a.FechaRetiro) - new Date(b.FechaRetiro));
+  return activos[0] || null;
+}
