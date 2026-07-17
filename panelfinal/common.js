@@ -73,7 +73,7 @@ function rangosSeSolapan(inicioA, finA, inicioB, finB) {
 function alquilerQueOcupa(vestidoId, fechaRetiro, fechaDevolucion, alquileres, excludeId) {
   return alquileres.find(a =>
     String(a.VestidoID) === String(vestidoId) &&
-    a.Estado !== 'Devuelto' &&
+    a.Estado !== 'Devuelto' && a.Estado !== 'Anulado' &&
     (!excludeId || String(a.ID) !== String(excludeId)) &&
     rangosSeSolapan(fechaRetiro, fechaDevolucion, a.FechaRetiro, a.FechaDevolucion)
   );
@@ -83,7 +83,7 @@ function alquilerQueOcupa(vestidoId, fechaRetiro, fechaDevolucion, alquileres, e
 function proximaOcupacion(vestidoId, alquileres) {
   const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
   const activos = alquileres
-    .filter(a => String(a.VestidoID) === String(vestidoId) && a.Estado !== 'Devuelto' && a.FechaDevolucion && new Date(a.FechaDevolucion) >= hoy)
+    .filter(a => String(a.VestidoID) === String(vestidoId) && a.Estado !== 'Devuelto' && a.Estado !== 'Anulado' && a.FechaDevolucion && new Date(a.FechaDevolucion) >= hoy)
     .sort((a, b) => new Date(a.FechaRetiro) - new Date(b.FechaRetiro));
   return activos[0] || null;
 }
