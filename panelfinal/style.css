@@ -117,6 +117,20 @@ label{font-size:.8rem;color:var(--ink-soft);font-weight:600;margin-bottom:5px;di
 .stat .n{font-family:'Fraunces',serif;font-size:2.1rem;color:var(--wine);}
 .stat .l{color:var(--ink-soft);font-size:.85rem;margin-top:2px;}
 
+/* -------- dashboard: tarjetas accionables -------- */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;}
+.dash-card{
+  background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);
+  border-top:3px solid var(--gold);display:block;transition:transform .12s, box-shadow .12s;
+}
+.dash-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(74,30,51,.14);}
+.dash-card .dc-icon{font-size:1.5rem;margin-bottom:8px;}
+.dash-card .dc-n{font-family:'Fraunces',serif;font-size:2rem;color:var(--wine);line-height:1;}
+.dash-card .dc-l{color:var(--ink);font-size:.88rem;font-weight:600;margin-top:6px;}
+.dash-card .dc-sub{color:var(--ink-soft);font-size:.76rem;margin-top:2px;}
+.dash-card.dc-alerta{border-top-color:var(--warn);}
+.dash-card.dc-alerta .dc-n{color:var(--warn);}
+
 .card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;}
 
 /* -------- vestidos grid -------- */
@@ -166,6 +180,9 @@ tr:hover td{background:#fbf7f4;}
 .pill.Entregado{background:#dde6f2;color:#3a5f8a;}
 .pill.Anulado{background:#e6e1e3;color:#8a7a83;text-decoration:line-through;}
 .pill.arreglo{background:#f3d9d9;color:#a44343;}
+.pill.Pendiente{background:#f3d9d9;color:#a44343;}
+.pill.Seña{background:#f6e6d8;color:var(--warn);}
+.pill.Pagado{background:#e3efe4;color:var(--ok);}
 
 /* -------- modal -------- */
 .overlay{
