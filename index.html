@@ -1,203 +1,188 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Albaluz - Alquiler de Vestidos</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALBALUZ · Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="mobilebar">
+  <div class="brand">👗 ALBALUZ</div>
+  <select id="mobileNav" onchange="location.href=this.value">
+    <option value="index.html">Inicio</option>
+    <option value="vestidos.html">Vestidos</option>
+    <option value="alquileres.html">Alquileres</option>
+    <option value="clientes.html">Clientes</option>
+    <option value="gastos.html">Gastos</option>
+    <option value="arreglos.html">Arreglos</option>
+  </select>
+</div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">👗 ALBALUZ</div>
+    <nav>
+      <a href="index.html" data-nav="index.html">🏠 Inicio</a>
+      <a href="vestidos.html" data-nav="vestidos.html">🪡 Vestidos</a>
+      <a href="alquileres.html" data-nav="alquileres.html">📅 Alquileres</a>
+      <a href="clientes.html" data-nav="clientes.html">👥 Clientes</a>
+      <a href="gastos.html" data-nav="gastos.html">💰 Gastos</a>
+      <a href="arreglos.html" data-nav="arreglos.html">🧵 Arreglos</a>
+    </nav>
+    <div class="tag">Alquiler de vestidos<br>Panel de gestión</div>
+  </aside>
 
-<header>
-  <nav class="main-nav">
-    <ul>
-      <li><a href="index.html">Inicio</a></li>
-      <li><a href="catalogo.html">Catálogo</a></li>
-      <li><a href="#agendar">Agendar</a></li>
-      <li><a href="#contacto">Contáctanos</a></li>
-    </ul>
-  </nav>
-</header>
-
-<main>
-
-  <!-- Inicio con nombre y logo -->
-  <section id="inicio" class="inicio-flex">
-    
-    
-   
-    
-    <div class="inicio-columna texto">
-      <h1>ALBALUZ</h1>
-      <p class="subtitulo">Alquiler de Vestidos</p>
-      <a href="catalogo.html" target="_blank" class="button">Ver colección</a>
-    </div>
-  </section>
-
-  <!-- Nueva Colección con slider -->
-  <section id="nueva-coleccion" class="contenido-seccion">
-    <h2>Nueva Colección</h2>
-    <div class="slider-horizontal" id="galeria-nueva"></div>
-  </section>
-
-  <!-- Agendate -->
-  <section id="agendar" class="contenido-seccion agendar">
-    <h2>Agendate para elegir tu vestido ideal</h2>
-    <p>Consultanos por WhatsApp y coordiná tu cita personalizada.</p>
-    <a href="https://wa.me/59899670749" target="_blank" class="btn-whatsapp">Consultar por WhatsApp</a>
-  </section>
-
-  <!-- Más de 150 vestidos, talles, packaging -->
-  <section id="info-tienda" class="info-tienda arcos-seccion">
-   
-    <div class="arco-card">
-      <h3>Horarios extendidos</h3>
-      <p>Buscamos siempre un horario en el que puedas venir a probarte y encontrar tu look ideal , inclusive los sábados</p>
-    </div>
-    <div class="arco-card">
-      <h3>Atención personalizada </h3>
-      <p>Sólo puedes asistir con agenda.
-Esto significa que tendrás todo el local para ti! 
-Te asesoramos en tu elección y te brindamos un espacio cálido y armonioso  </p>
-    </div>
-    <div class="arco-card">
-      <h3>Vestidos únicos y actualizados</h3>
-      <p>Cada vestido es único en su talle para asegurarte que tu vestido sea único en la noche 🤍
-Estamos continuamente renovando stock para que tengas distintas opciones 💥</p>
-    </div>
-  </section>
-
-  <!-- Imágenes packaging -->
-  <section id="packaging-eco" class="contenido-seccion packaging-eco">
-    <h2>Packaging Eco Friendly</h2>
-    <div class="packaging-imgs">
-      <div class="pack-item">
-        <img src="img/packaging.bolsa.craft.jpg" alt="Bolsa craft" class="circle-img" />
-        
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Inicio</h1>
+        <p id="fechaHoy">Resumen de lo que tenés que resolver esta semana</p>
       </div>
-      <div class="pack-item">
-        <img src="img/packaging.fundaprotectora.png" alt="Funda protectora" class="circle-img" />
-        
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn ghost" onclick="location.href='alquileres.html'">+ Alquiler</button>
+        <button class="btn ghost" onclick="location.href='vestidos.html'">+ Vestido</button>
+        <button class="btn gold" onclick="location.href='gastos.html'">+ Gasto</button>
       </div>
     </div>
-  </section>
 
-  <!-- Preguntas frecuentes -->
-  <section id="faq" class="contenido-seccion faq">
-    <h2>Preguntas Frecuentes</h2>
-
-    <div class="faq-item">
-      <button class="faq-question">¿Cómo alquilar un vestido?</button>
-      <div class="faq-content">Escribinos por WhatsApp y coordinamos tu prueba y reserva.</div>
+    <div class="dash-grid" id="dashGrid">
+      <a class="dash-card" href="alquileres.html?f=finde">
+        <div class="dc-icon">👗</div>
+        <div class="dc-n" id="dcFinde">…</div>
+        <div class="dc-l">Próximos retiros</div>
+        <div class="dc-sub">Este fin de semana</div>
+      </a>
+      <a class="dash-card" href="arreglos.html">
+        <div class="dc-icon">✂️</div>
+        <div class="dc-n" id="dcArreglos">…</div>
+        <div class="dc-l">Vestidos para arreglar</div>
+        <div class="dc-sub">Pendientes</div>
+      </a>
+      <a class="dash-card" href="alquileres.html?f=adevolver">
+        <div class="dc-icon">🔄</div>
+        <div class="dc-n" id="dcDevolver">…</div>
+        <div class="dc-l">Vestidos a devolver</div>
+        <div class="dc-sub">Hoy o vencidos</div>
+      </a>
+      <a class="dash-card" href="alquileres.html?f=porcobrar">
+        <div class="dc-icon">💰</div>
+        <div class="dc-n" id="dcCobrar">…</div>
+        <div class="dc-l">Dinero a cobrar</div>
+        <div class="dc-sub">Pendiente de pago</div>
+      </a>
+      <a class="dash-card" href="gastos.html">
+        <div class="dc-icon">💵</div>
+        <div class="dc-n" id="dcIngresado">…</div>
+        <div class="dc-l">Ingresado este mes</div>
+        <div class="dc-sub">Plata que ya cobraste</div>
+      </a>
+      <a class="dash-card" href="gastos.html">
+        <div class="dc-icon">📈</div>
+        <div class="dc-n" id="dcGanancia">…</div>
+        <div class="dc-l">Ganancia del mes</div>
+        <div class="dc-sub">Ingresos − Gastos</div>
+      </a>
     </div>
 
-    <div class="faq-item">
-      <button class="faq-question">¿Cuánto tiempo antes debo reservar?</button>
-      <div class="faq-content">Recomendamos agendar con máximo un mes de anticipación para asegurar stock y calidad.</div>
+    <div id="recordatorios" class="card" style="margin-top:22px;display:none">
+      <h3 style="margin-bottom:10px">🔔 Recordatorios rápidos</h3>
+      <div id="recordatoriosLista"></div>
     </div>
 
-    <div class="faq-item">
-      <button class="faq-question">¿Puedo ir acompañada a probarme?</button>
-      <div class="faq-content">Sí, indicá cuántas personas vendrán contigo al agendar.</div>
+    <div style="height:24px"></div>
+    <div class="card" style="cursor:pointer" onclick="location.href='alquileres.html?f=finde'">
+      <h3 style="margin-bottom:14px">📅 Próximos retiros <span class="hint" style="font-weight:400">— tocá para ir a Alquileres</span></h3>
+      <div id="proximos">Cargando…</div>
     </div>
 
-    <div class="faq-item">
-      <button class="faq-question">¿Cuáles son los precios?</button>
-      <div class="faq-content">Los precios varían entre $700 y $1300, consultanos para detalles.</div>
+    <div style="height:24px"></div>
+    <div class="card" style="cursor:pointer" onclick="location.href='alquileres.html?f=porcobrar'">
+      <h3 style="margin-bottom:14px">💳 Clientes que deben plata <span class="hint" style="font-weight:400">— tocá para ir a Alquileres</span></h3>
+      <div id="deudas">Cargando…</div>
     </div>
+  </main>
+</div>
 
-    <div class="faq-item">
-      <button class="faq-question">¿Cómo son las devoluciones?</button>
-      <div class="faq-content">Los vestidos se devuelven el siguiente día hábil del alquiler. ¡Nosotras nos encargamos de la tintoreria!</div>
-    </div>
-  </section>
-
-  <!-- Contacto -->
-  <section id="contacto" class="contenido-seccion contacto">
-    <h2>Contacto</h2>
-    <div class="contacto-lineal">
-      <p> Dirección: <a href="https://www.google.com/maps/place/Treinta+y+Tres+1121,+Dolores,+Departamento+de+Soriano,+Uruguay" target="_blank">Treinta y tres 1121 bis, Dolores</a></p>
-      <p> Contacto: <a href="https://wa.me/59899670749" target="_blank">099 670 749</a></p>
-      <p> Instagram: <a href="https://www.instagram.com/albaluz_alquilerdevestidos" target="_blank">@albaluz_alquilerdevestidos</a></p>
-      <p> Tik tok:<a href="https://www.tiktok.com/@albaluz_alquilerdevesti2" target="_blank">@albaluz_alquilerdevesti2</a></p>
-      <p> Facebook: <a href="https://www.facebook.com/p/Albaluz-Alquiler-de-vestidos-100095095251771/" target="_blank">Facebook Albaluz</a></p>
-    </div>
-  </section>
-
-</main>
-
+<script src="common.js"></script>
 <script>
-  // Preguntas frecuentes toggle
-  document.querySelectorAll('.faq-question').forEach(button => {
-    button.addEventListener('click', () => {
-      const content = button.nextElementSibling;
-      content.style.display = content.style.display === 'block' ? 'none' : 'block';
-    });
-  });
+document.getElementById('fechaHoy').textContent = 'Hoy es ' + new Date().toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric', month: 'long' });
 
-  // Slider con nombres exactos desde carpeta img
-  document.addEventListener("DOMContentLoaded", () => {
-    const slider = document.getElementById("slider");
-    if (!slider) return;
+async function cargar() {
+  const grid = document.getElementById('dashGrid');
+  try {
+    const [dash, alquileres] = await Promise.all([
+      apiGet('getDashboard'),
+      apiGet('getAlquileres')
+    ]);
 
-    const vestidos = [
-      "vestido-azul-brillos-unhombro.jpg",
-      "vestido-negro-xl-espalda.jpg",
-      "vestido-rojo-corto-espaldaabierta.jpg",
-      "vestido-plateado-lentejuelas-manga.jpg"
-    ];
+    document.getElementById('dcFinde').textContent = dash.alquiladosProxFinde ?? 0;
+    document.getElementById('dcArreglos').textContent = dash.arreglosPendientes ?? 0;
+    document.getElementById('dcDevolver').textContent = dash.aDevolver ?? 0;
+    document.getElementById('dcCobrar').textContent = fmtMoney(dash.porCobrar);
+    document.getElementById('dcIngresado').textContent = fmtMoney(dash.ingresosMes);
+    const dcGanancia = document.getElementById('dcGanancia');
+    dcGanancia.textContent = fmtMoney(dash.gananciaNetaMes);
+    dcGanancia.style.color = dash.gananciaNetaMes >= 0 ? 'var(--ok)' : 'var(--warn)';
 
-    let idx = 0;
+    // Resaltar en rojo las tarjetas que necesitan atención hoy
+    if (dash.aDevolver > 0) grid.children[2].classList.add('dc-alerta');
+    if (dash.arreglosPendientes > 0) grid.children[1].classList.add('dc-alerta');
 
-    function mostrarSlide(i) {
-      slider.innerHTML = "";
-      const img = document.createElement("img");
-      img.src = `img/${vestidos[i]}`;
-      img.alt = "Vestido " + (i + 1);
-      img.className = "vestido-slide";
-      img.style.cursor = "pointer";
-      img.addEventListener("click", () => {
-        window.open("https://wa.me/59899670749?text=Hola!%20Quiero%20consultar%20por%20el%20vestido%20" + encodeURIComponent(img.alt), "_blank");
-      });
-      slider.appendChild(img);
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const { viernes, domingo } = calcularProximoFindeJS(hoy);
+    const listaAlquileres = alquileres.data || [];
+
+    const proximos = listaAlquileres
+      .filter(a => a.Estado !== 'Devuelto' && a.Estado !== 'Anulado' && a.FechaRetiro && new Date(a.FechaRetiro) >= viernes && new Date(a.FechaRetiro) <= domingo)
+      .sort((a,b) => new Date(a.FechaRetiro) - new Date(b.FechaRetiro));
+
+    const box = document.getElementById('proximos');
+    if (!proximos.length) {
+      box.innerHTML = '<p class="hint">No hay retiros este fin de semana.</p>';
+    } else {
+      box.innerHTML = proximos.map(a => `
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)">
+          <div><strong>${a.Cliente}</strong> · ${a.VestidoDesc || ('Vestido #' + a.VestidoID)}</div>
+          <div class="hint">${fmtDate(a.FechaRetiro)}</div>
+        </div>`).join('');
     }
 
-    mostrarSlide(idx);
-    setInterval(() => {
-      idx = (idx + 1) % vestidos.length;
-      mostrarSlide(idx);
-    }, 3500);
-  });
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const galeria = document.getElementById("galeria-nueva");
+    const deudores = listaAlquileres
+      .filter(a => a.Estado !== 'Anulado' && Number(a.Debe) > 0)
+      .sort((a,b) => Number(b.Debe) - Number(a.Debe));
+    const boxDeudas = document.getElementById('deudas');
+    if (!deudores.length) {
+      boxDeudas.innerHTML = '<p class="hint">Nadie te debe plata en este momento 🎉</p>';
+    } else {
+      boxDeudas.innerHTML = deudores.map(a => `
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)">
+          <div><strong>${a.Cliente}</strong>${a.Telefono ? ` · <span class="hint">${a.Telefono}</span>` : ''} · ${a.VestidoDesc || ('Vestido #' + a.VestidoID)}</div>
+          <div style="color:var(--warn);font-weight:600">${fmtMoney(a.Debe)}</div>
+        </div>`).join('');
+    }
 
-  const vestidos = [
-    "vestido-azul-brillos-unhombro.jpg",
-    "vestido-azul-corto-unamanga.jpg",
-    "vestido-azul-cruzado.jpg",
-    "vestido-azul-largo-brillos.jpg",
-    "vestido-bordo-corto-brillos.jpg",
-    "vestido-corset-celeste.jpg",
-    "vestido-terracota-corto.jpg",
-    "vestido-verde-brillos-unhombro.jpg",
-    "vestido-verde-cruzado.jpg",
-    "vestido-verde-unatira.jpg"
-  ];
-
-  vestidos.forEach(archivo => {
-    const img = document.createElement("img");
-    img.src = `img/${archivo}`;
-    img.alt = archivo.split('.')[0].replaceAll("-", " ");
-    img.addEventListener("click", () => {
-      const nombreVestido = archivo.replace(".jpg", "");
-      window.location.href = `catalogo.html?vestido=${nombreVestido}`;
+    // Recordatorios rápidos: devoluciones vencidas + arreglos vencidos
+    const recordatorios = [];
+    listaAlquileres.forEach(a => {
+      if (a.Estado === 'Retirado' && a.FechaDevolucion && new Date(a.FechaDevolucion) < hoy) {
+        recordatorios.push(`⏰ ${a.Cliente} debía devolver el ${fmtDate(a.FechaDevolucion)}`);
+      }
+      if (a.ParaArreglar === 'Pendiente' && a.FechaLimiteArreglo && new Date(a.FechaLimiteArreglo) < hoy) {
+        recordatorios.push(`✂️ Vestido #${a.VestidoID} para arreglar — venció el ${fmtDate(a.FechaLimiteArreglo)}`);
+      }
     });
-    galeria.appendChild(img);
-  });
-});
+    if (recordatorios.length) {
+      document.getElementById('recordatorios').style.display = 'block';
+      document.getElementById('recordatoriosLista').innerHTML = recordatorios.map(r => `<div style="padding:6px 0">${r}</div>`).join('');
+    }
+  } catch (err) {
+    grid.innerHTML = `<div class="card" style="grid-column:1/-1"><p class="hint">No se pudo conectar con la planilla. Revisá que API_URL esté configurada en common.js (ver README).</p></div>`;
+    console.error(err);
+  }
+}
+cargar();
 </script>
-
 </body>
 </html>
