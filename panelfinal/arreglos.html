@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arreglos · ALBALUZ</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="mobilebar">
+  <div class="brand">👗 ALBALUZ</div>
+  <select id="mobileNav" onchange="location.href=this.value">
+    <option value="index.html">Inicio</option>
+    <option value="vestidos.html">Vestidos</option>
+    <option value="alquileres.html">Alquileres</option>
+    <option value="clientes.html">Clientes</option>
+    <option value="gastos.html">Gastos</option>
+    <option value="arreglos.html">Arreglos</option>
+  </select>
+</div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">👗 ALBALUZ</div>
+    <nav>
+      <a href="index.html" data-nav="index.html">🏠 Inicio</a>
+      <a href="vestidos.html" data-nav="vestidos.html">🪡 Vestidos</a>
+      <a href="alquileres.html" data-nav="alquileres.html">📅 Alquileres</a>
+      <a href="clientes.html" data-nav="clientes.html">👥 Clientes</a>
+      <a href="gastos.html" data-nav="gastos.html">💰 Gastos</a>
+      <a href="arreglos.html" data-nav="arreglos.html">🧵 Arreglos</a>
+    </nav>
+    <div class="tag">Alquiler de vestidos<br>Panel de gestión</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Arreglos</h1>
+        <p>Lo que hay que coser antes de entregar</p>
+      </div>
+    </div>
+
+    <div class="search-row">
+      <div class="chip active" data-f="Pendiente" onclick="filtrar(this)">Pendientes</div>
+      <div class="chip" data-f="Arreglado" onclick="filtrar(this)">Ya arreglados</div>
+      <div class="chip" data-f="Todos" onclick="filtrar(this)">Todos</div>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr><th>Vestido</th><th>Cliente</th><th>Arreglo</th><th>Fecha límite</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script src="common.js"></script>
+<script>
+let alquileres = [];
+let filtroEstado = 'Pendiente';
+
+async function cargar() {
+  const res = await apiGet('getAlquileres');
+  alquileres = res.data || [];
+  render();
+}
+
+function filtrar(el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filtroEstado = el.dataset.f;
+  render();
+}
+
+function render() {
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  let lista = alquileres.filter(a => a.ParaArreglar === 'Pendiente' || a.ParaArreglar === 'Arreglado');
+  if (filtroEstado !== 'Todos') lista = lista.filter(a => a.ParaArreglar === filtroEstado);
+  lista.sort((a, b) => new Date(a.FechaLimiteArreglo || a.FechaRetiro) - new Date(b.FechaLimiteArreglo || b.FechaRetiro));
+
+  const tbody = document.getElementById('tbody');
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><h3>Nada por acá</h3><p>Los arreglos se marcan desde la ficha de cada alquiler en Alquileres.</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = lista.map(a => {
+    const vencido = a.FechaLimiteArreglo && new Date(a.FechaLimiteArreglo) < hoy && a.ParaArreglar === 'Pendiente';
+    const accion = a.ParaArreglar === 'Pendiente'
+      ? `<button class="btn ghost sm" onclick="marcarArreglado(${a.ID})">Marcar arreglado</button>`
+      : `<span class="hint">Listo ✓</span>`;
+    return `
+    <tr onclick="location.href='alquileres.html?abrir=${a.ID}'" style="cursor:pointer">
+      <td data-label="Vestido"><strong>#${a.VestidoID} · ${a.VestidoDesc || ''}</strong></td>
+      <td data-label="Cliente">${a.Cliente}</td>
+      <td data-label="Arreglo">${a.NotaArreglo || ''}</td>
+      <td data-label="Fecha límite">${a.FechaLimiteArreglo ? `<span style="${vencido ? 'color:var(--warn);font-weight:600' : ''}">${fmtDate(a.FechaLimiteArreglo)}${vencido ? ' ⚠️' : ''}</span>` : '—'}</td>
+      <td data-label="Estado"><span class="pill ${a.ParaArreglar === 'Pendiente' ? 'arreglo' : 'Devuelto'}">${a.ParaArreglar}</span></td>
+      <td class="acciones" onclick="event.stopPropagation()">${accion}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function marcarArreglado(id) {
+  await apiPost('updateAlquiler', { id, paraArreglar: 'Arreglado' });
+  toast('Vestido marcado como arreglado');
+  cargar();
+}
+
+cargar();
+</script>
+</body>
+</html>
