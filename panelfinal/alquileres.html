@@ -15,6 +15,8 @@
     <option value="vestidos.html">Vestidos</option>
     <option value="alquileres.html">Alquileres</option>
     <option value="clientes.html">Clientes</option>
+    <option value="gastos.html">Gastos</option>
+    <option value="arreglos.html">Arreglos</option>
   </select>
 </div>
 <div class="app">
@@ -25,6 +27,8 @@
       <a href="vestidos.html" data-nav="vestidos.html">🪡 Vestidos</a>
       <a href="alquileres.html" data-nav="alquileres.html">📅 Alquileres</a>
       <a href="clientes.html" data-nav="clientes.html">👥 Clientes</a>
+      <a href="gastos.html" data-nav="gastos.html">💰 Gastos</a>
+      <a href="arreglos.html" data-nav="arreglos.html">🧵 Arreglos</a>
     </nav>
     <div class="tag">Alquiler de vestidos<br>Panel de gestión</div>
   </aside>
@@ -40,6 +44,9 @@
 
     <div class="search-row">
       <div class="chip active" data-f="Todos" onclick="filtrar(this)">Todos</div>
+      <div class="chip" data-f="finde" onclick="filtrar(this)">Este finde</div>
+      <div class="chip" data-f="adevolver" onclick="filtrar(this)">A devolver</div>
+      <div class="chip" data-f="porcobrar" onclick="filtrar(this)">💰 Por cobrar</div>
       <div class="chip" data-f="30dias" onclick="filtrar(this)">Próximos 30 días</div>
       <div class="chip" data-f="hoy" onclick="filtrar(this)">Hoy</div>
       <div class="chip" data-f="Reservado" onclick="filtrar(this)">Pronto a retirar</div>
@@ -52,7 +59,7 @@
     <div style="overflow-x:auto">
       <table>
         <thead>
-          <tr><th>Cliente</th><th>Vestido</th><th>Retiro</th><th>Devolución</th><th>Precio</th><th>Debe</th><th>Estado</th><th></th></tr>
+          <tr><th>Cliente</th><th>Vestido</th><th>Retiro</th><th>Devolución</th><th>Precio</th><th>Pago</th><th>Estado</th><th></th></tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
@@ -140,10 +147,34 @@
         <label>¿Qué hay que hacerle?</label>
         <textarea id="notaArreglo" rows="3" placeholder="Ej: descoser bastilla, falta un broche…" required></textarea>
       </div>
+      <div class="field">
+        <label>Fecha límite (opcional)</label>
+        <input type="date" id="fechaLimiteArreglo">
+      </div>
       <input type="hidden" id="arregloAlquilerId">
       <div class="modal-actions">
         <button type="submit" class="btn gold" style="flex:1">Guardar</button>
         <button type="button" class="btn ghost" onclick="cerrarModalArreglo()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: registrar pago -->
+<div class="overlay" id="overlayPago">
+  <div class="modal">
+    <h2>💰 Registrar pago</h2>
+    <p class="hint" id="pagoInfo" style="margin-bottom:14px"></p>
+    <form id="formPago">
+      <div class="field">
+        <label>Monto recibido</label>
+        <input type="number" id="montoPago" required autofocus>
+        <p class="hint" id="pagoResumen" style="margin-top:6px"></p>
+      </div>
+      <input type="hidden" id="pagoAlquilerId">
+      <div class="modal-actions">
+        <button type="submit" class="btn gold" style="flex:1">Registrar</button>
+        <button type="button" class="btn ghost" onclick="cerrarModalPago()">Cancelar</button>
       </div>
     </form>
   </div>
@@ -172,12 +203,17 @@ function filtrar(el) {
 function render() {
   const hoy = new Date(); hoy.setHours(0,0,0,0);
   const en30 = new Date(hoy.getTime() + 30*24*60*60*1000);
+  const { viernes, domingo } = calcularProximoFindeJS(hoy);
 
   let lista = [...alquileres].sort((a,b) => new Date(b.FechaCreacion) - new Date(a.FechaCreacion));
 
   lista = lista.filter(a => {
     const retiro = a.FechaRetiro ? new Date(a.FechaRetiro) : null;
-    if (filtroEstado === 'arreglo') return a.ParaArreglar === 'SI';
+    const devolucion = a.FechaDevolucion ? new Date(a.FechaDevolucion) : null;
+    if (filtroEstado === 'arreglo') return a.ParaArreglar === 'Pendiente';
+    if (filtroEstado === 'porcobrar') return a.Estado !== 'Anulado' && Number(a.Debe) > 0;
+    if (filtroEstado === 'adevolver') return a.Estado === 'Retirado' && devolucion && devolucion <= hoy;
+    if (filtroEstado === 'finde') return retiro && retiro >= viernes && retiro <= domingo && a.Estado !== 'Devuelto';
     if (filtroEstado === 'Devuelto') return a.Estado === 'Devuelto';
     if (filtroEstado === 'Anulado') return a.Estado === 'Anulado';
     if (filtroEstado === 'Retirado') return a.Estado === 'Retirado';
@@ -200,9 +236,12 @@ function render() {
     } else if (a.Estado === 'Retirado') {
       accionEstado = `<button class="btn ghost sm" onclick="event.stopPropagation();cambiarEstado(${a.ID},'Devuelto')">Marcar devuelto</button>`;
     }
-    const btnArreglo = a.ParaArreglar === 'SI'
+    const btnArreglo = a.ParaArreglar === 'Pendiente'
       ? `<span class="pill arreglo" title="${(a.NotaArreglo || '').replace(/"/g,'&quot;')}">🧵 Para arreglar</span>`
       : `<button class="btn ghost sm" onclick="event.stopPropagation();abrirArreglo(${a.ID})">🧵 Arreglo</button>`;
+    const btnPago = a.Estado !== 'Anulado' && Number(a.Debe) > 0
+      ? `<button class="btn ghost sm" onclick="event.stopPropagation();abrirPago(${a.ID})">💰 Registrar pago</button>`
+      : '';
     return `
     <tr onclick="abrirEditar(${a.ID})" style="cursor:pointer">
       <td data-label="Cliente"><strong>${a.Cliente}</strong>${a.Telefono ? `<br><span class="hint">${a.Telefono}</span>` : ''}</td>
@@ -210,9 +249,12 @@ function render() {
       <td data-label="Retiro">${fmtDate(a.FechaRetiro)}</td>
       <td data-label="Devolución">${fmtDate(a.FechaDevolucion)}</td>
       <td data-label="Precio">${fmtMoney(a.PrecioFinal)}</td>
-      <td data-label="Debe">${Number(a.Debe) > 0 ? `<span style="color:var(--warn);font-weight:600">${fmtMoney(a.Debe)}</span>` : '—'}</td>
+      <td data-label="Pago">
+        <span class="pill ${a.EstadoPago || 'Pendiente'}">${a.EstadoPago || 'Pendiente'}</span>
+        ${Number(a.Debe) > 0 ? `<br><span class="hint">Debe ${fmtMoney(a.Debe)}</span>` : ''}
+      </td>
       <td data-label="Estado"><span class="pill ${a.Estado}">${a.Estado}</span></td>
-      <td class="acciones" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${accionEstado}${btnArreglo}</td>
+      <td class="acciones" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${btnPago}${accionEstado}${btnArreglo}</td>
     </tr>`;
   }).join('');
 }
@@ -235,9 +277,35 @@ function cerrarModalArreglo() { document.getElementById('overlayArreglo').classL
 document.getElementById('formArreglo').addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('arregloAlquilerId').value;
-  await apiPost('updateAlquiler', { id, paraArreglar: 'SI', notaArreglo: document.getElementById('notaArreglo').value });
+  await apiPost('updateAlquiler', {
+    id,
+    paraArreglar: 'Pendiente',
+    notaArreglo: document.getElementById('notaArreglo').value,
+    fechaLimiteArreglo: document.getElementById('fechaLimiteArreglo').value
+  });
   toast('Vestido marcado para arreglar');
   cerrarModalArreglo();
+  cargar();
+});
+
+function abrirPago(id) {
+  const a = alquileres.find(x => String(x.ID) === String(id));
+  if (!a) return;
+  document.getElementById('pagoAlquilerId').value = id;
+  document.getElementById('pagoInfo').textContent = `${a.Cliente} · #${a.VestidoID} ${a.VestidoDesc || ''}`;
+  document.getElementById('pagoResumen').textContent = `Precio ${fmtMoney(a.PrecioFinal)} · Cobrado ${fmtMoney(a.Cobrado)} · Debe ${fmtMoney(a.Debe)}`;
+  document.getElementById('montoPago').value = a.Debe || '';
+  document.getElementById('overlayPago').classList.add('open');
+}
+function cerrarModalPago() { document.getElementById('overlayPago').classList.remove('open'); }
+
+document.getElementById('formPago').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('pagoAlquilerId').value;
+  const monto = document.getElementById('montoPago').value;
+  await apiPost('registrarPago', { id, monto });
+  toast('Pago registrado');
+  cerrarModalPago();
   cargar();
 });
 
@@ -414,7 +482,20 @@ document.getElementById('form').addEventListener('submit', async (e) => {
   }
 });
 
-cargar();
+function aplicarParametrosURL() {
+  const params = new URLSearchParams(location.search);
+  const f = params.get('f');
+  if (f) {
+    filtroEstado = f;
+    document.querySelectorAll('.search-row .chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.f === f);
+    });
+  }
+  const abrir = params.get('abrir');
+  if (abrir) abrirEditar(abrir);
+}
+
+cargar().then(aplicarParametrosURL);
 </script>
 </body>
 </html>
