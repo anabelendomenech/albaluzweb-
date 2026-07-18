@@ -79,7 +79,18 @@ function alquilerQueOcupa(vestidoId, fechaRetiro, fechaDevolucion, alquileres, e
   );
 }
 
-// Próximo alquiler activo (hoy o futuro) de un vestido, para mostrar "Ocupado hasta..." en el catálogo.
+// Próximo fin de semana (viernes a domingo). Si hoy ya es finde, usa el actual.
+function calcularProximoFindeJS(hoy) {
+  const diaSemana = hoy.getDay();
+  let diasHastaViernes;
+  if (diaSemana === 0) diasHastaViernes = -2;
+  else if (diaSemana >= 5) diasHastaViernes = 5 - diaSemana;
+  else diasHastaViernes = 5 - diaSemana;
+  const viernes = new Date(hoy.getTime() + diasHastaViernes * 86400000);
+  const domingo = new Date(viernes.getTime() + 2 * 86400000);
+  domingo.setHours(23, 59, 59, 999);
+  return { viernes, domingo };
+}
 function proximaOcupacion(vestidoId, alquileres) {
   const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
   const activos = alquileres
