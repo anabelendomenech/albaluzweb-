@@ -59,6 +59,7 @@
 
 <div class="overlay" id="overlay">
   <div class="modal">
+    <button type="button" class="modal-close" onclick="cerrarModal()" aria-label="Cerrar">&times;</button>
     <h2>Nuevo cliente</h2>
     <form id="form">
       <div class="field"><label>Nombre</label><input id="nombre" required></div>
@@ -78,6 +79,7 @@
 <!-- Modal: ficha del cliente -->
 <div class="overlay" id="overlayFicha">
   <div class="modal" style="max-width:560px">
+    <button type="button" class="modal-close" onclick="cerrarModalFicha()" aria-label="Cerrar">&times;</button>
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px">
       <h2 style="font-size:1.2rem">Ficha de clienta</h2>
       <div id="fichaContacto" style="display:flex;gap:6px"></div>
@@ -117,10 +119,6 @@
 
     <h3 style="font-size:1rem;margin-bottom:10px">Historial</h3>
     <div id="fichaHistorial"></div>
-
-    <div class="modal-actions">
-      <button type="button" class="btn ghost" style="flex:1" onclick="cerrarModalFicha()">Cerrar</button>
-    </div>
   </div>
 </div>
 

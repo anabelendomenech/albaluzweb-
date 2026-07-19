@@ -15,7 +15,6 @@
     <option value="vestidos.html">Vestidos</option>
     <option value="alquileres.html">Alquileres</option>
     <option value="pruebas.html">Pruebas</option>
-    <option value="pruebas.html">Pruebas</option>
     <option value="clientes.html">Clientes</option>
     <option value="gastos.html">Gastos</option>
     <option value="arreglos.html">Arreglos</option>
@@ -51,10 +50,6 @@
         <div class="l">Ingresos del mes (alquileres)</div>
       </div>
       <div class="stat">
-        <div class="n" id="statOtrosIngresos">…</div>
-        <div class="l">Otros ingresos del mes</div>
-      </div>
-      <div class="stat">
         <div class="n" id="statGastos">…</div>
         <div class="l">Gastos del mes</div>
       </div>
@@ -67,7 +62,7 @@
     <div class="search-row">
       <div class="chip active" data-f="Todos" onclick="filtrar(this)">Todos</div>
       <div class="chip" data-f="Gasto" onclick="filtrar(this)">Gastos</div>
-      <div class="chip" data-f="Ingreso" onclick="filtrar(this)">Otros ingresos</div>
+      <div class="chip" data-f="Ingreso" onclick="filtrar(this)">Ingresos por alquiler</div>
       <div class="chip" data-f="mes" onclick="filtrar(this)">Este mes</div>
     </div>
 
@@ -82,15 +77,10 @@
 
 <div class="overlay" id="overlay">
   <div class="modal">
-    <h2>Nuevo movimiento</h2>
+    <button type="button" class="modal-close" onclick="cerrarModal()" aria-label="Cerrar">&times;</button>
+    <h2>Nuevo gasto</h2>
     <form id="form">
-      <div class="field">
-        <label>Tipo</label>
-        <select id="tipo" onchange="actualizarCategorias()">
-          <option value="Gasto">Gasto (tela, arreglos, envíos, etc.)</option>
-          <option value="Ingreso">Otro ingreso (no es un alquiler)</option>
-        </select>
-      </div>
+      <p class="hint" style="margin-bottom:14px">Los ingresos por alquiler se registran solos al cobrar. Acá cargás solo gastos.</p>
       <div class="field">
         <label>Categoría</label>
         <select id="categoria"></select>
@@ -133,7 +123,6 @@ async function cargar() {
   const [g, dash] = await Promise.all([apiGet('getGastos'), apiGet('getDashboard')]);
   gastos = g.data || [];
   document.getElementById('statIngresos').textContent = fmtMoney(dash.ingresosAlquileresMes);
-  document.getElementById('statOtrosIngresos').textContent = fmtMoney(dash.otrosIngresosMes);
   document.getElementById('statGastos').textContent = fmtMoney(dash.gastosMes);
   const neto = document.getElementById('statNeto');
   neto.textContent = fmtMoney(dash.gananciaNetaMes);
@@ -186,10 +175,7 @@ async function eliminarGasto(id) {
 }
 
 function actualizarCategorias() {
-  const tipo = document.getElementById('tipo').value;
-  const sel = document.getElementById('categoria');
-  const cats = tipo === 'Gasto' ? CATEGORIAS_GASTO : CATEGORIAS_INGRESO;
-  sel.innerHTML = cats.map(c => `<option>${c}</option>`).join('');
+  document.getElementById('categoria').innerHTML = CATEGORIAS_GASTO.map(c => `<option>${c}</option>`).join('');
 }
 
 function abrirNuevo() {
@@ -206,7 +192,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
   btn.disabled = true; btn.textContent = 'Guardando…';
   try {
     await apiPost('addGasto', {
-      tipo: document.getElementById('tipo').value,
+      tipo: 'Gasto',
       categoria: document.getElementById('categoria').value,
       descripcion: document.getElementById('descripcion').value,
       monto: document.getElementById('monto').value,

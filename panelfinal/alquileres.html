@@ -15,7 +15,6 @@
     <option value="vestidos.html">Vestidos</option>
     <option value="alquileres.html">Alquileres</option>
     <option value="pruebas.html">Pruebas</option>
-    <option value="pruebas.html">Pruebas</option>
     <option value="clientes.html">Clientes</option>
     <option value="gastos.html">Gastos</option>
     <option value="arreglos.html">Arreglos</option>
@@ -70,6 +69,7 @@
 <!-- Modal: nuevo alquiler -->
 <div class="overlay" id="overlay">
   <div class="modal">
+    <button type="button" class="modal-close" onclick="cerrarModal()" aria-label="Cerrar">&times;</button>
     <h2 id="modalTitleAlquiler">Nuevo alquiler</h2>
     <form id="form">
       <input type="hidden" id="editId">
@@ -142,6 +142,7 @@
 <!-- Modal: enviar a arreglar -->
 <div class="overlay" id="overlayArreglo">
   <div class="modal">
+    <button type="button" class="modal-close" onclick="cerrarModalArreglo()" aria-label="Cerrar">&times;</button>
     <h2>🧵 Enviar a arreglar</h2>
     <form id="formArreglo">
       <p class="hint" id="arregloInfo" style="margin-bottom:14px"></p>
@@ -165,6 +166,7 @@
 <!-- Modal: registrar pago -->
 <div class="overlay" id="overlayPago">
   <div class="modal">
+    <button type="button" class="modal-close" onclick="cerrarModalPago()" aria-label="Cerrar">&times;</button>
     <h2>💰 Registrar pago</h2>
     <p class="hint" id="pagoInfo" style="margin-bottom:14px"></p>
     <form id="formPago">
@@ -185,8 +187,8 @@
 <!-- Modal: ficha de detalle del alquiler -->
 <div class="overlay" id="overlayDetalleAlq">
   <div class="modal" style="max-width:520px">
+    <button type="button" class="modal-close" onclick="cerrarDetalleAlq()" aria-label="Cerrar">&times;</button>
     <div id="detalleAlqContenido"></div>
-    <div style="margin-top:14px;text-align:right"><button type="button" class="btn ghost" onclick="cerrarDetalleAlq()">Cerrar</button></div>
   </div>
 </div>
 
