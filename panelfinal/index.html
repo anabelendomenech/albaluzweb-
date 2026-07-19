@@ -75,18 +75,6 @@
         <div class="dc-l">Dinero a cobrar</div>
         <div class="dc-sub">Pendiente de pago</div>
       </a>
-      <a class="dash-card" href="gastos.html">
-        <div class="dc-icon">💵</div>
-        <div class="dc-n" id="dcIngresado">…</div>
-        <div class="dc-l">Ingresado este mes</div>
-        <div class="dc-sub">Plata que ya cobraste</div>
-      </a>
-      <a class="dash-card" href="gastos.html">
-        <div class="dc-icon">📈</div>
-        <div class="dc-n" id="dcGanancia">…</div>
-        <div class="dc-l">Ganancia del mes</div>
-        <div class="dc-sub">Ingresos − Gastos</div>
-      </a>
       <a class="dash-card" href="pruebas.html">
         <div class="dc-icon">🗓️</div>
         <div class="dc-n" id="dcPruebas">…</div>
@@ -130,10 +118,6 @@ async function cargar() {
     document.getElementById('dcArreglos').textContent = dash.arreglosPendientes ?? 0;
     document.getElementById('dcDevolver').textContent = dash.aDevolver ?? 0;
     document.getElementById('dcCobrar').textContent = fmtMoney(dash.porCobrar);
-    document.getElementById('dcIngresado').textContent = fmtMoney(dash.ingresosMes);
-    const dcGanancia = document.getElementById('dcGanancia');
-    dcGanancia.textContent = fmtMoney(dash.gananciaNetaMes);
-    dcGanancia.style.color = dash.gananciaNetaMes >= 0 ? 'var(--ok)' : 'var(--warn)';
     document.getElementById('dcPruebas').textContent = dash.pruebasSemana ?? 0;
 
     // Resaltar en rojo las tarjetas que necesitan atención hoy

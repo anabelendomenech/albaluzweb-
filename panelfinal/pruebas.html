@@ -84,10 +84,11 @@
     <h2 id="modalTitle">Agendar prueba</h2>
     <form id="form">
       <input type="hidden" id="editId">
-      <div class="field">
+      <div class="field autocomplete">
         <label>Nombre</label>
-        <input id="nombre" autocomplete="off" placeholder="Nombre de quien viene" required>
-        <p class="hint">Puede no ser clienta todavía. No se agrega sola a Clientes.</p>
+        <input id="nombre" autocomplete="off" placeholder="Escribí el nombre — si ya es clienta, elegila" required>
+        <div class="ac-list" id="acClientePrueba" style="display:none"></div>
+        <p class="hint">Si ya es clienta, aparece en la lista para elegirla. Si no, escribila igual (no se agrega sola a Clientes).</p>
       </div>
       <div class="field">
         <label>Teléfono (opcional)</label>
@@ -130,14 +131,39 @@
 <script src="common.js"></script>
 <script>
 let pruebas = [];
+let CLIENTES = [];
 let filtroEstado = 'Todas';
 let offsetSemana = 0;
 
 async function cargar() {
-  const res = await apiGet('getPruebas');
-  pruebas = res.data || [];
+  const [rp, rc] = await Promise.all([apiGet('getPruebas'), apiGet('getClientes')]);
+  pruebas = rp.data || [];
+  CLIENTES = rc.data || [];
   render();
 }
+
+// ---- autocompletar cliente existente (no crea clientes) ----
+const nombreInput = document.getElementById('nombre');
+nombreInput.addEventListener('input', () => {
+  const q = nombreInput.value.trim().toLowerCase();
+  const box = document.getElementById('acClientePrueba');
+  if (!q) { box.style.display = 'none'; return; }
+  const res = CLIENTES.filter(c => (c.Nombre || '').toLowerCase().includes(q)).slice(0, 6);
+  if (!res.length) { box.style.display = 'none'; return; }
+  box.innerHTML = res.map(c => `<div class="ac-item" onclick='elegirClientePrueba(${JSON.stringify(c).replace(/'/g, "&#39;")})'><span>${c.Nombre}</span><small>${c.Telefono || ''}</small></div>`).join('');
+  box.style.display = 'block';
+});
+function elegirClientePrueba(c) {
+  document.getElementById('nombre').value = c.Nombre || '';
+  document.getElementById('telefono').value = c.Telefono || '';
+  document.getElementById('acClientePrueba').style.display = 'none';
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.autocomplete')) {
+    const box = document.getElementById('acClientePrueba');
+    if (box) box.style.display = 'none';
+  }
+});
 
 function cambiarSemana(delta) { offsetSemana += delta; render(); }
 function irHoy() { offsetSemana = 0; render(); }

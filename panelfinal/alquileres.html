@@ -121,8 +121,9 @@
           <input type="number" id="precioFinal" readonly style="background:#f6f1ee">
         </div>
         <div class="field">
-          <label>Debe $</label>
-          <input type="number" id="debe" value="0">
+          <label>¿Pagó algo? Monto $</label>
+          <input type="number" id="pagado" value="0" oninput="calcular()" placeholder="0 = todavía no pagó">
+          <p class="hint" id="debeHint"></p>
         </div>
       </div>
       <div class="field">
@@ -317,6 +318,7 @@ function abrirNuevo() {
   document.getElementById('editId').value = '';
   document.getElementById('vestidoId').value = '';
   document.getElementById('vestidoInfo').textContent = '';
+  document.getElementById('debeHint').textContent = '';
   document.getElementById('modalTitleAlquiler').textContent = 'Nuevo alquiler';
   document.getElementById('zonaAnular').style.display = 'none';
   document.getElementById('overlay').classList.add('open');
@@ -337,8 +339,9 @@ function abrirEditar(id) {
   document.getElementById('precioBase').value = a.PrecioBase || 0;
   document.getElementById('descuento').value = a.Descuento || 0;
   document.getElementById('precioFinal').value = a.PrecioFinal || 0;
-  document.getElementById('debe').value = a.Debe || 0;
+  document.getElementById('pagado').value = a.Cobrado || 0;
   document.getElementById('notas').value = a.Notas || '';
+  calcular();
   document.getElementById('modalTitleAlquiler').textContent = `Editar alquiler · ${a.Cliente}`;
   document.getElementById('zonaAnular').style.display = a.Estado === 'Anulado' ? 'none' : 'block';
   revisarDisponibilidad();
@@ -434,7 +437,11 @@ document.addEventListener('click', (e) => {
 function calcular() {
   const base = Number(document.getElementById('precioBase').value) || 0;
   const desc = Number(document.getElementById('descuento').value) || 0;
-  document.getElementById('precioFinal').value = Math.round(base * (1 - desc / 100));
+  const pf = Math.round(base * (1 - desc / 100));
+  document.getElementById('precioFinal').value = pf;
+  const pagado = Number(document.getElementById('pagado').value) || 0;
+  const debe = Math.max(pf - pagado, 0);
+  document.getElementById('debeHint').textContent = pf ? `Debe: ${fmtMoney(debe)}` : '';
 }
 
 document.getElementById('form').addEventListener('submit', async (e) => {
@@ -465,7 +472,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
       precioBase: document.getElementById('precioBase').value,
       descuento: document.getElementById('descuento').value,
       precioFinal: document.getElementById('precioFinal').value,
-      debe: document.getElementById('debe').value,
+      debe: Math.max((Number(document.getElementById('precioFinal').value) || 0) - (Number(document.getElementById('pagado').value) || 0), 0),
       notas: document.getElementById('notas').value
     };
     if (editId) {

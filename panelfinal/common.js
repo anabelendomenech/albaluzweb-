@@ -130,12 +130,15 @@ function parseFechaLocal(v) {
 function fmtHora(v) {
   if (!v && v !== 0) return '';
   if (typeof v === 'string') {
-    const m = v.match(/(\d{1,2}):(\d{2})/);
-    if (m) return `${m[1].padStart(2, '0')}:${m[2]}`;
+    // "HH:MM" plano (columna guardada como texto): usar tal cual.
+    const plano = v.match(/^\s*(\d{1,2}):(\d{2})\s*$/);
+    if (plano) return `${plano[1].padStart(2, '0')}:${plano[2]}`;
   }
+  // Date o ISO con fecha (la planilla lo guardó como valor de tiempo): usar la hora LOCAL.
   const d = new Date(v);
   if (!isNaN(d)) return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  return String(v);
+  const m = String(v).match(/(\d{1,2}):(\d{2})/);
+  return m ? `${m[1].padStart(2, '0')}:${m[2]}` : String(v);
 }
 
 // "lunes 21 de jul" — encabezado de cada día en la agenda.
