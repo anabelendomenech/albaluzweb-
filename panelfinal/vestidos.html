@@ -48,8 +48,9 @@
     <div class="search-row">
       <input id="buscador" placeholder="Buscar por número, descripción o tipo…" oninput="render()">
       <div class="chip active" data-f="Todos" onclick="filtrar(this)">Todos</div>
-      <div class="chip" data-f="Disponible" onclick="filtrar(this)">Disponibles</div>
-      <div class="chip" data-f="Alquilado" onclick="filtrar(this)">Ocupados ahora</div>
+      <div class="chip" data-f="En tienda" onclick="filtrar(this)">En tienda</div>
+      <div class="chip" data-f="Alquilado" onclick="filtrar(this)">Alquilados</div>
+      <div class="chip" data-f="En reparación" onclick="filtrar(this)">En reparación</div>
     </div>
 
     <div id="grid" class="grid"></div>
@@ -87,14 +88,30 @@
       </div>
       <div class="field">
         <label>Detalle (opcional)</label>
-        <input id="detalle" placeholder="Ej: Talle L, menos 2cm cada lado">
+        <input id="detalle" placeholder="Ej: menos 2cm cada lado, sin breteles">
       </div>
+      <div class="row">
+        <div class="field"><label>Talle</label><input id="talle" placeholder="Ej: M / 42"></div>
+        <div class="field"><label>Costo de compra $</label><input type="number" id="costoCompra" placeholder="0"></div>
+      </div>
+      <div class="field"><label>Fecha de compra (opcional)</label><input type="date" id="fechaCompra"></div>
       <input type="hidden" id="editId">
       <div class="modal-actions">
         <button type="submit" class="btn gold" style="flex:1">Guardar</button>
         <button type="button" class="btn ghost" onclick="cerrarModal()">Cancelar</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal: detalle / ficha del vestido -->
+<div class="overlay" id="overlayDetalle">
+  <div class="modal" style="max-width:580px">
+    <div id="detalleContenido"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn gold" style="flex:1" id="btnEditarDetalle">✏️ Editar vestido</button>
+      <button type="button" class="btn ghost" onclick="cerrarDetalle()">Cerrar</button>
+    </div>
   </div>
 </div>
 
@@ -118,17 +135,34 @@ function filtrar(el) {
   render();
 }
 
+// Estado automático del vestido según sus alquileres: En reparación (arreglo pendiente) >
+// Alquilado (fuera hoy) > En tienda (disponible).
+function estadoVestido(v) {
+  const enRep = alquileres.some(a => String(a.VestidoID) === String(v.ID) && a.ParaArreglar === 'Pendiente');
+  if (enRep) return { txt: 'En reparación', cls: 'ocupado' };
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const alquiladoHoy = alquileres.some(a =>
+    String(a.VestidoID) === String(v.ID) && a.Estado !== 'Devuelto' && a.Estado !== 'Anulado' &&
+    a.FechaRetiro && a.FechaDevolucion && new Date(a.FechaRetiro) <= hoy && new Date(a.FechaDevolucion) >= hoy);
+  if (alquiladoHoy) return { txt: 'Alquilado', cls: 'alquilado' };
+  return { txt: 'En tienda', cls: 'disponible' };
+}
+
+// Próxima reserva futura (retiro de hoy en adelante), o null.
+function proximaReserva(v) {
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  return alquileres
+    .filter(a => String(a.VestidoID) === String(v.ID) && a.Estado !== 'Anulado' && a.Estado !== 'Devuelto' && a.FechaRetiro && new Date(a.FechaRetiro) >= hoy)
+    .sort((a, b) => new Date(a.FechaRetiro) - new Date(b.FechaRetiro))[0] || null;
+}
+
 function render() {
   const q = document.getElementById('buscador').value.trim().toLowerCase();
   const grid = document.getElementById('grid');
 
   let lista = vestidos.filter(v => {
-    const ocupacion = proximaOcupacion(v.ID, alquileres);
-    const estaOcupadoHoy = !!ocupacion;
-    const okEstado = filtroEstado === 'Todos'
-      || (filtroEstado === 'Disponible' && !estaOcupadoHoy)
-      || (filtroEstado === 'Alquilado' && estaOcupadoHoy);
-    const texto = `${v.ID} ${v.Descripcion} ${v.Tipo}`.toLowerCase();
+    const okEstado = filtroEstado === 'Todos' || filtroEstado === estadoVestido(v).txt;
+    const texto = `${v.ID} ${v.Descripcion} ${v.Tipo} ${v.Talle || ''}`.toLowerCase();
     const okTexto = !q || texto.includes(q);
     return okEstado && okTexto;
   });
@@ -139,20 +173,22 @@ function render() {
   }
 
   grid.innerHTML = lista.map(v => {
-    const ocupacion = proximaOcupacion(v.ID, alquileres);
-    const badge = ocupacion
-      ? `<span class="badge ocupado">Ocupado hasta ${fmtDate(ocupacion.FechaDevolucion)}</span>`
-      : `<span class="badge disponible">Disponible</span>`;
+    const est = estadoVestido(v);
+    const prox = proximaReserva(v);
     return `
-    <div class="dress" onclick='abrirEditar(${JSON.stringify(v).replace(/'/g,"&#39;")})'>
+    <div class="dress" onclick='abrirDetalle(${JSON.stringify(v).replace(/'/g,"&#39;")})'>
       <div class="ph">
         <span class="num">#${v.ID}</span>
-        ${badge}
+        <span class="badge ${est.cls}">${est.txt}</span>
         ${v.Foto ? `<img src="${v.Foto}" loading="lazy">` : '🧵'}
       </div>
       <div class="info">
         <div class="desc">${v.Descripcion || ''}</div>
-        <div class="price">${fmtMoney(v.Precio)}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div class="price">${fmtMoney(v.Precio)}</div>
+          ${v.Talle ? `<span class="hint">Talle ${v.Talle}</span>` : ''}
+        </div>
+        ${prox ? `<div class="hint">📅 Próx: ${fmtDate(prox.FechaRetiro)}</div>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -173,10 +209,79 @@ function abrirEditar(v) {
   document.getElementById('precio').value = v.Precio || '';
   document.getElementById('descripcion').value = v.Descripcion || '';
   document.getElementById('detalle').value = v.Detalle || '';
+  document.getElementById('talle').value = v.Talle || '';
+  document.getElementById('costoCompra').value = v.CostoCompra || '';
+  document.getElementById('fechaCompra').value = toDateInput(v.FechaCompra);
   const prev = document.getElementById('preview');
   if (v.Foto) { prev.src = v.Foto; prev.style.display = 'block'; } else { prev.style.display = 'none'; }
   document.getElementById('overlay').classList.add('open');
 }
+
+function toDateInput(v) {
+  const d = parseFechaLocal(v);
+  if (!d) return '';
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// Ficha de detalle del vestido: datos, estado, estadísticas (uso, ingresos, rentabilidad) e historial.
+function abrirDetalle(v) {
+  const propios = alquileres.filter(a => String(a.VestidoID) === String(v.ID) && a.Estado !== 'Anulado');
+  const nAlq = propios.length;
+  const ingresos = propios.reduce((s, a) => s + (Number(a.Cobrado) || 0), 0);
+  const costo = Number(v.CostoCompra) || 0;
+  const rent = costo > 0 ? ingresos - costo : null;
+  const ordenadas = [...propios].sort((a, b) => new Date(b.FechaRetiro) - new Date(a.FechaRetiro));
+  const hoyD = new Date(); hoyD.setHours(0, 0, 0, 0);
+  const ultima = ordenadas.find(a => a.FechaRetiro && new Date(a.FechaRetiro) <= hoyD) || null;
+  const est = estadoVestido(v);
+  const prox = proximaReserva(v);
+  const stat = (n, l, color) => `<div class="stat" style="padding:14px"><div class="n" style="font-size:1.4rem${color ? `;color:${color}` : ''}">${n}</div><div class="l">${l}</div></div>`;
+
+  let html = `
+    <div style="display:flex;gap:16px;margin-bottom:16px;align-items:flex-start">
+      <div style="width:110px;height:145px;flex-shrink:0;border-radius:10px;overflow:hidden;background:var(--rose-light);display:flex;align-items:center;justify-content:center;font-size:1.6rem">
+        ${v.Foto ? `<img src="${v.Foto}" style="width:100%;height:100%;object-fit:cover">` : '🧵'}
+      </div>
+      <div style="flex:1">
+        <h2 style="margin-bottom:6px">#${v.ID} · ${v.Descripcion || ''}</h2>
+        <span class="badge ${est.cls}" style="position:static;display:inline-block">${est.txt}</span>
+        <div class="hint" style="margin-top:6px">${v.Tipo || ''}${v.Talle ? ` · Talle ${v.Talle}` : ''}</div>
+        <div class="price" style="margin-top:4px">${fmtMoney(v.Precio)}</div>
+        ${v.Detalle ? `<div class="hint" style="margin-top:4px">${v.Detalle}</div>` : ''}
+      </div>
+    </div>
+
+    <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px">
+      ${stat(nAlq, 'Veces alquilado')}
+      ${stat(fmtMoney(ingresos), 'Ingresos generados', 'var(--ok)')}
+      ${stat(rent === null ? '—' : fmtMoney(rent), 'Rentabilidad', rent === null ? null : (rent >= 0 ? 'var(--ok)' : 'var(--warn)'))}
+    </div>
+    ${costo > 0
+      ? `<p class="hint" style="margin-bottom:12px">Costo de compra: ${fmtMoney(costo)}${v.FechaCompra ? ` · comprado ${fmtDate(v.FechaCompra)}` : ''}${rent !== null && rent >= 0 ? ' · ✅ ya se pagó solo' : ''}</p>`
+      : `<p class="hint" style="margin-bottom:12px">Cargá el costo de compra (editando el vestido) para ver la rentabilidad.</p>`}
+
+    <div class="row" style="gap:14px;margin-bottom:14px">
+      <div class="field" style="margin:0"><label>Última vez</label><div>${ultima ? fmtDate(ultima.FechaRetiro) : '—'}</div></div>
+      <div class="field" style="margin:0"><label>Última clienta</label><div>${ultima ? (ultima.Cliente || '—') : '—'}</div></div>
+      <div class="field" style="margin:0"><label>Próxima reserva</label><div>${prox ? fmtDate(prox.FechaRetiro) : '—'}</div></div>
+    </div>
+
+    <h3 style="font-size:1rem;margin-bottom:8px">Historial</h3>
+    <div>`;
+  html += !propios.length
+    ? '<p class="hint">Todavía no se alquiló.</p>'
+    : ordenadas.map(a => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);gap:10px">
+        <div><strong>${a.Cliente || ''}</strong><div class="hint">${fmtDate(a.FechaRetiro)} → ${fmtDate(a.FechaDevolucion)} · ${fmtMoney(a.PrecioFinal)}</div></div>
+        <span class="pill ${a.Estado}">${a.Estado}</span>
+      </div>`).join('');
+  html += '</div>';
+
+  document.getElementById('detalleContenido').innerHTML = html;
+  document.getElementById('btnEditarDetalle').onclick = () => { cerrarDetalle(); abrirEditar(v); };
+  document.getElementById('overlayDetalle').classList.add('open');
+}
+function cerrarDetalle() { document.getElementById('overlayDetalle').classList.remove('open'); }
 
 function cerrarModal() {
   document.getElementById('overlay').classList.remove('open');
@@ -208,7 +313,10 @@ document.getElementById('form').addEventListener('submit', async (e) => {
       tipo: document.getElementById('tipo').value,
       precio: document.getElementById('precio').value,
       descripcion: document.getElementById('descripcion').value,
-      detalle: document.getElementById('detalle').value
+      detalle: document.getElementById('detalle').value,
+      talle: document.getElementById('talle').value,
+      costoCompra: document.getElementById('costoCompra').value,
+      fechaCompra: document.getElementById('fechaCompra').value
     };
     if (fotoUrl) payload.foto = fotoUrl;
 
