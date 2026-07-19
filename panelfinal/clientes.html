@@ -15,7 +15,6 @@
     <option value="vestidos.html">Vestidos</option>
     <option value="alquileres.html">Alquileres</option>
     <option value="pruebas.html">Pruebas</option>
-    <option value="pruebas.html">Pruebas</option>
     <option value="clientes.html">Clientes</option>
     <option value="gastos.html">Gastos</option>
     <option value="arreglos.html">Arreglos</option>
@@ -79,9 +78,13 @@
 <!-- Modal: ficha del cliente -->
 <div class="overlay" id="overlayFicha">
   <div class="modal" style="max-width:560px">
-    <h2 id="fichaNombre">Cliente</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px">
+      <h2 style="font-size:1.2rem">Ficha de clienta</h2>
+      <div id="fichaContacto" style="display:flex;gap:6px"></div>
+    </div>
 
-    <div class="row" style="margin-top:14px">
+    <div class="field"><label>Nombre</label><input id="fichaNombreInput"></div>
+    <div class="row">
       <div class="field"><label>Teléfono</label><input id="fichaTelInput" placeholder="09X XXX XXX"></div>
       <div class="field">
         <label>Instagram</label>
@@ -95,6 +98,7 @@
         <button type="button" class="btn gold" style="width:100%;justify-content:center" onclick="guardarCliente()">💾 Guardar datos</button>
       </div>
     </div>
+    <div id="fichaEstado" style="margin:6px 0 4px;display:flex;gap:6px;flex-wrap:wrap"></div>
 
     <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
       <div class="stat" style="padding:14px">
@@ -134,25 +138,34 @@ async function cargar() {
 
 function render() {
   const q = document.getElementById('buscador').value.trim().toLowerCase();
-  const lista = clientes.filter(c => !q || (c.Nombre || '').toLowerCase().includes(q));
   const tbody = document.getElementById('tbody');
+  // Datos calculados por clienta + orden: primero las que deben Y ya devolvieron, luego por deuda.
+  let lista = clientes
+    .filter(c => !q || (c.Nombre || '').toLowerCase().includes(q))
+    .map(c => {
+      const propios = alquileres.filter(a => a.Cliente === c.Nombre && a.Estado !== 'Anulado');
+      const debe = propios.reduce((s, a) => s + (Number(a.Debe) || 0), 0);
+      const urgente = propios.some(a => a.Estado === 'Devuelto' && Number(a.Debe) > 0);
+      const ultima = propios.length
+        ? propios.reduce((max, a) => (!max || new Date(a.FechaRetiro) > new Date(max.FechaRetiro)) ? a : max, null)
+        : null;
+      return { c, propios, debe, urgente, ultima };
+    })
+    .sort((a, b) => (b.urgente - a.urgente) || (b.debe - a.debe));
+
   if (!lista.length) {
     tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><h3>Sin clientes todavía</h3><p>Aparecen automáticamente al crear un alquiler.</p></div></td></tr>`;
     return;
   }
-  tbody.innerHTML = lista.map(c => {
-    const propios = alquileres.filter(a => a.Cliente === c.Nombre && a.Estado !== 'Anulado');
-    const ultima = propios.length
-      ? propios.reduce((max, a) => (!max || new Date(a.FechaRetiro) > new Date(max.FechaRetiro)) ? a : max, null)
-      : null;
-    const debe = propios.reduce((s, a) => s + (Number(a.Debe) || 0), 0);
-    return `<tr onclick="abrirFicha('${c.Nombre.replace(/'/g,"\\'")}')" style="cursor:pointer">
-      <td data-label="Nombre"><strong>${c.Nombre}</strong></td>
+  tbody.innerHTML = lista.map(({ c, propios, debe, urgente, ultima }) => {
+    const wa = linkWhatsApp(c.Telefono, `Hola ${c.Nombre || ''}! `);
+    return `<tr onclick="abrirFicha('${c.Nombre.replace(/'/g,"\\'")}')" style="cursor:pointer${urgente ? ';background:#fdecec' : ''}">
+      <td data-label="Nombre"><strong>${c.Nombre}</strong>${urgente ? ' <span class="pill Pendiente" style="font-size:.62rem">debe y devolvió</span>' : ''}</td>
       <td data-label="Teléfono">${c.Telefono || '—'}</td>
       <td data-label="Alquileres">${propios.length}</td>
       <td data-label="Debe">${debe > 0 ? `<span style="color:var(--warn);font-weight:600">${fmtMoney(debe)}</span>` : '—'}</td>
       <td data-label="Última vez">${ultima ? fmtDate(ultima.FechaRetiro) : '—'}</td>
-      <td class="acciones"><span class="hint">Ver ficha →</span></td>
+      <td class="acciones">${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank" onclick="event.stopPropagation()">💬</a>` : '<span class="hint">Ver ficha →</span>'}</td>
     </tr>`;
   }).join('');
 }
@@ -164,12 +177,28 @@ function abrirFicha(nombre) {
     .sort((a, b) => new Date(b.FechaRetiro) - new Date(a.FechaRetiro));
 
   fichaClienteActual = nombre;
-  document.getElementById('fichaNombre').textContent = nombre;
+  document.getElementById('fichaNombreInput').value = nombre;
   document.getElementById('fichaTelInput').value = (c && c.Telefono) || '';
   document.getElementById('fichaInstaInput').value = (c && c.Instagram) || '';
   document.getElementById('fichaCumpleInput').value = toDateInput(c && c.Cumpleanos);
   actualizarInstaLink();
   document.getElementById('fichaTotal').textContent = propios.length;
+
+  // Contacto rápido
+  const wa = linkWhatsApp(c && c.Telefono, `Hola ${nombre}! `);
+  const ig = linkInstagram(c && c.Instagram);
+  document.getElementById('fichaContacto').innerHTML =
+    (wa ? `<a class="btn ghost sm" href="${wa}" target="_blank">💬</a>` : '') +
+    (ig ? `<a class="btn ghost sm" href="${ig}" target="_blank">📷</a>` : '');
+
+  // Estado contextual: debe / tiene que devolver / tiene que retirar
+  const debeTot = propios.reduce((s, a) => s + (Number(a.Debe) || 0), 0);
+  const debeYaDevuelto = propios.some(a => a.Estado === 'Devuelto' && Number(a.Debe) > 0);
+  const chips = [];
+  if (debeTot > 0) chips.push(`<span class="pill Pendiente">Debe ${fmtMoney(debeTot)}${debeYaDevuelto ? ' · ya devolvió' : ''}</span>`);
+  propios.filter(a => a.Estado === 'Retirado').forEach(a => chips.push(`<span class="pill Retirado">Tiene que devolver #${a.VestidoID}</span>`));
+  propios.filter(a => a.Estado === 'Reservado').forEach(a => chips.push(`<span class="pill Reservado">Tiene que retirar #${a.VestidoID} · ${fmtDate(a.FechaRetiro)}</span>`));
+  document.getElementById('fichaEstado').innerHTML = chips.join('');
 
   const ultima = propios[0];
   document.getElementById('fichaUltima').textContent = ultima ? fmtDate(ultima.FechaRetiro) : '—';
@@ -227,13 +256,18 @@ document.getElementById('fichaInstaInput').addEventListener('input', actualizarI
 
 async function guardarCliente() {
   if (!fichaClienteActual) return;
-  await apiPost('updateCliente', {
-    nombre: fichaClienteActual,
+  const nuevoNombre = document.getElementById('fichaNombreInput').value.trim();
+  if (!nuevoNombre) { toast('El nombre no puede quedar vacío'); return; }
+  const res = await apiPost('updateCliente', {
+    nombreActual: fichaClienteActual,
+    nombre: nuevoNombre,
     telefono: document.getElementById('fichaTelInput').value,
     instagram: document.getElementById('fichaInstaInput').value.trim().replace(/^@/, ''),
     cumpleanos: document.getElementById('fichaCumpleInput').value
   });
+  if (res && res.error) { toast(res.error); return; }
   toast('Datos guardados');
+  cerrarModalFicha();
   await cargar();
 }
 
