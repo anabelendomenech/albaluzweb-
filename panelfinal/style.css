@@ -183,6 +183,9 @@ tr:hover td{background:#fbf7f4;}
 .pill.Pendiente{background:#f3d9d9;color:#a44343;}
 .pill.Seña{background:#f6e6d8;color:var(--warn);}
 .pill.Pagado{background:#e3efe4;color:var(--ok);}
+.pill.Confirmada{background:#dde6f2;color:#3a5f8a;}
+.pill.Realizada{background:#e3efe4;color:var(--ok);}
+.pill.Cancelada{background:#e6e1e3;color:#8a7a83;text-decoration:line-through;}
 
 /* -------- modal -------- */
 .overlay{

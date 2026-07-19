@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pruebas · ALBALUZ</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .week-nav{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+  .week-nav .rango{font-family:'Fraunces',serif;color:var(--wine);font-size:1.05rem;min-width:210px;text-align:center;}
+  .dia-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:14px;}
+  .dia-card.hoy{border-left:4px solid var(--gold);}
+  .dia-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .dia-head h3{text-transform:capitalize;font-size:1.05rem;}
+  .dia-head .badge-hoy{font-size:.7rem;background:var(--gold);color:var(--wine-dark);padding:2px 10px;border-radius:999px;font-weight:600;}
+  .prueba-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+  .prueba-row:last-child{border-bottom:none;}
+  .prueba-hora{font-family:'Fraunces',serif;color:var(--wine);font-weight:600;min-width:52px;}
+  .prueba-main{flex:1;min-width:160px;}
+  .prueba-acciones{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start;}
+  .dia-vacio{color:var(--ink-soft);font-size:.82rem;}
+</style>
+</head>
+<body>
+<div class="mobilebar">
+  <div class="brand">👗 ALBALUZ</div>
+  <select id="mobileNav" onchange="location.href=this.value">
+    <option value="index.html">Inicio</option>
+    <option value="vestidos.html">Vestidos</option>
+    <option value="alquileres.html">Alquileres</option>
+    <option value="pruebas.html">Pruebas</option>
+    <option value="clientes.html">Clientes</option>
+    <option value="gastos.html">Gastos</option>
+    <option value="arreglos.html">Arreglos</option>
+  </select>
+</div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">👗 ALBALUZ</div>
+    <nav>
+      <a href="index.html" data-nav="index.html">🏠 Inicio</a>
+      <a href="vestidos.html" data-nav="vestidos.html">🪡 Vestidos</a>
+      <a href="alquileres.html" data-nav="alquileres.html">📅 Alquileres</a>
+      <a href="pruebas.html" data-nav="pruebas.html">🗓️ Pruebas</a>
+      <a href="clientes.html" data-nav="clientes.html">👥 Clientes</a>
+      <a href="gastos.html" data-nav="gastos.html">💰 Gastos</a>
+      <a href="arreglos.html" data-nav="arreglos.html">🧵 Arreglos</a>
+    </nav>
+    <div class="tag">Alquiler de vestidos<br>Panel de gestión</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Agenda de pruebas</h1>
+        <p>Quién viene a probarse vestidos esta semana</p>
+      </div>
+      <button class="btn gold" onclick="abrirNuevo()">+ Agendar prueba</button>
+    </div>
+
+    <div class="week-nav">
+      <button class="btn ghost sm" onclick="cambiarSemana(-1)">‹ Anterior</button>
+      <span class="rango" id="rangoSemana">…</span>
+      <button class="btn ghost sm" onclick="cambiarSemana(1)">Siguiente ›</button>
+      <button class="btn ghost sm" onclick="irHoy()">Hoy</button>
+    </div>
+
+    <div class="search-row">
+      <div class="chip active" data-f="Todas" onclick="filtrar(this)">Todas</div>
+      <div class="chip" data-f="Pendiente" onclick="filtrar(this)">Pendientes</div>
+      <div class="chip" data-f="Confirmada" onclick="filtrar(this)">Confirmadas</div>
+      <div class="chip" data-f="Realizada" onclick="filtrar(this)">Realizadas</div>
+      <div class="chip" data-f="Cancelada" onclick="filtrar(this)">Canceladas</div>
+    </div>
+
+    <div id="semana">Cargando…</div>
+  </main>
+</div>
+
+<!-- Modal: nueva / editar prueba -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">Agendar prueba</h2>
+    <form id="form">
+      <input type="hidden" id="editId">
+      <div class="field">
+        <label>Nombre</label>
+        <input id="nombre" autocomplete="off" placeholder="Nombre de quien viene" required>
+        <p class="hint">Puede no ser clienta todavía. No se agrega sola a Clientes.</p>
+      </div>
+      <div class="field">
+        <label>Teléfono (opcional)</label>
+        <input id="telefono" placeholder="09X XXX XXX">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" id="fecha" required>
+        </div>
+        <div class="field">
+          <label>Hora</label>
+          <input type="time" id="hora" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <select id="estado">
+          <option value="Pendiente">Pendiente</option>
+          <option value="Confirmada">Confirmada</option>
+          <option value="Realizada">Realizada</option>
+          <option value="Cancelada">Cancelada</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Observaciones (opcional)</label>
+        <textarea id="observaciones" rows="2" placeholder="Ej: quiere ver vestidos largos, talle M"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn gold" style="flex:1">Guardar</button>
+        <button type="button" class="btn ghost" onclick="cerrarModal()">Cancelar</button>
+      </div>
+      <div id="zonaConvertir" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+        <button type="button" class="btn ghost" style="width:100%;justify-content:center" onclick="convertirEnAlquiler()">👗 Convertir en alquiler</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+let pruebas = [];
+let filtroEstado = 'Todas';
+let offsetSemana = 0;
+
+async function cargar() {
+  const res = await apiGet('getPruebas');
+  pruebas = res.data || [];
+  render();
+}
+
+function cambiarSemana(delta) { offsetSemana += delta; render(); }
+function irHoy() { offsetSemana = 0; render(); }
+
+function filtrar(el) {
+  document.querySelectorAll('.search-row .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filtroEstado = el.dataset.f;
+  render();
+}
+
+function render() {
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const { lunes, domingo } = calcularSemanaJS(hoy, offsetSemana);
+  document.getElementById('rangoSemana').textContent =
+    `${lunes.toLocaleDateString('es-UY', { day: '2-digit', month: 'short' })} — ${domingo.toLocaleDateString('es-UY', { day: '2-digit', month: 'short' })}`;
+
+  const cont = document.getElementById('semana');
+  let html = '';
+
+  for (let i = 0; i < 7; i++) {
+    const dia = new Date(lunes.getTime() + i * 86400000);
+    const esHoy = dia.getTime() === hoy.getTime();
+
+    const delDia = pruebas
+      .filter(p => {
+        const f = parseFechaLocal(p.Fecha);
+        if (!f) return false;
+        f.setHours(0, 0, 0, 0);
+        if (f.getTime() !== dia.getTime()) return false;
+        return filtroEstado === 'Todas' || p.Estado === filtroEstado;
+      })
+      .sort((a, b) => fmtHora(a.Hora).localeCompare(fmtHora(b.Hora)));
+
+    html += `<div class="dia-card${esHoy ? ' hoy' : ''}">
+      <div class="dia-head">
+        <h3>${fmtDiaLargo(dia)}</h3>
+        ${esHoy ? '<span class="badge-hoy">HOY</span>' : ''}
+      </div>`;
+
+    if (!delDia.length) {
+      html += `<p class="dia-vacio">Sin pruebas${filtroEstado !== 'Todas' ? ' (con este filtro)' : ''}.</p>`;
+    } else {
+      html += delDia.map(p => filaPrueba(p)).join('');
+    }
+    html += `</div>`;
+  }
+
+  cont.innerHTML = html;
+}
+
+function filaPrueba(p) {
+  const acciones = [];
+  if (p.Estado === 'Pendiente') {
+    acciones.push(`<button class="btn ghost sm" onclick="event.stopPropagation();cambiarEstado(${p.ID},'Confirmada')">Confirmar</button>`);
+  }
+  if (p.Estado === 'Pendiente' || p.Estado === 'Confirmada') {
+    acciones.push(`<button class="btn ghost sm" onclick="event.stopPropagation();cambiarEstado(${p.ID},'Realizada')">Marcar realizada</button>`);
+    acciones.push(`<button class="btn gold sm" onclick="event.stopPropagation();convertirDirecto(${p.ID})">👗 A alquiler</button>`);
+  }
+  return `
+  <div class="prueba-row" onclick="abrirEditar(${p.ID})" style="cursor:pointer">
+    <div class="prueba-hora">${fmtHora(p.Hora) || '--:--'}</div>
+    <div class="prueba-main">
+      <strong>${p.Nombre || ''}</strong>${p.Telefono ? ` · <span class="hint">${p.Telefono}</span>` : ''}
+      ${p.Observaciones ? `<div class="hint">${p.Observaciones}</div>` : ''}
+    </div>
+    <div class="prueba-acciones">
+      <span class="pill ${p.Estado}">${p.Estado}</span>
+      ${acciones.join('')}
+    </div>
+  </div>`;
+}
+
+async function cambiarEstado(id, estado) {
+  await apiPost('updatePrueba', { id, estado });
+  toast(estado === 'Confirmada' ? 'Prueba confirmada' : 'Prueba marcada como realizada');
+  cargar();
+}
+
+function convertirDirecto(id) {
+  const p = pruebas.find(x => String(x.ID) === String(id));
+  if (p) irAAlquiler(p);
+}
+
+function irAAlquiler(p) {
+  const qs = new URLSearchParams({
+    prellenarCliente: p.Nombre || '',
+    prellenarTelefono: p.Telefono || ''
+  }).toString();
+  location.href = `alquileres.html?${qs}`;
+}
+
+function abrirNuevo() {
+  document.getElementById('form').reset();
+  document.getElementById('editId').value = '';
+  document.getElementById('estado').value = 'Pendiente';
+  document.getElementById('modalTitle').textContent = 'Agendar prueba';
+  document.getElementById('zonaConvertir').style.display = 'none';
+  document.getElementById('overlay').classList.add('open');
+}
+function cerrarModal() { document.getElementById('overlay').classList.remove('open'); }
+
+function abrirEditar(id) {
+  const p = pruebas.find(x => String(x.ID) === String(id));
+  if (!p) return;
+  document.getElementById('editId').value = p.ID;
+  document.getElementById('nombre').value = p.Nombre || '';
+  document.getElementById('telefono').value = p.Telefono || '';
+  document.getElementById('fecha').value = (p.Fecha || '').slice(0, 10);
+  document.getElementById('hora').value = fmtHora(p.Hora);
+  document.getElementById('estado').value = p.Estado || 'Pendiente';
+  document.getElementById('observaciones').value = p.Observaciones || '';
+  document.getElementById('modalTitle').textContent = `Editar prueba · ${p.Nombre || ''}`;
+  document.getElementById('zonaConvertir').style.display = p.Estado === 'Cancelada' ? 'none' : 'block';
+  document.getElementById('overlay').classList.add('open');
+}
+
+function convertirEnAlquiler() {
+  const id = document.getElementById('editId').value;
+  const p = pruebas.find(x => String(x.ID) === String(id));
+  if (p) irAAlquiler(p);
+}
+
+document.getElementById('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.disabled = true; btn.textContent = 'Guardando…';
+  try {
+    const editId = document.getElementById('editId').value;
+    const payload = {
+      nombre: document.getElementById('nombre').value,
+      telefono: document.getElementById('telefono').value,
+      fecha: document.getElementById('fecha').value,
+      hora: document.getElementById('hora').value,
+      estado: document.getElementById('estado').value,
+      observaciones: document.getElementById('observaciones').value
+    };
+    if (editId) {
+      await apiPost('updatePrueba', { id: editId, ...payload });
+      toast('Prueba actualizada');
+    } else {
+      await apiPost('addPrueba', payload);
+      toast('Prueba agendada');
+    }
+    cerrarModal();
+    await cargar();
+  } catch (err) {
+    toast('Error al guardar. Intentá de nuevo.');
+    console.error(err);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Guardar';
+  }
+});
+
+cargar();
+</script>
+</body>
+</html>

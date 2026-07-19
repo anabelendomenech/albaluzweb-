@@ -1,5 +1,6 @@
 // ⚠️ Pegá acá la URL de tu Web App de Google Apps Script (ver README.md paso 4)
-const API_URL = 'https://script.google.com/macros/s/AKfycbyoEJSjK9X0UlUGD2g11StJt4DQhENY2uhzp5JiewhMlvuXrw0AGWDeTxqxMyOW6qacEw/exec';
+// Backend "ALBALUZ - Backend" (Fase 1 + Agenda de Pruebas), desplegado 2026-07-18.
+const API_URL = 'https://script.google.com/macros/s/AKfycbyKCB-mN7pC_OaOJoNhqgsrxCA7ra1rJ966tG-YHCEjxiT_yfnYvkHkimd3PGA6fzjVgg/exec';
 
 async function apiGet(action, params = {}) {
   const qs = new URLSearchParams({ action, ...params }).toString();
@@ -97,4 +98,49 @@ function proximaOcupacion(vestidoId, alquileres) {
     .filter(a => String(a.VestidoID) === String(vestidoId) && a.Estado !== 'Devuelto' && a.Estado !== 'Anulado' && a.FechaDevolucion && new Date(a.FechaDevolucion) >= hoy)
     .sort((a, b) => new Date(a.FechaRetiro) - new Date(b.FechaRetiro));
   return activos[0] || null;
+}
+
+// ---- Semana (para la Agenda de Pruebas) ----
+// Devuelve el lunes y el domingo de la semana de `hoy`. offsetSemanas desplaza a semanas anteriores (−1) o próximas (+1).
+function calcularSemanaJS(hoy, offsetSemanas = 0) {
+  const d = new Date(hoy); d.setHours(0, 0, 0, 0);
+  const dia = d.getDay(); // 0 dom .. 6 sab
+  const diasDesdeLunes = dia === 0 ? 6 : dia - 1;
+  const lunes = new Date(d.getTime() + (offsetSemanas * 7 - diasDesdeLunes) * 86400000);
+  lunes.setHours(0, 0, 0, 0);
+  const domingo = new Date(lunes.getTime() + 6 * 86400000);
+  domingo.setHours(23, 59, 59, 999);
+  return { lunes, domingo };
+}
+
+// Parsea una fecha respetando el día LOCAL. Una cadena "YYYY-MM-DD" sola la interpreta
+// JS como medianoche UTC, lo que en Uruguay (UTC-3) la corre un día para atrás. Esto lo evita.
+function parseFechaLocal(v) {
+  if (!v) return null;
+  if (typeof v === 'string') {
+    const m = v.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  }
+  const d = new Date(v);
+  return isNaN(d) ? null : d;
+}
+
+// Normaliza la hora a "HH:MM". Viene como "HH:MM" (ideal, si la columna es texto),
+// pero si la planilla la guardó como valor de tiempo, la recupera igual.
+function fmtHora(v) {
+  if (!v && v !== 0) return '';
+  if (typeof v === 'string') {
+    const m = v.match(/(\d{1,2}):(\d{2})/);
+    if (m) return `${m[1].padStart(2, '0')}:${m[2]}`;
+  }
+  const d = new Date(v);
+  if (!isNaN(d)) return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  return String(v);
+}
+
+// "lunes 21 de jul" — encabezado de cada día en la agenda.
+function fmtDiaLargo(d) {
+  const date = new Date(d);
+  if (isNaN(date)) return '';
+  return date.toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric', month: 'short' });
 }

@@ -15,6 +15,8 @@
     <option value="index.html">Inicio</option>
     <option value="vestidos.html">Vestidos</option>
     <option value="alquileres.html">Alquileres</option>
+    <option value="pruebas.html">Pruebas</option>
+    <option value="pruebas.html">Pruebas</option>
     <option value="clientes.html">Clientes</option>
     <option value="gastos.html">Gastos</option>
     <option value="arreglos.html">Arreglos</option>
@@ -27,6 +29,7 @@
       <a href="index.html" data-nav="index.html">🏠 Inicio</a>
       <a href="vestidos.html" data-nav="vestidos.html">🪡 Vestidos</a>
       <a href="alquileres.html" data-nav="alquileres.html">📅 Alquileres</a>
+      <a href="pruebas.html" data-nav="pruebas.html">🗓️ Pruebas</a>
       <a href="clientes.html" data-nav="clientes.html">👥 Clientes</a>
       <a href="gastos.html" data-nav="gastos.html">💰 Gastos</a>
       <a href="arreglos.html" data-nav="arreglos.html">🧵 Arreglos</a>
@@ -84,6 +87,12 @@
         <div class="dc-l">Ganancia del mes</div>
         <div class="dc-sub">Ingresos − Gastos</div>
       </a>
+      <a class="dash-card" href="pruebas.html">
+        <div class="dc-icon">🗓️</div>
+        <div class="dc-n" id="dcPruebas">…</div>
+        <div class="dc-l">Pruebas esta semana</div>
+        <div class="dc-sub">Agenda de la semana</div>
+      </a>
     </div>
 
     <div id="recordatorios" class="card" style="margin-top:22px;display:none">
@@ -125,6 +134,7 @@ async function cargar() {
     const dcGanancia = document.getElementById('dcGanancia');
     dcGanancia.textContent = fmtMoney(dash.gananciaNetaMes);
     dcGanancia.style.color = dash.gananciaNetaMes >= 0 ? 'var(--ok)' : 'var(--warn)';
+    document.getElementById('dcPruebas').textContent = dash.pruebasSemana ?? 0;
 
     // Resaltar en rojo las tarjetas que necesitan atención hoy
     if (dash.aDevolver > 0) grid.children[2].classList.add('dc-alerta');
