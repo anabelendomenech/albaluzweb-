@@ -50,9 +50,6 @@
       <div class="chip" data-f="finde" onclick="filtrar(this)">Este finde</div>
       <div class="chip" data-f="adevolver" onclick="filtrar(this)">A devolver</div>
       <div class="chip" data-f="porcobrar" onclick="filtrar(this)">💰 Por cobrar</div>
-      <div class="chip" data-f="30dias" onclick="filtrar(this)">Próximos 30 días</div>
-      <div class="chip" data-f="hoy" onclick="filtrar(this)">Hoy</div>
-      <div class="chip" data-f="Reservado" onclick="filtrar(this)">Pronto a retirar</div>
       <div class="chip" data-f="Retirado" onclick="filtrar(this)">Retirados</div>
       <div class="chip" data-f="Devuelto" onclick="filtrar(this)">Devueltos</div>
       <div class="chip" data-f="Anulado" onclick="filtrar(this)">Anulados</div>
@@ -80,6 +77,7 @@
         <label>Cliente</label>
         <input id="cliente" autocomplete="off" placeholder="Nombre del cliente" required>
         <div class="ac-list" id="acCliente" style="display:none"></div>
+        <div id="cumpleChip" style="color:var(--gold);font-weight:600;font-size:.82rem;margin-top:4px"></div>
       </div>
       <div class="field">
         <label>Teléfono (opcional)</label>
@@ -89,7 +87,7 @@
       <div class="row">
         <div class="field">
           <label>Fecha de retiro</label>
-          <input type="date" id="fechaRetiro" required onchange="revisarDisponibilidad()">
+          <input type="date" id="fechaRetiro" required onchange="onRetiroChange()">
         </div>
         <div class="field">
           <label>Fecha de devolución</label>
@@ -184,18 +182,96 @@
   </div>
 </div>
 
+<!-- Modal: ficha de detalle del alquiler -->
+<div class="overlay" id="overlayDetalleAlq">
+  <div class="modal" style="max-width:520px">
+    <div id="detalleAlqContenido"></div>
+    <div style="margin-top:14px;text-align:right"><button type="button" class="btn ghost" onclick="cerrarDetalleAlq()">Cerrar</button></div>
+  </div>
+</div>
+
 <script src="common.js"></script>
 <script>
-let alquileres = [], vestidos = [], clientes = [];
+let alquileres = [], vestidos = [], clientes = [], gastos = [];
 let filtroEstado = 'Todos';
 
 async function cargar() {
-  const [a, v, c] = await Promise.all([apiGet('getAlquileres'), apiGet('getVestidos'), apiGet('getClientes')]);
+  const [a, v, c, g] = await Promise.all([apiGet('getAlquileres'), apiGet('getVestidos'), apiGet('getClientes'), apiGet('getGastos')]);
   alquileres = a.data || [];
   vestidos = v.data || [];
   clientes = c.data || [];
+  gastos = g.data || [];
   render();
 }
+
+function toDateInput(d) {
+  if (!d) return '';
+  const x = new Date(d);
+  return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
+}
+
+// Al elegir/cambiar la fecha de retiro, la devolución se propone por defecto para el lunes próximo.
+function onRetiroChange() {
+  const r = document.getElementById('fechaRetiro').value;
+  if (r) document.getElementById('fechaDevolucion').value = toDateInput(proximoLunes(r));
+  revisarDisponibilidad();
+}
+
+// Muestra el aviso "MES DE SU CUMPLE · 15% OFF" si la clienta cumple este mes.
+function checkCumpleCliente(nombre) {
+  const c = clientes.find(x => (x.Nombre || '').trim().toLowerCase() === (nombre || '').trim().toLowerCase());
+  document.getElementById('cumpleChip').textContent = (c && esMesCumple(c.Cumpleanos)) ? '🎂 MES DE SU CUMPLE · 15% OFF' : '';
+}
+
+// ---- Ficha de detalle del alquiler (con historial de pagos) ----
+function abrirDetalleAlq(id) {
+  const a = alquileres.find(x => String(x.ID) === String(id));
+  if (!a) return;
+  const cli = clientes.find(c => (c.Nombre || '').trim().toLowerCase() === (a.Cliente || '').trim().toLowerCase()) || {};
+  const pagos = gastos
+    .filter(g => String(g.AlquilerID) === String(a.ID) && g.Tipo === 'Ingreso')
+    .sort((x, y) => new Date(x.Fecha) - new Date(y.Fecha));
+  const wa = linkWhatsApp(a.Telefono || cli.Telefono, `Hola ${a.Cliente || ''}! `);
+  const ig = linkInstagram(cli.Instagram);
+  const cobrado = Number(a.Cobrado) || 0, debe = Number(a.Debe) || 0;
+
+  let acciones = '';
+  if (a.Estado === 'Reservado') acciones += `<button class="btn ghost sm" onclick="cerrarDetalleAlq();cambiarEstado(${a.ID},'Retirado')">Marcar retirado</button>`;
+  else if (a.Estado === 'Retirado') acciones += `<button class="btn ghost sm" onclick="cerrarDetalleAlq();cambiarEstado(${a.ID},'Devuelto')">Marcar devuelto</button>`;
+  if (a.Estado !== 'Anulado' && debe > 0) acciones += `<button class="btn ghost sm" onclick="cerrarDetalleAlq();abrirPago(${a.ID})">💰 Registrar pago</button>`;
+  if (a.ParaArreglar !== 'Pendiente' && a.Estado !== 'Anulado') acciones += `<button class="btn ghost sm" onclick="cerrarDetalleAlq();abrirArreglo(${a.ID})">🧵 Arreglo</button>`;
+
+  document.getElementById('detalleAlqContenido').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:4px">
+      <h2>${a.Cliente || ''}</h2>
+      <span class="pill ${a.Estado}">${a.Estado}</span>
+    </div>
+    <p class="hint" style="margin-bottom:12px">#${a.VestidoID} · ${a.VestidoDesc || ''}<br>Retiro ${fmtDate(a.FechaRetiro)} → Devolución ${fmtDate(a.FechaDevolucion)}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      ${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank">💬 WhatsApp</a>` : ''}
+      ${ig ? `<a class="btn ghost sm" href="${ig}" target="_blank">📷 Instagram</a>` : ''}
+    </div>
+    <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+      <div class="stat" style="padding:14px"><div class="n" style="font-size:1.25rem">${fmtMoney(a.PrecioFinal)}</div><div class="l">Precio</div></div>
+      <div class="stat" style="padding:14px"><div class="n" style="font-size:1.25rem;color:var(--ok)">${fmtMoney(cobrado)}</div><div class="l">Cobrado</div></div>
+      <div class="stat" style="padding:14px"><div class="n" style="font-size:1.25rem;color:${debe > 0 ? 'var(--warn)' : 'var(--ok)'}">${fmtMoney(debe)}</div><div class="l">Debe</div></div>
+    </div>
+    <h3 style="font-size:1rem;margin-bottom:8px">Historial de pagos</h3>
+    <div>${!pagos.length
+      ? '<p class="hint">Todavía no registró pagos.</p>'
+      : pagos.map(p => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)">
+          <div>${fmtDate(p.Fecha)}<span class="hint"> · ${p.Descripcion || 'Pago'}</span></div>
+          <div style="color:var(--ok);font-weight:600">+${fmtMoney(p.Monto)}</div>
+        </div>`).join('')}</div>
+    ${a.ParaArreglar === 'Pendiente' ? `<p class="hint" style="margin-top:10px">🧵 Para arreglar: ${a.NotaArreglo || ''}${a.FechaLimiteArreglo ? ` (límite ${fmtDate(a.FechaLimiteArreglo)})` : ''}</p>` : ''}
+    ${a.Notas ? `<p class="hint" style="margin-top:8px">📝 ${a.Notas}</p>` : ''}
+    <div class="modal-actions" style="flex-wrap:wrap">
+      ${acciones}
+      <button class="btn gold sm" onclick="cerrarDetalleAlq();abrirEditar(${a.ID})">✏️ Editar</button>
+    </div>`;
+  document.getElementById('overlayDetalleAlq').classList.add('open');
+}
+function cerrarDetalleAlq() { document.getElementById('overlayDetalleAlq').classList.remove('open'); }
 
 function filtrar(el) {
   document.querySelectorAll('.search-row .chip').forEach(c => c.classList.remove('active'));
@@ -206,24 +282,19 @@ function filtrar(el) {
 
 function render() {
   const hoy = new Date(); hoy.setHours(0,0,0,0);
-  const en30 = new Date(hoy.getTime() + 30*24*60*60*1000);
   const { viernes, domingo } = calcularProximoFindeJS(hoy);
 
   let lista = [...alquileres].sort((a,b) => new Date(b.FechaCreacion) - new Date(a.FechaCreacion));
 
   lista = lista.filter(a => {
     const retiro = a.FechaRetiro ? new Date(a.FechaRetiro) : null;
-    const devolucion = a.FechaDevolucion ? new Date(a.FechaDevolucion) : null;
     if (filtroEstado === 'arreglo') return a.ParaArreglar === 'Pendiente';
     if (filtroEstado === 'porcobrar') return a.Estado !== 'Anulado' && Number(a.Debe) > 0;
-    if (filtroEstado === 'adevolver') return a.Estado === 'Retirado' && devolucion && devolucion <= hoy;
-    if (filtroEstado === 'finde') return retiro && retiro >= viernes && retiro <= domingo && a.Estado !== 'Devuelto';
+    if (filtroEstado === 'adevolver') return a.Estado === 'Retirado';
+    if (filtroEstado === 'finde') return retiro && retiro >= viernes && retiro <= domingo && a.Estado === 'Reservado';
     if (filtroEstado === 'Devuelto') return a.Estado === 'Devuelto';
     if (filtroEstado === 'Anulado') return a.Estado === 'Anulado';
     if (filtroEstado === 'Retirado') return a.Estado === 'Retirado';
-    if (filtroEstado === 'Reservado') return a.Estado === 'Reservado';
-    if (filtroEstado === 'hoy') return retiro && retiro.toDateString() === hoy.toDateString();
-    if (filtroEstado === '30dias') return retiro && retiro >= hoy && retiro <= en30 && a.Estado !== 'Devuelto';
     return true;
   });
 
@@ -246,19 +317,22 @@ function render() {
     const btnPago = a.Estado !== 'Anulado' && Number(a.Debe) > 0
       ? `<button class="btn ghost sm" onclick="event.stopPropagation();abrirPago(${a.ID})">💰 Registrar pago</button>`
       : '';
+    const wa = linkWhatsApp(a.Telefono, `Hola ${a.Cliente || ''}! `);
+    const btnContacto = wa ? `<a class="btn ghost sm" href="${wa}" target="_blank" onclick="event.stopPropagation()">💬</a>` : '';
+    const vencido = a.Estado === 'Retirado' && a.FechaDevolucion && new Date(a.FechaDevolucion) < hoy;
     return `
-    <tr onclick="abrirEditar(${a.ID})" style="cursor:pointer">
+    <tr onclick="abrirDetalleAlq(${a.ID})" style="cursor:pointer${vencido ? ';background:#fdecec' : ''}">
       <td data-label="Cliente"><strong>${a.Cliente}</strong>${a.Telefono ? `<br><span class="hint">${a.Telefono}</span>` : ''}</td>
       <td data-label="Vestido">#${a.VestidoID} · ${a.VestidoDesc || ''}</td>
       <td data-label="Retiro">${fmtDate(a.FechaRetiro)}</td>
-      <td data-label="Devolución">${fmtDate(a.FechaDevolucion)}</td>
+      <td data-label="Devolución">${fmtDate(a.FechaDevolucion)}${vencido ? ' <span class="hint" style="color:#a44343">⚠️ vencido</span>' : ''}</td>
       <td data-label="Precio">${fmtMoney(a.PrecioFinal)}</td>
       <td data-label="Pago">
         <span class="pill ${a.EstadoPago || 'Pendiente'}">${a.EstadoPago || 'Pendiente'}</span>
         ${Number(a.Debe) > 0 ? `<br><span class="hint">Debe ${fmtMoney(a.Debe)}</span>` : ''}
       </td>
       <td data-label="Estado"><span class="pill ${a.Estado}">${a.Estado}</span></td>
-      <td class="acciones" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${btnPago}${accionEstado}${btnArreglo}</td>
+      <td class="acciones" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${btnContacto}${btnPago}${accionEstado}${btnArreglo}</td>
     </tr>`;
   }).join('');
 }
@@ -319,6 +393,7 @@ function abrirNuevo() {
   document.getElementById('vestidoId').value = '';
   document.getElementById('vestidoInfo').textContent = '';
   document.getElementById('debeHint').textContent = '';
+  document.getElementById('cumpleChip').textContent = '';
   document.getElementById('modalTitleAlquiler').textContent = 'Nuevo alquiler';
   document.getElementById('zonaAnular').style.display = 'none';
   document.getElementById('overlay').classList.add('open');
@@ -344,6 +419,7 @@ function abrirEditar(id) {
   calcular();
   document.getElementById('modalTitleAlquiler').textContent = `Editar alquiler · ${a.Cliente}`;
   document.getElementById('zonaAnular').style.display = a.Estado === 'Anulado' ? 'none' : 'block';
+  checkCumpleCliente(a.Cliente);
   revisarDisponibilidad();
   document.getElementById('overlay').classList.add('open');
 }
@@ -425,6 +501,7 @@ function elegirCliente(c) {
   document.getElementById('cliente').value = c.Nombre;
   document.getElementById('telefono').value = c.Telefono || '';
   document.getElementById('acCliente').style.display = 'none';
+  checkCumpleCliente(c.Nombre);
 }
 
 document.addEventListener('click', (e) => {
