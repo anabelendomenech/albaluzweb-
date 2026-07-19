@@ -147,3 +147,47 @@ function fmtDiaLargo(d) {
   if (isNaN(date)) return '';
   return date.toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric', month: 'short' });
 }
+
+// ---- Contacto (WhatsApp / Instagram) ----
+// Normaliza un teléfono uruguayo a formato wa.me: solo dígitos, sin 0 inicial, con 598 adelante.
+function telWhatsApp(telefono) {
+  let d = String(telefono || '').replace(/\D/g, '');
+  if (!d) return '';
+  if (d.startsWith('598')) return d;
+  if (d.startsWith('0')) d = d.slice(1);
+  return '598' + d;
+}
+// Link de WhatsApp con mensaje ya escrito. Devuelve '' si no hay teléfono.
+function linkWhatsApp(telefono, mensaje) {
+  const t = telWhatsApp(telefono);
+  if (!t) return '';
+  const q = mensaje ? '?text=' + encodeURIComponent(mensaje) : '';
+  return `https://wa.me/${t}${q}`;
+}
+// Link a un perfil de Instagram (acepta handle con o sin @, o una URL completa). '' si vacío.
+function linkInstagram(handle) {
+  const h = String(handle || '').trim();
+  if (!h) return '';
+  if (/^https?:\/\//i.test(h)) return h;
+  return 'https://instagram.com/' + h.replace(/^@/, '');
+}
+
+// Próximo lunes a partir de una fecha (o de hoy). Si `desde` ya es lunes, devuelve el siguiente.
+function proximoLunes(desde) {
+  const base = desde ? (parseFechaLocal(desde) || new Date(desde)) : new Date();
+  const d = new Date(base); d.setHours(0, 0, 0, 0);
+  const dia = d.getDay(); // 0 dom .. 1 lun .. 6 sab
+  const faltan = ((8 - dia) % 7) || 7; // días hasta el próximo lunes (nunca 0)
+  d.setDate(d.getDate() + faltan);
+  return d;
+}
+// true si el mes del cumpleaños coincide con el mes actual.
+function esMesCumple(cumple) {
+  const d = parseFechaLocal(cumple);
+  if (!d) return false;
+  return d.getMonth() === new Date().getMonth();
+}
+// Mensaje de saludo de cumpleaños con el 15% off (texto definido por la dueña).
+function mensajeCumple(nombre) {
+  return `Feliz cumple ${nombre || ''}! Esperamos que estés pasando un bonito día 🎉 Tenés un descuento del 15% en tu próximo alquiler para festejarlo, válido por el resto del mes. Es intransferible. 💛 ALBALUZ`;
+}

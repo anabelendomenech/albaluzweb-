@@ -16,7 +16,6 @@
     <option value="vestidos.html">Vestidos</option>
     <option value="alquileres.html">Alquileres</option>
     <option value="pruebas.html">Pruebas</option>
-    <option value="pruebas.html">Pruebas</option>
     <option value="clientes.html">Clientes</option>
     <option value="gastos.html">Gastos</option>
     <option value="arreglos.html">Arreglos</option>
@@ -67,19 +66,7 @@
         <div class="dc-icon">🔄</div>
         <div class="dc-n" id="dcDevolver">…</div>
         <div class="dc-l">Vestidos a devolver</div>
-        <div class="dc-sub">Hoy o vencidos</div>
-      </a>
-      <a class="dash-card" href="alquileres.html?f=porcobrar">
-        <div class="dc-icon">💰</div>
-        <div class="dc-n" id="dcCobrar">…</div>
-        <div class="dc-l">Dinero a cobrar</div>
-        <div class="dc-sub">Pendiente de pago</div>
-      </a>
-      <a class="dash-card" href="pruebas.html">
-        <div class="dc-icon">🗓️</div>
-        <div class="dc-n" id="dcPruebas">…</div>
-        <div class="dc-l">Pruebas esta semana</div>
-        <div class="dc-sub">Agenda de la semana</div>
+        <div class="dc-sub">Retirados sin devolver</div>
       </a>
     </div>
 
@@ -89,14 +76,14 @@
     </div>
 
     <div style="height:24px"></div>
-    <div class="card" style="cursor:pointer" onclick="location.href='alquileres.html?f=finde'">
-      <h3 style="margin-bottom:14px">📅 Próximos retiros <span class="hint" style="font-weight:400">— tocá para ir a Alquileres</span></h3>
-      <div id="proximos">Cargando…</div>
+    <div class="card" style="cursor:pointer" onclick="location.href='pruebas.html'">
+      <h3 style="margin-bottom:14px">🗓️ Pruebas de hoy <span class="hint" style="font-weight:400">— tocá para ir a la agenda</span></h3>
+      <div id="pruebasHoy">Cargando…</div>
     </div>
 
     <div style="height:24px"></div>
     <div class="card" style="cursor:pointer" onclick="location.href='alquileres.html?f=porcobrar'">
-      <h3 style="margin-bottom:14px">💳 Clientes que deben plata <span class="hint" style="font-weight:400">— tocá para ir a Alquileres</span></h3>
+      <h3 style="margin-bottom:14px">💳 Clientas que deben plata <span class="hint" style="font-weight:400">— tocá para ir a Alquileres</span></h3>
       <div id="deudas">Cargando…</div>
     </div>
   </main>
@@ -109,57 +96,77 @@ document.getElementById('fechaHoy').textContent = 'Hoy es ' + new Date().toLocal
 async function cargar() {
   const grid = document.getElementById('dashGrid');
   try {
-    const [dash, alquileres] = await Promise.all([
-      apiGet('getDashboard'),
-      apiGet('getAlquileres')
+    const [dash, alq, pru, cli] = await Promise.all([
+      apiGet('getDashboard'), apiGet('getAlquileres'), apiGet('getPruebas'), apiGet('getClientes')
     ]);
+    const alquileres = alq.data || [];
+    const pruebas = pru.data || [];
+    const clientes = cli.data || [];
 
     document.getElementById('dcFinde').textContent = dash.alquiladosProxFinde ?? 0;
     document.getElementById('dcArreglos').textContent = dash.arreglosPendientes ?? 0;
     document.getElementById('dcDevolver').textContent = dash.aDevolver ?? 0;
-    document.getElementById('dcCobrar').textContent = fmtMoney(dash.porCobrar);
-    document.getElementById('dcPruebas').textContent = dash.pruebasSemana ?? 0;
-
-    // Resaltar en rojo las tarjetas que necesitan atención hoy
     if (dash.aDevolver > 0) grid.children[2].classList.add('dc-alerta');
     if (dash.arreglosPendientes > 0) grid.children[1].classList.add('dc-alerta');
 
     const hoy = new Date(); hoy.setHours(0,0,0,0);
-    const { viernes, domingo } = calcularProximoFindeJS(hoy);
-    const listaAlquileres = alquileres.data || [];
 
-    const proximos = listaAlquileres
-      .filter(a => a.Estado !== 'Devuelto' && a.Estado !== 'Anulado' && a.FechaRetiro && new Date(a.FechaRetiro) >= viernes && new Date(a.FechaRetiro) <= domingo)
-      .sort((a,b) => new Date(a.FechaRetiro) - new Date(b.FechaRetiro));
-
-    const box = document.getElementById('proximos');
-    if (!proximos.length) {
-      box.innerHTML = '<p class="hint">No hay retiros este fin de semana.</p>';
+    // ---- Pruebas de hoy ----
+    const pruebasHoy = pruebas
+      .filter(p => {
+        if (p.Estado === 'Cancelada') return false;
+        const f = parseFechaLocal(p.Fecha);
+        return f && (f.setHours(0,0,0,0), f.getTime() === hoy.getTime());
+      })
+      .sort((a,b) => fmtHora(a.Hora).localeCompare(fmtHora(b.Hora)));
+    const boxP = document.getElementById('pruebasHoy');
+    if (!pruebasHoy.length) {
+      boxP.innerHTML = '<p class="hint">No hay pruebas agendadas para hoy.</p>';
     } else {
-      box.innerHTML = proximos.map(a => `
-        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)">
-          <div><strong>${a.Cliente}</strong> · ${a.VestidoDesc || ('Vestido #' + a.VestidoID)}</div>
-          <div class="hint">${fmtDate(a.FechaRetiro)}</div>
-        </div>`).join('');
+      boxP.innerHTML = pruebasHoy.map(p => {
+        const wa = linkWhatsApp(p.Telefono, `Hola ${p.Nombre || ''}! Te esperamos hoy a las ${fmtHora(p.Hora)} para tu prueba en ALBALUZ 👗`);
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);gap:10px">
+          <div><strong>${fmtHora(p.Hora)}</strong> · ${p.Nombre || ''}${p.Observaciones ? `<br><span class="hint">${p.Observaciones}</span>` : ''}</div>
+          ${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank" onclick="event.stopPropagation()">💬 WhatsApp</a>` : ''}
+        </div>`;
+      }).join('');
     }
 
-    const deudores = listaAlquileres
+    // ---- Clientas que deben plata (las que ya devolvieron y deben, primero y en rojo) ----
+    const deudores = alquileres
       .filter(a => a.Estado !== 'Anulado' && Number(a.Debe) > 0)
-      .sort((a,b) => Number(b.Debe) - Number(a.Debe));
-    const boxDeudas = document.getElementById('deudas');
+      .sort((a,b) => {
+        const ar = a.Estado === 'Devuelto' ? 0 : 1, br = b.Estado === 'Devuelto' ? 0 : 1;
+        return ar !== br ? ar - br : Number(b.Debe) - Number(a.Debe);
+      });
+    const totalDeuda = deudores.reduce((s,a) => s + (Number(a.Debe)||0), 0);
+    const boxD = document.getElementById('deudas');
     if (!deudores.length) {
-      boxDeudas.innerHTML = '<p class="hint">Nadie te debe plata en este momento 🎉</p>';
+      boxD.innerHTML = '<p class="hint">Nadie te debe plata en este momento 🎉</p>';
     } else {
-      boxDeudas.innerHTML = deudores.map(a => `
-        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)">
-          <div><strong>${a.Cliente}</strong>${a.Telefono ? ` · <span class="hint">${a.Telefono}</span>` : ''} · ${a.VestidoDesc || ('Vestido #' + a.VestidoID)}</div>
-          <div style="color:var(--warn);font-weight:600">${fmtMoney(a.Debe)}</div>
-        </div>`).join('');
+      boxD.innerHTML = deudores.map(a => {
+        const urgente = a.Estado === 'Devuelto';
+        const wa = linkWhatsApp(a.Telefono, `Hola ${a.Cliente || ''}! Te recordamos que quedó un saldo pendiente de ${fmtMoney(a.Debe)} por tu alquiler (#${a.VestidoID} ${a.VestidoDesc||''}). ¡Gracias! 💛 ALBALUZ`);
+        return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)${urgente ? ';background:#fdecec;border-radius:8px' : ''}" onclick="event.stopPropagation()">
+          <div><strong>${a.Cliente}</strong>${urgente ? ' <span class="pill Pendiente" style="font-size:.66rem">ya devolvió y debe</span>' : ''} · <span class="hint">#${a.VestidoID} ${a.VestidoDesc||''}</span></div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="color:var(--warn);font-weight:600">${fmtMoney(a.Debe)}</span>
+            ${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank">💬</a>` : ''}
+          </div>
+        </div>`;
+      }).join('') + `<div style="text-align:right;padding:12px 4px 0;font-weight:600;color:var(--wine)">Total a cobrar: ${fmtMoney(totalDeuda)}</div>`;
     }
 
-    // Recordatorios rápidos: devoluciones vencidas + arreglos vencidos
+    // ---- Recordatorios: cumpleaños de hoy + devoluciones/arreglos vencidos ----
     const recordatorios = [];
-    listaAlquileres.forEach(a => {
+    clientes.forEach(c => {
+      const cu = parseFechaLocal(c.Cumpleanos);
+      if (cu && cu.getDate() === hoy.getDate() && cu.getMonth() === hoy.getMonth()) {
+        const wa = linkWhatsApp(c.Telefono, mensajeCumple(c.Nombre));
+        recordatorios.push(`🎂 Hoy cumple <strong>${c.Nombre}</strong>${wa ? ` <a class="btn ghost sm" href="${wa}" target="_blank" style="margin-left:6px">💬 Saludar (15% off)</a>` : ''}`);
+      }
+    });
+    alquileres.forEach(a => {
       if (a.Estado === 'Retirado' && a.FechaDevolucion && new Date(a.FechaDevolucion) < hoy) {
         recordatorios.push(`⏰ ${a.Cliente} debía devolver el ${fmtDate(a.FechaDevolucion)}`);
       }
@@ -172,7 +179,7 @@ async function cargar() {
       document.getElementById('recordatoriosLista').innerHTML = recordatorios.map(r => `<div style="padding:6px 0">${r}</div>`).join('');
     }
   } catch (err) {
-    grid.innerHTML = `<div class="card" style="grid-column:1/-1"><p class="hint">No se pudo conectar con la planilla. Revisá que API_URL esté configurada en common.js (ver README).</p></div>`;
+    grid.innerHTML = `<div class="card" style="grid-column:1/-1"><p class="hint">No se pudo conectar con la planilla.</p></div>`;
     console.error(err);
   }
 }
