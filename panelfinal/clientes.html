@@ -51,7 +51,7 @@
 
     <div style="overflow-x:auto">
       <table>
-        <thead><tr><th>Nombre</th><th>Teléfono</th><th>Alquileres</th><th>Última vez</th><th></th></tr></thead>
+        <thead><tr><th>Nombre</th><th>Teléfono</th><th>Alquileres</th><th>Debe</th><th>Última vez</th><th></th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
@@ -63,7 +63,11 @@
     <h2>Nuevo cliente</h2>
     <form id="form">
       <div class="field"><label>Nombre</label><input id="nombre" required></div>
-      <div class="field"><label>Teléfono</label><input id="telefono"></div>
+      <div class="row">
+        <div class="field"><label>Teléfono</label><input id="telefono"></div>
+        <div class="field"><label>Instagram (opcional)</label><input id="instagram" placeholder="usuaria (sin @)"></div>
+      </div>
+      <div class="field"><label>Cumpleaños (opcional)</label><input type="date" id="cumpleanos"></div>
       <div class="modal-actions">
         <button type="submit" class="btn gold" style="flex:1">Guardar</button>
         <button type="button" class="btn ghost" onclick="cerrarModal()">Cancelar</button>
@@ -76,7 +80,21 @@
 <div class="overlay" id="overlayFicha">
   <div class="modal" style="max-width:560px">
     <h2 id="fichaNombre">Cliente</h2>
-    <p class="hint" id="fichaTelefono" style="margin-bottom:16px"></p>
+
+    <div class="row" style="margin-top:14px">
+      <div class="field"><label>Teléfono</label><input id="fichaTelInput" placeholder="09X XXX XXX"></div>
+      <div class="field">
+        <label>Instagram</label>
+        <input id="fichaInstaInput" placeholder="usuaria (sin @)">
+        <p class="hint" id="fichaInstaLink"></p>
+      </div>
+    </div>
+    <div class="row" style="align-items:flex-end">
+      <div class="field"><label>Cumpleaños</label><input type="date" id="fichaCumpleInput"></div>
+      <div class="field">
+        <button type="button" class="btn gold" style="width:100%;justify-content:center" onclick="guardarCliente()">💾 Guardar datos</button>
+      </div>
+    </div>
 
     <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
       <div class="stat" style="padding:14px">
@@ -105,6 +123,7 @@
 <script src="common.js"></script>
 <script>
 let clientes = [], alquileres = [];
+let fichaClienteActual = null;
 
 async function cargar() {
   const [c, a] = await Promise.all([apiGet('getClientes'), apiGet('getAlquileres')]);
@@ -118,7 +137,7 @@ function render() {
   const lista = clientes.filter(c => !q || (c.Nombre || '').toLowerCase().includes(q));
   const tbody = document.getElementById('tbody');
   if (!lista.length) {
-    tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><h3>Sin clientes todavía</h3><p>Aparecen automáticamente al crear un alquiler.</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><h3>Sin clientes todavía</h3><p>Aparecen automáticamente al crear un alquiler.</p></div></td></tr>`;
     return;
   }
   tbody.innerHTML = lista.map(c => {
@@ -126,10 +145,12 @@ function render() {
     const ultima = propios.length
       ? propios.reduce((max, a) => (!max || new Date(a.FechaRetiro) > new Date(max.FechaRetiro)) ? a : max, null)
       : null;
+    const debe = propios.reduce((s, a) => s + (Number(a.Debe) || 0), 0);
     return `<tr onclick="abrirFicha('${c.Nombre.replace(/'/g,"\\'")}')" style="cursor:pointer">
       <td data-label="Nombre"><strong>${c.Nombre}</strong></td>
       <td data-label="Teléfono">${c.Telefono || '—'}</td>
       <td data-label="Alquileres">${propios.length}</td>
+      <td data-label="Debe">${debe > 0 ? `<span style="color:var(--warn);font-weight:600">${fmtMoney(debe)}</span>` : '—'}</td>
       <td data-label="Última vez">${ultima ? fmtDate(ultima.FechaRetiro) : '—'}</td>
       <td class="acciones"><span class="hint">Ver ficha →</span></td>
     </tr>`;
@@ -142,8 +163,12 @@ function abrirFicha(nombre) {
     .filter(a => a.Cliente === nombre && a.Estado !== 'Anulado')
     .sort((a, b) => new Date(b.FechaRetiro) - new Date(a.FechaRetiro));
 
+  fichaClienteActual = nombre;
   document.getElementById('fichaNombre').textContent = nombre;
-  document.getElementById('fichaTelefono').textContent = (c && c.Telefono) || 'Sin teléfono registrado';
+  document.getElementById('fichaTelInput').value = (c && c.Telefono) || '';
+  document.getElementById('fichaInstaInput').value = (c && c.Instagram) || '';
+  document.getElementById('fichaCumpleInput').value = toDateInput(c && c.Cumpleanos);
+  actualizarInstaLink();
   document.getElementById('fichaTotal').textContent = propios.length;
 
   const ultima = propios[0];
@@ -185,12 +210,44 @@ function abrirFicha(nombre) {
 }
 function cerrarModalFicha() { document.getElementById('overlayFicha').classList.remove('open'); }
 
+// Convierte lo guardado (texto "YYYY-MM-DD" o fecha) al formato del input date.
+function toDateInput(v) {
+  const d = parseFechaLocal(v);
+  if (!d) return '';
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function actualizarInstaLink() {
+  const user = (document.getElementById('fichaInstaInput').value || '').trim().replace(/^@/, '');
+  document.getElementById('fichaInstaLink').innerHTML = user
+    ? `<a href="https://instagram.com/${encodeURIComponent(user)}" target="_blank" rel="noopener" style="color:var(--rose)">Abrir @${user} ↗</a>`
+    : '';
+}
+document.getElementById('fichaInstaInput').addEventListener('input', actualizarInstaLink);
+
+async function guardarCliente() {
+  if (!fichaClienteActual) return;
+  await apiPost('updateCliente', {
+    nombre: fichaClienteActual,
+    telefono: document.getElementById('fichaTelInput').value,
+    instagram: document.getElementById('fichaInstaInput').value.trim().replace(/^@/, ''),
+    cumpleanos: document.getElementById('fichaCumpleInput').value
+  });
+  toast('Datos guardados');
+  await cargar();
+}
+
 function abrirNuevo() { document.getElementById('form').reset(); document.getElementById('overlay').classList.add('open'); }
 function cerrarModal() { document.getElementById('overlay').classList.remove('open'); }
 
 document.getElementById('form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  await apiPost('addCliente', { nombre: document.getElementById('nombre').value, telefono: document.getElementById('telefono').value });
+  await apiPost('addCliente', {
+    nombre: document.getElementById('nombre').value,
+    telefono: document.getElementById('telefono').value,
+    instagram: document.getElementById('instagram').value.trim().replace(/^@/, ''),
+    cumpleanos: document.getElementById('cumpleanos').value
+  });
   toast('Cliente agregado');
   cerrarModal();
   cargar();
