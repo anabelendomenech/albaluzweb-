@@ -7,19 +7,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
-  .week-nav{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
-  .week-nav .rango{font-family:'Fraunces',serif;color:var(--wine);font-size:1.05rem;min-width:210px;text-align:center;}
-  .dia-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:14px;}
-  .dia-card.hoy{border-left:4px solid var(--gold);}
-  .dia-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
-  .dia-head h3{text-transform:capitalize;font-size:1.05rem;}
-  .dia-head .badge-hoy{font-size:.7rem;background:var(--gold);color:var(--wine-dark);padding:2px 10px;border-radius:999px;font-weight:600;}
+  .cal-nav{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+  .cal-nav .rango{font-family:'Fraunces',serif;color:var(--wine);font-size:1.15rem;min-width:180px;text-align:center;text-transform:capitalize;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:24px;}
+  .cal-dow{text-align:center;font-size:.72rem;color:var(--ink-soft);text-transform:uppercase;font-weight:600;padding-bottom:2px;}
+  .cal-day{min-height:62px;background:#fff;border-radius:10px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;padding:6px 4px;cursor:pointer;border:2px solid transparent;transition:border .12s;}
+  .cal-day:hover{border-color:var(--rose-light);}
+  .cal-day.otro{background:transparent;box-shadow:none;opacity:.4;cursor:default;}
+  .cal-day.hoy{border-color:var(--gold);}
+  .cal-day.sel{border-color:var(--wine);}
+  .cal-day .num{font-weight:600;font-size:.9rem;}
+  .cal-day .cnt{margin-top:5px;font-size:.66rem;background:var(--wine);color:#fff;border-radius:999px;padding:1px 8px;font-weight:600;}
   .prueba-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;}
   .prueba-row:last-child{border-bottom:none;}
   .prueba-hora{font-family:'Fraunces',serif;color:var(--wine);font-weight:600;min-width:52px;}
   .prueba-main{flex:1;min-width:160px;}
   .prueba-acciones{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start;}
-  .dia-vacio{color:var(--ink-soft);font-size:.82rem;}
 </style>
 </head>
 <body>
@@ -54,27 +57,21 @@
     <div class="topbar">
       <div>
         <h1>Agenda de pruebas</h1>
-        <p>Quién viene a probarse vestidos esta semana</p>
+        <p>Tocá un día para ver quién viene a probarse</p>
       </div>
       <button class="btn gold" onclick="abrirNuevo()">+ Agendar prueba</button>
     </div>
 
-    <div class="week-nav">
-      <button class="btn ghost sm" onclick="cambiarSemana(-1)">‹ Anterior</button>
-      <span class="rango" id="rangoSemana">…</span>
-      <button class="btn ghost sm" onclick="cambiarSemana(1)">Siguiente ›</button>
+    <div class="cal-nav">
+      <button class="btn ghost sm" onclick="cambiarMes(-1)">‹ Anterior</button>
+      <span class="rango" id="rangoMes">…</span>
+      <button class="btn ghost sm" onclick="cambiarMes(1)">Siguiente ›</button>
       <button class="btn ghost sm" onclick="irHoy()">Hoy</button>
     </div>
 
-    <div class="search-row">
-      <div class="chip active" data-f="Todas" onclick="filtrar(this)">Todas</div>
-      <div class="chip" data-f="Pendiente" onclick="filtrar(this)">Pendientes</div>
-      <div class="chip" data-f="Confirmada" onclick="filtrar(this)">Confirmadas</div>
-      <div class="chip" data-f="Realizada" onclick="filtrar(this)">Realizadas</div>
-      <div class="chip" data-f="Cancelada" onclick="filtrar(this)">Canceladas</div>
-    </div>
+    <div class="cal-grid" id="calGrid"></div>
 
-    <div id="semana">Cargando…</div>
+    <div class="card" id="diaPanel">Cargando…</div>
   </main>
 </div>
 
@@ -105,15 +102,6 @@
         </div>
       </div>
       <div class="field">
-        <label>Estado</label>
-        <select id="estado">
-          <option value="Pendiente">Pendiente</option>
-          <option value="Confirmada">Confirmada</option>
-          <option value="Realizada">Realizada</option>
-          <option value="Cancelada">Cancelada</option>
-        </select>
-      </div>
-      <div class="field">
         <label>Observaciones (opcional)</label>
         <textarea id="observaciones" rows="2" placeholder="Ej: quiere ver vestidos largos, talle M"></textarea>
       </div>
@@ -121,8 +109,9 @@
         <button type="submit" class="btn gold" style="flex:1">Guardar</button>
         <button type="button" class="btn ghost" onclick="cerrarModal()">Cancelar</button>
       </div>
-      <div id="zonaConvertir" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
-        <button type="button" class="btn ghost" style="width:100%;justify-content:center" onclick="convertirEnAlquiler()">👗 Convertir en alquiler</button>
+      <div id="zonaExtra" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="btn ghost" style="flex:1;justify-content:center" onclick="convertirEnAlquiler()">👗 Convertir en alquiler</button>
+        <button type="button" class="btn ghost" style="flex:1;justify-content:center;color:#a44343;border-color:#e8c6c6" onclick="cancelarPrueba()">Cancelar prueba</button>
       </div>
     </form>
   </div>
@@ -132,13 +121,14 @@
 <script>
 let pruebas = [];
 let CLIENTES = [];
-let filtroEstado = 'Todas';
-let offsetSemana = 0;
+let mesActual = new Date();
+let diaSeleccionado = null;
 
 async function cargar() {
   const [rp, rc] = await Promise.all([apiGet('getPruebas'), apiGet('getClientes')]);
   pruebas = rp.data || [];
   CLIENTES = rc.data || [];
+  if (!diaSeleccionado) { diaSeleccionado = new Date(); diaSeleccionado.setHours(0, 0, 0, 0); }
   render();
 }
 
@@ -165,65 +155,67 @@ document.addEventListener('click', (e) => {
   }
 });
 
-function cambiarSemana(delta) { offsetSemana += delta; render(); }
-function irHoy() { offsetSemana = 0; render(); }
-
-function filtrar(el) {
-  document.querySelectorAll('.search-row .chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  filtroEstado = el.dataset.f;
+function cambiarMes(delta) { mesActual.setMonth(mesActual.getMonth() + delta); render(); }
+function irHoy() {
+  mesActual = new Date();
+  diaSeleccionado = new Date(); diaSeleccionado.setHours(0, 0, 0, 0);
   render();
+}
+function seleccionarDia(y, m, d) { diaSeleccionado = new Date(y, m, d); render(); }
+
+// Agrupa las pruebas activas (no canceladas) por día → "AAAA-M-D".
+function pruebasPorDia() {
+  const porDia = {};
+  pruebas.forEach(p => {
+    if (p.Estado === 'Cancelada') return;
+    const f = parseFechaLocal(p.Fecha);
+    if (!f) return;
+    const k = `${f.getFullYear()}-${f.getMonth()}-${f.getDate()}`;
+    (porDia[k] = porDia[k] || []).push(p);
+  });
+  return porDia;
 }
 
 function render() {
+  const y = mesActual.getFullYear(), m = mesActual.getMonth();
   const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-  const { lunes, domingo } = calcularSemanaJS(hoy, offsetSemana);
-  document.getElementById('rangoSemana').textContent =
-    `${lunes.toLocaleDateString('es-UY', { day: '2-digit', month: 'short' })} — ${domingo.toLocaleDateString('es-UY', { day: '2-digit', month: 'short' })}`;
+  document.getElementById('rangoMes').textContent = new Date(y, m, 1).toLocaleDateString('es-UY', { month: 'long', year: 'numeric' });
+  const porDia = pruebasPorDia();
 
-  const cont = document.getElementById('semana');
-  let html = '';
+  // Grilla: empieza el lunes de la semana del día 1.
+  const primero = new Date(y, m, 1);
+  const desdeLunes = primero.getDay() === 0 ? 6 : primero.getDay() - 1;
+  const inicio = new Date(y, m, 1 - desdeLunes);
 
-  for (let i = 0; i < 7; i++) {
-    const dia = new Date(lunes.getTime() + i * 86400000);
-    const esHoy = dia.getTime() === hoy.getTime();
-
-    const delDia = pruebas
-      .filter(p => {
-        const f = parseFechaLocal(p.Fecha);
-        if (!f) return false;
-        f.setHours(0, 0, 0, 0);
-        if (f.getTime() !== dia.getTime()) return false;
-        return filtroEstado === 'Todas' || p.Estado === filtroEstado;
-      })
-      .sort((a, b) => fmtHora(a.Hora).localeCompare(fmtHora(b.Hora)));
-
-    html += `<div class="dia-card${esHoy ? ' hoy' : ''}">
-      <div class="dia-head">
-        <h3>${fmtDiaLargo(dia)}</h3>
-        ${esHoy ? '<span class="badge-hoy">HOY</span>' : ''}
-      </div>`;
-
-    if (!delDia.length) {
-      html += `<p class="dia-vacio">Sin pruebas${filtroEstado !== 'Todas' ? ' (con este filtro)' : ''}.</p>`;
-    } else {
-      html += delDia.map(p => filaPrueba(p)).join('');
-    }
-    html += `</div>`;
+  let cells = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(inicio); d.setDate(inicio.getDate() + i); d.setHours(0, 0, 0, 0);
+    if (d.getMonth() !== m) { cells += `<div class="cal-day otro"><span class="num">${d.getDate()}</span></div>`; continue; }
+    const cnt = (porDia[`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`] || []).length;
+    const esHoy = d.getTime() === hoy.getTime();
+    const esSel = diaSeleccionado && d.getTime() === diaSeleccionado.getTime();
+    cells += `<div class="cal-day${esHoy ? ' hoy' : ''}${esSel ? ' sel' : ''}" onclick="seleccionarDia(${d.getFullYear()},${d.getMonth()},${d.getDate()})">
+      <span class="num">${d.getDate()}</span>${cnt ? `<span class="cnt">${cnt}</span>` : ''}
+    </div>`;
   }
+  document.getElementById('calGrid').innerHTML = cells;
 
-  cont.innerHTML = html;
+  // Panel del día seleccionado.
+  const panel = document.getElementById('diaPanel');
+  if (!diaSeleccionado) { panel.innerHTML = '<p class="hint">Tocá un día del calendario.</p>'; return; }
+  const lista = (porDia[`${diaSeleccionado.getFullYear()}-${diaSeleccionado.getMonth()}-${diaSeleccionado.getDate()}`] || [])
+    .sort((a, b) => fmtHora(a.Hora).localeCompare(fmtHora(b.Hora)));
+  let h = `<h3 style="text-transform:capitalize;margin-bottom:12px">${fmtDiaLargo(diaSeleccionado)}</h3>`;
+  if (!lista.length) {
+    h += `<p class="hint">Sin pruebas este día. Agendá una con el botón de arriba.</p>`;
+  } else {
+    h += lista.map(p => filaPrueba(p)).join('');
+  }
+  panel.innerHTML = h;
 }
 
 function filaPrueba(p) {
-  const acciones = [];
-  if (p.Estado === 'Pendiente') {
-    acciones.push(`<button class="btn ghost sm" onclick="event.stopPropagation();cambiarEstado(${p.ID},'Confirmada')">Confirmar</button>`);
-  }
-  if (p.Estado === 'Pendiente' || p.Estado === 'Confirmada') {
-    acciones.push(`<button class="btn ghost sm" onclick="event.stopPropagation();cambiarEstado(${p.ID},'Realizada')">Marcar realizada</button>`);
-    acciones.push(`<button class="btn gold sm" onclick="event.stopPropagation();convertirDirecto(${p.ID})">👗 A alquiler</button>`);
-  }
+  const wa = linkWhatsApp(p.Telefono, `Hola ${p.Nombre || ''}! Te recordamos tu cita de prueba en ALBALUZ el ${fmtDate(p.Fecha)} a las ${fmtHora(p.Hora)}. ¡Te esperamos! 👗`);
   return `
   <div class="prueba-row" onclick="abrirEditar(${p.ID})" style="cursor:pointer">
     <div class="prueba-hora">${fmtHora(p.Hora) || '--:--'}</div>
@@ -232,37 +224,30 @@ function filaPrueba(p) {
       ${p.Observaciones ? `<div class="hint">${p.Observaciones}</div>` : ''}
     </div>
     <div class="prueba-acciones">
-      <span class="pill ${p.Estado}">${p.Estado}</span>
-      ${acciones.join('')}
+      ${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank" onclick="event.stopPropagation()">💬 Recordar</a>` : ''}
+      <button class="btn gold sm" onclick="event.stopPropagation();convertirDirecto(${p.ID})">👗 A alquiler</button>
     </div>
   </div>`;
-}
-
-async function cambiarEstado(id, estado) {
-  await apiPost('updatePrueba', { id, estado });
-  toast(estado === 'Confirmada' ? 'Prueba confirmada' : 'Prueba marcada como realizada');
-  cargar();
 }
 
 function convertirDirecto(id) {
   const p = pruebas.find(x => String(x.ID) === String(id));
   if (p) irAAlquiler(p);
 }
-
 function irAAlquiler(p) {
-  const qs = new URLSearchParams({
-    prellenarCliente: p.Nombre || '',
-    prellenarTelefono: p.Telefono || ''
-  }).toString();
+  const qs = new URLSearchParams({ prellenarCliente: p.Nombre || '', prellenarTelefono: p.Telefono || '' }).toString();
   location.href = `alquileres.html?${qs}`;
 }
 
 function abrirNuevo() {
   document.getElementById('form').reset();
   document.getElementById('editId').value = '';
-  document.getElementById('estado').value = 'Pendiente';
+  // Prellenar con el día seleccionado del calendario.
+  if (diaSeleccionado) {
+    document.getElementById('fecha').value = `${diaSeleccionado.getFullYear()}-${String(diaSeleccionado.getMonth() + 1).padStart(2, '0')}-${String(diaSeleccionado.getDate()).padStart(2, '0')}`;
+  }
   document.getElementById('modalTitle').textContent = 'Agendar prueba';
-  document.getElementById('zonaConvertir').style.display = 'none';
+  document.getElementById('zonaExtra').style.display = 'none';
   document.getElementById('overlay').classList.add('open');
 }
 function cerrarModal() { document.getElementById('overlay').classList.remove('open'); }
@@ -275,17 +260,25 @@ function abrirEditar(id) {
   document.getElementById('telefono').value = p.Telefono || '';
   document.getElementById('fecha').value = (p.Fecha || '').slice(0, 10);
   document.getElementById('hora').value = fmtHora(p.Hora);
-  document.getElementById('estado').value = p.Estado || 'Pendiente';
   document.getElementById('observaciones').value = p.Observaciones || '';
   document.getElementById('modalTitle').textContent = `Editar prueba · ${p.Nombre || ''}`;
-  document.getElementById('zonaConvertir').style.display = p.Estado === 'Cancelada' ? 'none' : 'block';
+  document.getElementById('zonaExtra').style.display = 'flex';
   document.getElementById('overlay').classList.add('open');
 }
 
 function convertirEnAlquiler() {
-  const id = document.getElementById('editId').value;
-  const p = pruebas.find(x => String(x.ID) === String(id));
+  const p = pruebas.find(x => String(x.ID) === String(document.getElementById('editId').value));
   if (p) irAAlquiler(p);
+}
+
+async function cancelarPrueba() {
+  const id = document.getElementById('editId').value;
+  if (!id) return;
+  if (!confirm('¿Cancelar esta prueba? Se borra del calendario.')) return;
+  await apiPost('updatePrueba', { id, estado: 'Cancelada' });
+  toast('Prueba cancelada');
+  cerrarModal();
+  cargar();
 }
 
 document.getElementById('form').addEventListener('submit', async (e) => {
@@ -299,9 +292,11 @@ document.getElementById('form').addEventListener('submit', async (e) => {
       telefono: document.getElementById('telefono').value,
       fecha: document.getElementById('fecha').value,
       hora: document.getElementById('hora').value,
-      estado: document.getElementById('estado').value,
       observaciones: document.getElementById('observaciones').value
     };
+    // El día agendado pasa a ser el seleccionado, para verlo enseguida.
+    const f = parseFechaLocal(payload.fecha);
+    if (f) diaSeleccionado = f;
     if (editId) {
       await apiPost('updatePrueba', { id: editId, ...payload });
       toast('Prueba actualizada');
