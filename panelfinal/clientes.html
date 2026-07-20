@@ -263,17 +263,19 @@ async function guardarCliente() {
   if (!fichaClienteActual) return;
   const nuevoNombre = document.getElementById('fichaNombreInput').value.trim();
   if (!nuevoNombre) { toast('El nombre no puede quedar vacío'); return; }
-  const res = await apiPost('updateCliente', {
-    nombreActual: fichaClienteActual,
-    nombre: nuevoNombre,
-    telefono: document.getElementById('fichaTelInput').value,
-    instagram: document.getElementById('fichaInstaInput').value.trim().replace(/^@/, ''),
-    cumpleanos: formatDiaMes(document.getElementById('fichaCumpleDia').value, document.getElementById('fichaCumpleMes').value)
-  });
+  const telefono = document.getElementById('fichaTelInput').value;
+  const instagram = document.getElementById('fichaInstaInput').value.trim().replace(/^@/, '');
+  const cumpleanos = formatDiaMes(document.getElementById('fichaCumpleDia').value, document.getElementById('fichaCumpleMes').value);
+  const res = await apiPost('updateCliente', { nombreActual: fichaClienteActual, nombre: nuevoNombre, telefono, instagram, cumpleanos });
   if (res && res.error) { toast(res.error); return; }
+  const c = clientes.find(x => x.Nombre === fichaClienteActual);
+  if (c) Object.assign(c, { Nombre: nuevoNombre, Telefono: telefono, Instagram: instagram, Cumpleanos: cumpleanos });
+  if (nuevoNombre !== fichaClienteActual) {
+    alquileres.forEach(a => { if (a.Cliente === fichaClienteActual) a.Cliente = nuevoNombre; });
+  }
   toast('Datos guardados');
   cerrarModalFicha();
-  await cargar();
+  render();
 }
 
 function abrirNuevo() { document.getElementById('form').reset(); document.getElementById('overlay').classList.add('open'); }
@@ -281,15 +283,15 @@ function cerrarModal() { document.getElementById('overlay').classList.remove('op
 
 document.getElementById('form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  await apiPost('addCliente', {
-    nombre: document.getElementById('nombre').value,
-    telefono: document.getElementById('telefono').value,
-    instagram: document.getElementById('instagram').value.trim().replace(/^@/, ''),
-    cumpleanos: formatDiaMes(document.getElementById('cumpleDia').value, document.getElementById('cumpleMes').value)
-  });
+  const nombre = document.getElementById('nombre').value;
+  const telefono = document.getElementById('telefono').value;
+  const instagram = document.getElementById('instagram').value.trim().replace(/^@/, '');
+  const cumpleanos = formatDiaMes(document.getElementById('cumpleDia').value, document.getElementById('cumpleMes').value);
+  await apiPost('addCliente', { nombre, telefono, instagram, cumpleanos });
+  clientes.push({ Nombre: nombre, Telefono: telefono, Instagram: instagram, Cumpleanos: cumpleanos });
   toast('Cliente agregado');
   cerrarModal();
-  cargar();
+  render();
 });
 
 cargar();

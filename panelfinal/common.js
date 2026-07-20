@@ -210,3 +210,11 @@ function esMesCumple(cumple) {
 function mensajeCumple(nombre) {
   return `Feliz cumple ${nombre || ''}! Esperamos que estés pasando un bonito día 🎉 Tenés un descuento del 15% en tu próximo alquiler para festejarlo, válido por el resto del mes. Es intransferible. 💛 ALBALUZ`;
 }
+
+// ---- Actualización optimista ----
+// Replica en el navegador el cálculo que hace el backend (estadoPagoDe en Code.gs),
+// para poder mostrar el resultado al instante sin esperar la vuelta del servidor.
+function estadoPagoLocal(cobrado, precioFinal) {
+  if (cobrado <= 0) return 'Pendiente';
+  return cobrado >= precioFinal ? 'Pagado' : 'Seña';
+}

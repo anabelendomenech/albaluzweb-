@@ -277,9 +277,11 @@ async function cancelarPrueba() {
   if (!id) return;
   if (!confirm('¿Cancelar esta prueba? Se borra del calendario.')) return;
   await apiPost('updatePrueba', { id, estado: 'Cancelada' });
+  const p = pruebas.find(x => String(x.ID) === String(id));
+  if (p) p.Estado = 'Cancelada';
   toast('Prueba cancelada');
   cerrarModal();
-  cargar();
+  render();
 }
 
 document.getElementById('form').addEventListener('submit', async (e) => {
@@ -300,13 +302,23 @@ document.getElementById('form').addEventListener('submit', async (e) => {
     if (f) diaSeleccionado = f;
     if (editId) {
       await apiPost('updatePrueba', { id: editId, ...payload });
+      const p = pruebas.find(x => String(x.ID) === String(editId));
+      if (p) Object.assign(p, {
+        Nombre: payload.nombre, Telefono: payload.telefono, Fecha: payload.fecha,
+        Hora: payload.hora, Observaciones: payload.observaciones
+      });
       toast('Prueba actualizada');
     } else {
-      await apiPost('addPrueba', payload);
+      const res = await apiPost('addPrueba', payload);
+      pruebas.push({
+        ID: res.id, Nombre: payload.nombre, Telefono: payload.telefono, Fecha: payload.fecha,
+        Hora: payload.hora, Observaciones: payload.observaciones, Estado: 'Agendada',
+        ConvertidaCliente: 'NO', CalendarEventId: ''
+      });
       toast('Prueba agendada');
     }
     cerrarModal();
-    await cargar();
+    render();
   } catch (err) {
     toast('Error al guardar. Intentá de nuevo.');
     console.error(err);

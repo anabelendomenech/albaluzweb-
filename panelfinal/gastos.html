@@ -118,15 +118,28 @@ const CATEGORIAS_INGRESO = ['Venta de vestido', 'Otro'];
 
 let gastos = [];
 let filtroTipo = 'Todos';
+let statGastosMes = 0, statNetoMes = 0;
+
+function esDeEsteMes(fecha) {
+  const d = parseFechaLocal(fecha);
+  const hoy = new Date();
+  return !!d && d.getFullYear() === hoy.getFullYear() && d.getMonth() === hoy.getMonth();
+}
+
+function pintarStats() {
+  document.getElementById('statGastos').textContent = fmtMoney(statGastosMes);
+  const neto = document.getElementById('statNeto');
+  neto.textContent = fmtMoney(statNetoMes);
+  neto.style.color = statNetoMes >= 0 ? 'var(--ok)' : 'var(--warn)';
+}
 
 async function cargar() {
   const [g, dash] = await Promise.all([apiGet('getGastos'), apiGet('getDashboard')]);
   gastos = g.data || [];
   document.getElementById('statIngresos').textContent = fmtMoney(dash.ingresosAlquileresMes);
-  document.getElementById('statGastos').textContent = fmtMoney(dash.gastosMes);
-  const neto = document.getElementById('statNeto');
-  neto.textContent = fmtMoney(dash.gananciaNetaMes);
-  neto.style.color = dash.gananciaNetaMes >= 0 ? 'var(--ok)' : 'var(--warn)';
+  statGastosMes = dash.gastosMes;
+  statNetoMes = dash.gananciaNetaMes;
+  pintarStats();
   render();
 }
 
@@ -168,10 +181,17 @@ async function eliminarGasto(id) {
   const res = await apiPost('deleteGasto', { id });
   if (res && res.error) {
     toast(res.error);
-  } else {
-    toast('Movimiento eliminado');
+    return;
   }
-  cargar();
+  const g = gastos.find(x => String(x.ID) === String(id));
+  gastos = gastos.filter(x => String(x.ID) !== String(id));
+  if (g && esDeEsteMes(g.Fecha)) {
+    statGastosMes -= Number(g.Monto) || 0;
+    statNetoMes += Number(g.Monto) || 0;
+    pintarStats();
+  }
+  toast('Movimiento eliminado');
+  render();
 }
 
 function actualizarCategorias() {
@@ -191,17 +211,28 @@ document.getElementById('form').addEventListener('submit', async (e) => {
   const btn = e.target.querySelector('button[type=submit]');
   btn.disabled = true; btn.textContent = 'Guardando…';
   try {
-    await apiPost('addGasto', {
+    const payload = {
       tipo: 'Gasto',
       categoria: document.getElementById('categoria').value,
       descripcion: document.getElementById('descripcion').value,
       monto: document.getElementById('monto').value,
       fecha: document.getElementById('fecha').value,
       notas: document.getElementById('notas').value
+    };
+    const res = await apiPost('addGasto', payload);
+    const monto = Number(payload.monto) || 0;
+    gastos.push({
+      ID: res.id, Fecha: payload.fecha, Tipo: 'Gasto', Categoria: payload.categoria,
+      Descripcion: payload.descripcion, Monto: monto, Notas: payload.notas, Origen: 'Manual', AlquilerID: ''
     });
+    if (esDeEsteMes(payload.fecha)) {
+      statGastosMes += monto;
+      statNetoMes -= monto;
+      pintarStats();
+    }
     toast('Movimiento guardado');
     cerrarModal();
-    await cargar();
+    render();
   } catch (err) {
     toast('Error al guardar. Intentá de nuevo.');
     console.error(err);

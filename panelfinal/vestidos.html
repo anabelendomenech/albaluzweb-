@@ -322,13 +322,24 @@ document.getElementById('form').addEventListener('submit', async (e) => {
 
     if (editId) {
       await apiPost('updateVestido', { id: editId, ...payload });
+      const v = vestidos.find(x => String(x.ID) === String(editId));
+      if (v) Object.assign(v, {
+        Descripcion: payload.descripcion, Tipo: payload.tipo, Precio: Number(payload.precio) || 0,
+        Detalle: payload.detalle, Talle: payload.talle, CostoCompra: Number(payload.costoCompra) || 0,
+        FechaCompra: payload.fechaCompra, ...(fotoUrl ? { Foto: fotoUrl } : {})
+      });
       toast('Vestido actualizado');
     } else {
-      await apiPost('addVestido', payload);
+      const res = await apiPost('addVestido', payload);
+      vestidos.push({
+        ID: res.id, Foto: fotoUrl || '', Descripcion: payload.descripcion, Tipo: payload.tipo,
+        Precio: Number(payload.precio) || 0, Detalle: payload.detalle, Estado: 'Disponible',
+        Talle: payload.talle, FechaCompra: payload.fechaCompra, CostoCompra: Number(payload.costoCompra) || 0
+      });
       toast('Vestido agregado');
     }
     cerrarModal();
-    await cargar();
+    render();
   } catch (err) {
     toast('Error al guardar. Intentá de nuevo.');
     console.error(err);

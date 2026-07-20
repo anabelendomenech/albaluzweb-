@@ -109,8 +109,10 @@ function render() {
 
 async function marcarArreglado(id) {
   await apiPost('updateAlquiler', { id, paraArreglar: 'Arreglado' });
+  const a = alquileres.find(x => String(x.ID) === String(id));
+  if (a) a.ParaArreglar = 'Arreglado';
   toast('Vestido marcado como arreglado');
-  cargar();
+  render();
 }
 
 cargar();

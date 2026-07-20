@@ -341,8 +341,10 @@ function render() {
 
 async function cambiarEstado(id, estado) {
   await apiPost('updateAlquiler', { id, estado });
+  const a = alquileres.find(x => String(x.ID) === String(id));
+  if (a) a.Estado = estado;
   toast(estado === 'Retirado' ? 'Marcado como retirado' : 'Marcado como devuelto');
-  cargar();
+  render();
 }
 
 function abrirArreglo(id) {
@@ -357,15 +359,14 @@ function cerrarModalArreglo() { document.getElementById('overlayArreglo').classL
 document.getElementById('formArreglo').addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('arregloAlquilerId').value;
-  await apiPost('updateAlquiler', {
-    id,
-    paraArreglar: 'Pendiente',
-    notaArreglo: document.getElementById('notaArreglo').value,
-    fechaLimiteArreglo: document.getElementById('fechaLimiteArreglo').value
-  });
+  const notaArreglo = document.getElementById('notaArreglo').value;
+  const fechaLimiteArreglo = document.getElementById('fechaLimiteArreglo').value;
+  await apiPost('updateAlquiler', { id, paraArreglar: 'Pendiente', notaArreglo, fechaLimiteArreglo });
+  const a = alquileres.find(x => String(x.ID) === String(id));
+  if (a) Object.assign(a, { ParaArreglar: 'Pendiente', NotaArreglo: notaArreglo, FechaLimiteArreglo: fechaLimiteArreglo });
   toast('Vestido marcado para arreglar');
   cerrarModalArreglo();
-  cargar();
+  render();
 });
 
 function abrirPago(id) {
@@ -383,10 +384,17 @@ document.getElementById('formPago').addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('pagoAlquilerId').value;
   const monto = document.getElementById('montoPago').value;
-  await apiPost('registrarPago', { id, monto });
+  const res = await apiPost('registrarPago', { id, monto });
+  const a = alquileres.find(x => String(x.ID) === String(id));
+  if (a && res.ok) {
+    Object.assign(a, { Cobrado: res.cobrado, Debe: res.debe, EstadoPago: res.estadoPago });
+    if (Number(monto) > 0) {
+      gastos.push({ Tipo: 'Ingreso', AlquilerID: id, Fecha: new Date().toISOString(), Monto: Number(monto), Descripcion: 'Pago registrado' });
+    }
+  }
   toast('Pago registrado');
   cerrarModalPago();
-  cargar();
+  render();
 });
 
 function abrirNuevo() {
@@ -431,9 +439,11 @@ async function anularAlquiler() {
   if (!id) return;
   if (!confirm('¿Anular este alquiler? El vestido queda liberado para esas fechas.')) return;
   await apiPost('updateAlquiler', { id, estado: 'Anulado' });
+  const a = alquileres.find(x => String(x.ID) === String(id));
+  if (a) a.Estado = 'Anulado';
   toast('Alquiler anulado');
   cerrarModal();
-  cargar();
+  render();
 }
 
 // ---- autocompletar vestido ----
@@ -554,15 +564,41 @@ document.getElementById('form').addEventListener('submit', async (e) => {
       debe: Math.max((Number(document.getElementById('precioFinal').value) || 0) - (Number(document.getElementById('pagado').value) || 0), 0),
       notas: document.getElementById('notas').value
     };
+    const precioFinal = Number(payload.precioFinal) || 0;
+    const debe = Number(payload.debe) || 0;
+    const cobrado = Math.max(precioFinal - debe, 0);
+    const estadoPago = estadoPagoLocal(cobrado, precioFinal);
+
     if (editId) {
       await apiPost('updateAlquiler', { id: editId, ...payload });
+      const a = alquileres.find(x => String(x.ID) === String(editId));
+      if (a) Object.assign(a, {
+        Cliente: payload.cliente, Telefono: payload.telefono, VestidoID: payload.vestidoId,
+        VestidoDesc: payload.vestidoDesc, FechaRetiro: payload.fechaRetiro, FechaDevolucion: payload.fechaDevolucion,
+        PrecioBase: Number(payload.precioBase) || 0, Descuento: Number(payload.descuento) || 0,
+        PrecioFinal: precioFinal, Debe: debe, Notas: payload.notas, Cobrado: cobrado, EstadoPago: estadoPago
+      });
       toast('Alquiler actualizado');
     } else {
-      await apiPost('addAlquiler', payload);
+      const res = await apiPost('addAlquiler', payload);
+      alquileres.push({
+        ID: res.id, Cliente: payload.cliente, Telefono: payload.telefono, VestidoID: payload.vestidoId,
+        VestidoDesc: payload.vestidoDesc, FechaRetiro: payload.fechaRetiro, FechaDevolucion: payload.fechaDevolucion,
+        PrecioBase: Number(payload.precioBase) || 0, Descuento: Number(payload.descuento) || 0,
+        PrecioFinal: precioFinal, Debe: debe, Notas: payload.notas, Estado: 'Reservado',
+        FechaCreacion: new Date().toISOString(), ParaArreglar: 'NO', NotaArreglo: '',
+        Cobrado: cobrado, EstadoPago: estadoPago, CalendarEventId: ''
+      });
+      if (payload.cliente && !clientes.some(c => (c.Nombre || '').trim().toLowerCase() === payload.cliente.trim().toLowerCase())) {
+        clientes.push({ Nombre: payload.cliente, Telefono: payload.telefono, Instagram: '', Cumpleanos: '' });
+      }
+      if (cobrado > 0) {
+        gastos.push({ Tipo: 'Ingreso', AlquilerID: res.id, Fecha: new Date().toISOString(), Monto: cobrado, Descripcion: 'Seña / pago al reservar' });
+      }
       toast('Alquiler guardado');
     }
     cerrarModal();
-    await cargar();
+    render();
   } catch (err) {
     toast('Error al guardar. Intentá de nuevo.');
     console.error(err);
