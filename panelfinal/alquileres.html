@@ -615,6 +615,7 @@ function aplicarParametrosURL() {
     document.querySelectorAll('.search-row .chip').forEach(c => {
       c.classList.toggle('active', c.dataset.f === f);
     });
+    render();
   }
   const abrir = params.get('abrir');
   if (abrir) abrirEditar(abrir);
