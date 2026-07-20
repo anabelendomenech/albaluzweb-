@@ -45,14 +45,20 @@
     </div>
 
     <div class="search-row">
-      <div class="chip active" data-f="Todos" onclick="filtrar(this)">Todos</div>
+      <div class="chip active" data-f="activos" onclick="filtrar(this)">Activos</div>
       <div class="chip" data-f="finde" onclick="filtrar(this)">Este finde</div>
       <div class="chip" data-f="adevolver" onclick="filtrar(this)">A devolver</div>
       <div class="chip" data-f="porcobrar" onclick="filtrar(this)">💰 Por cobrar</div>
-      <div class="chip" data-f="Retirado" onclick="filtrar(this)">Retirados</div>
-      <div class="chip" data-f="Devuelto" onclick="filtrar(this)">Devueltos</div>
-      <div class="chip" data-f="Anulado" onclick="filtrar(this)">Anulados</div>
       <div class="chip" data-f="arreglo" onclick="filtrar(this)">🧵 Para arreglar</div>
+      <div class="chip" data-f="historial" onclick="filtrar(this)">🗂️ Historial</div>
+      <div class="chip" data-f="Todos" onclick="filtrar(this)">Todos</div>
+    </div>
+    <div class="search-row" style="align-items:center;gap:10px">
+      <span class="hint">Retiro:</span>
+      <input type="date" id="retiroDesde" onchange="render()" style="max-width:150px">
+      <span class="hint">a</span>
+      <input type="date" id="retiroHasta" onchange="render()" style="max-width:150px">
+      <button type="button" class="btn ghost sm" onclick="limpiarFechas()">Limpiar</button>
     </div>
 
     <div style="overflow-x:auto">
@@ -195,7 +201,7 @@
 <script src="common.js"></script>
 <script>
 let alquileres = [], vestidos = [], clientes = [], gastos = [];
-let filtroEstado = 'Todos';
+let filtroEstado = 'activos';
 
 async function cargar() {
   const [a, v, c, g] = await Promise.all([apiGet('getAlquileres'), apiGet('getVestidos'), apiGet('getClientes'), apiGet('getGastos')]);
@@ -282,22 +288,47 @@ function filtrar(el) {
   render();
 }
 
+function limpiarFechas() {
+  document.getElementById('retiroDesde').value = '';
+  document.getElementById('retiroHasta').value = '';
+  render();
+}
+
 function render() {
   const hoy = new Date(); hoy.setHours(0,0,0,0);
   const { viernes, domingo } = calcularProximoFindeJS(hoy);
 
-  let lista = [...alquileres].sort((a,b) => new Date(b.FechaCreacion) - new Date(a.FechaCreacion));
-
-  lista = lista.filter(a => {
-    const retiro = a.FechaRetiro ? new Date(a.FechaRetiro) : null;
+  let lista = alquileres.filter(a => {
+    const retiro = parseFechaLocal(a.FechaRetiro);
     if (filtroEstado === 'arreglo') return a.ParaArreglar === 'Pendiente';
     if (filtroEstado === 'porcobrar') return a.Estado !== 'Anulado' && Number(a.Debe) > 0;
     if (filtroEstado === 'adevolver') return a.Estado === 'Retirado';
     if (filtroEstado === 'finde') return retiro && retiro >= viernes && retiro <= domingo && a.Estado === 'Reservado';
-    if (filtroEstado === 'Devuelto') return a.Estado === 'Devuelto';
-    if (filtroEstado === 'Anulado') return a.Estado === 'Anulado';
-    if (filtroEstado === 'Retirado') return a.Estado === 'Retirado';
-    return true;
+    if (filtroEstado === 'historial') return a.Estado === 'Devuelto' || a.Estado === 'Anulado';
+    if (filtroEstado === 'activos') return a.Estado !== 'Devuelto' && a.Estado !== 'Anulado';
+    return true; // Todos
+  });
+
+  // Buscador por fecha de retiro (rango desde/hasta), se combina con el chip elegido arriba.
+  const desde = parseFechaLocal(document.getElementById('retiroDesde').value);
+  const hasta = parseFechaLocal(document.getElementById('retiroHasta').value);
+  if (desde || hasta) {
+    lista = lista.filter(a => {
+      const retiro = parseFechaLocal(a.FechaRetiro);
+      if (!retiro) return false;
+      if (desde && retiro < desde) return false;
+      if (hasta && retiro > hasta) return false;
+      return true;
+    });
+  }
+
+  // Activo: lo más urgente primero (retiro más viejo arriba). Historial: lo más reciente primero.
+  lista.sort((a, b) => {
+    const ra = parseFechaLocal(a.FechaRetiro), rb = parseFechaLocal(b.FechaRetiro);
+    if (!ra && !rb) return 0;
+    if (!ra) return 1;
+    if (!rb) return -1;
+    return filtroEstado === 'historial' ? rb - ra : ra - rb;
   });
 
   const tbody = document.getElementById('tbody');
