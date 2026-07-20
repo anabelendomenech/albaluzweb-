@@ -283,11 +283,24 @@ function cerrarModal() { document.getElementById('overlay').classList.remove('op
 
 document.getElementById('form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const nombre = document.getElementById('nombre').value;
+  const nombre = document.getElementById('nombre').value.trim();
   const telefono = document.getElementById('telefono').value;
   const instagram = document.getElementById('instagram').value.trim().replace(/^@/, '');
   const cumpleanos = formatDiaMes(document.getElementById('cumpleDia').value, document.getElementById('cumpleMes').value);
-  await apiPost('addCliente', { nombre, telefono, instagram, cumpleanos });
+
+  // Chequeo local primero (instantáneo); el backend igual lo vuelve a chequear como respaldo.
+  const yaExiste = clientes.some(c => (c.Nombre || '').trim().toLowerCase() === nombre.toLowerCase());
+  if (yaExiste) {
+    toast('Ya existe una clienta con ese nombre. Buscala en la lista en vez de crearla de nuevo.');
+    return;
+  }
+
+  const res = await apiPost('addCliente', { nombre, telefono, instagram, cumpleanos });
+  if (res && res.existed) {
+    toast('Ya existe una clienta con ese nombre. Buscala en la lista en vez de crearla de nuevo.');
+    cerrarModal();
+    return;
+  }
   clientes.push({ Nombre: nombre, Telefono: telefono, Instagram: instagram, Cumpleanos: cumpleanos });
   toast('Cliente agregado');
   cerrarModal();
