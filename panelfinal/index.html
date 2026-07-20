@@ -160,8 +160,8 @@ async function cargar() {
     // ---- Recordatorios: cumpleaños de hoy + devoluciones/arreglos vencidos ----
     const recordatorios = [];
     clientes.forEach(c => {
-      const cu = parseFechaLocal(c.Cumpleanos);
-      if (cu && cu.getDate() === hoy.getDate() && cu.getMonth() === hoy.getMonth()) {
+      const cu = parseDiaMes(c.Cumpleanos);
+      if (cu && cu.dia === hoy.getDate() && cu.mes === hoy.getMonth() + 1) {
         const wa = linkWhatsApp(c.Telefono, mensajeCumple(c.Nombre));
         recordatorios.push(`🎂 Hoy cumple <strong>${c.Nombre}</strong>${wa ? ` <a class="btn ghost sm" href="${wa}" target="_blank" style="margin-left:6px">💬 Saludar (15% off)</a>` : ''}`);
       }

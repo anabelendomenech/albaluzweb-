@@ -67,7 +67,13 @@
         <div class="field"><label>Teléfono</label><input id="telefono"></div>
         <div class="field"><label>Instagram (opcional)</label><input id="instagram" placeholder="usuaria (sin @)"></div>
       </div>
-      <div class="field"><label>Cumpleaños (opcional)</label><input type="date" id="cumpleanos"></div>
+      <div class="field">
+        <label>Cumpleaños (opcional)</label>
+        <div class="row" style="gap:8px">
+          <input type="number" id="cumpleDia" min="1" max="31" placeholder="Día" style="width:80px">
+          <input type="number" id="cumpleMes" min="1" max="12" placeholder="Mes" style="width:80px">
+        </div>
+      </div>
       <div class="modal-actions">
         <button type="submit" class="btn gold" style="flex:1">Guardar</button>
         <button type="button" class="btn ghost" onclick="cerrarModal()">Cancelar</button>
@@ -95,7 +101,13 @@
       </div>
     </div>
     <div class="row" style="align-items:flex-end">
-      <div class="field"><label>Cumpleaños</label><input type="date" id="fichaCumpleInput"></div>
+      <div class="field">
+        <label>Cumpleaños</label>
+        <div class="row" style="gap:8px">
+          <input type="number" id="fichaCumpleDia" min="1" max="31" placeholder="Día" style="width:80px">
+          <input type="number" id="fichaCumpleMes" min="1" max="12" placeholder="Mes" style="width:80px">
+        </div>
+      </div>
       <div class="field">
         <button type="button" class="btn gold" style="width:100%;justify-content:center" onclick="guardarCliente()">💾 Guardar datos</button>
       </div>
@@ -178,7 +190,9 @@ function abrirFicha(nombre) {
   document.getElementById('fichaNombreInput').value = nombre;
   document.getElementById('fichaTelInput').value = (c && c.Telefono) || '';
   document.getElementById('fichaInstaInput').value = (c && c.Instagram) || '';
-  document.getElementById('fichaCumpleInput').value = toDateInput(c && c.Cumpleanos);
+  const dm = parseDiaMes(c && c.Cumpleanos);
+  document.getElementById('fichaCumpleDia').value = dm ? dm.dia : '';
+  document.getElementById('fichaCumpleMes').value = dm ? dm.mes : '';
   actualizarInstaLink();
   document.getElementById('fichaTotal').textContent = propios.length;
 
@@ -237,13 +251,6 @@ function abrirFicha(nombre) {
 }
 function cerrarModalFicha() { document.getElementById('overlayFicha').classList.remove('open'); }
 
-// Convierte lo guardado (texto "YYYY-MM-DD" o fecha) al formato del input date.
-function toDateInput(v) {
-  const d = parseFechaLocal(v);
-  if (!d) return '';
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
 function actualizarInstaLink() {
   const user = (document.getElementById('fichaInstaInput').value || '').trim().replace(/^@/, '');
   document.getElementById('fichaInstaLink').innerHTML = user
@@ -261,7 +268,7 @@ async function guardarCliente() {
     nombre: nuevoNombre,
     telefono: document.getElementById('fichaTelInput').value,
     instagram: document.getElementById('fichaInstaInput').value.trim().replace(/^@/, ''),
-    cumpleanos: document.getElementById('fichaCumpleInput').value
+    cumpleanos: formatDiaMes(document.getElementById('fichaCumpleDia').value, document.getElementById('fichaCumpleMes').value)
   });
   if (res && res.error) { toast(res.error); return; }
   toast('Datos guardados');
@@ -278,7 +285,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
     nombre: document.getElementById('nombre').value,
     telefono: document.getElementById('telefono').value,
     instagram: document.getElementById('instagram').value.trim().replace(/^@/, ''),
-    cumpleanos: document.getElementById('cumpleanos').value
+    cumpleanos: formatDiaMes(document.getElementById('cumpleDia').value, document.getElementById('cumpleMes').value)
   });
   toast('Cliente agregado');
   cerrarModal();

@@ -181,11 +181,30 @@ function proximoLunes(desde) {
   d.setDate(d.getDate() + faltan);
   return d;
 }
+// Cumpleaños se guarda sin año, como texto "DD/MM". Esto lee tanto ese formato
+// como fechas viejas con año (ya guardadas antes de este cambio).
+function parseDiaMes(v) {
+  if (!v) return null;
+  if (typeof v === 'string') {
+    const m = v.match(/^(\d{1,2})\/(\d{1,2})$/);
+    if (m) {
+      const dia = Number(m[1]), mes = Number(m[2]);
+      if (dia >= 1 && dia <= 31 && mes >= 1 && mes <= 12) return { dia, mes };
+    }
+  }
+  const d = parseFechaLocal(v);
+  if (!d) return null;
+  return { dia: d.getDate(), mes: d.getMonth() + 1 };
+}
+function formatDiaMes(dia, mes) {
+  dia = Number(dia); mes = Number(mes);
+  if (!dia || !mes) return '';
+  return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}`;
+}
 // true si el mes del cumpleaños coincide con el mes actual.
 function esMesCumple(cumple) {
-  const d = parseFechaLocal(cumple);
-  if (!d) return false;
-  return d.getMonth() === new Date().getMonth();
+  const dm = parseDiaMes(cumple);
+  return !!dm && dm.mes === new Date().getMonth() + 1;
 }
 // Mensaje de saludo de cumpleaños con el 15% off (texto definido por la dueña).
 function mensajeCumple(nombre) {
