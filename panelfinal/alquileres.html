@@ -467,8 +467,11 @@ vestidoInput.addEventListener('input', () => {
     const ocupa = alquilerQueOcupa(v.ID, retiro, devolucion, alquileres, editId);
     const estadoTxt = ocupa ? `🔴 ocupado hasta ${fmtDate(ocupa.FechaDevolucion)}` : `🟢 libre esas fechas · ${fmtMoney(v.Precio)}`;
     return `<div class="ac-item" onclick='elegirVestido(${JSON.stringify(v).replace(/'/g,"&#39;")})'>
-      <span>#${v.ID} — ${v.Descripcion}</span>
-      <small>${estadoTxt}</small>
+      <span style="display:flex;align-items:center;gap:8px;min-width:0">
+        ${v.Foto ? `<img src="${v.Foto}" style="width:28px;height:36px;object-fit:cover;border-radius:4px;flex-shrink:0">` : ''}
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">#${v.ID} — ${v.Descripcion}</span>
+      </span>
+      <small style="flex-shrink:0">${estadoTxt}</small>
     </div>`;
   }).join('');
   box.style.display = 'block';
