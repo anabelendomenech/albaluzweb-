@@ -216,7 +216,8 @@ function render() {
 }
 
 function filaPrueba(p) {
-  const wa = linkWhatsApp(p.Telefono, `Hola ${p.Nombre || ''}! Te recordamos tu cita de prueba en ALBALUZ el ${fmtDate(p.Fecha)} a las ${fmtHora(p.Hora)}. ¡Te esperamos! 👗`);
+  const cliP = CLIENTES.find(c => (c.Nombre || '').trim().toLowerCase() === (p.Nombre || '').trim().toLowerCase());
+  const contactoRecordar = botonContacto(p.Telefono, cliP && cliP.Instagram, `Hola ${p.Nombre || ''}! Te recordamos tu cita de prueba en ALBALUZ el ${fmtDate(p.Fecha)} a las ${fmtHora(p.Hora)}. ¡Te esperamos! 👗`, '💬 Recordar');
   return `
   <div class="prueba-row" onclick="abrirEditar(${p.ID})" style="cursor:pointer">
     <div class="prueba-hora">${fmtHora(p.Hora) || '--:--'}</div>
@@ -225,7 +226,7 @@ function filaPrueba(p) {
       ${p.Observaciones ? `<div class="hint">${p.Observaciones}</div>` : ''}
     </div>
     <div class="prueba-acciones">
-      ${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank" onclick="event.stopPropagation()">💬 Recordar</a>` : ''}
+      ${contactoRecordar}
       <button class="btn gold sm" onclick="event.stopPropagation();convertirDirecto(${p.ID})">👗 A alquiler</button>
     </div>
   </div>`;

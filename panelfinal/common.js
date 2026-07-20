@@ -211,6 +211,16 @@ function mensajeCumple(nombre) {
   return `Feliz cumple ${nombre || ''}! Esperamos que estés pasando un bonito día 🎉 Tenés un descuento del 15% en tu próximo alquiler para festejarlo, válido por el resto del mes. Es intransferible. 💛 ALBALUZ`;
 }
 
+// Botón de contacto: WhatsApp si hay teléfono; si no hay teléfono pero sí Instagram, el acceso al perfil en su lugar. '' si no hay ninguno.
+function botonContacto(telefono, instagram, mensajeWA, texto) {
+  texto = texto || '💬';
+  const wa = linkWhatsApp(telefono, mensajeWA);
+  if (wa) return `<a class="btn ghost sm" href="${wa}" target="_blank" onclick="event.stopPropagation()">${texto}</a>`;
+  const ig = linkInstagram(instagram);
+  if (ig) return `<a class="btn ghost sm" href="${ig}" target="_blank" onclick="event.stopPropagation()">📷</a>`;
+  return '';
+}
+
 // ---- Actualización optimista ----
 // Replica en el navegador el cálculo que hace el backend (estadoPagoDe en Code.gs),
 // para poder mostrar el resultado al instante sin esperar la vuelta del servidor.

@@ -319,8 +319,8 @@ function render() {
     const btnPago = a.Estado !== 'Anulado' && Number(a.Debe) > 0
       ? `<button class="btn ghost sm" onclick="event.stopPropagation();abrirPago(${a.ID})">💰 Registrar pago</button>`
       : '';
-    const wa = linkWhatsApp(a.Telefono, `Hola ${a.Cliente || ''}! `);
-    const btnContacto = wa ? `<a class="btn ghost sm" href="${wa}" target="_blank" onclick="event.stopPropagation()">💬</a>` : '';
+    const cliFila = clientes.find(c => (c.Nombre || '').trim().toLowerCase() === (a.Cliente || '').trim().toLowerCase());
+    const btnContacto = botonContacto(a.Telefono, cliFila && cliFila.Instagram, `Hola ${a.Cliente || ''}! `);
     const vencido = a.Estado === 'Retirado' && a.FechaDevolucion && new Date(a.FechaDevolucion) < hoy;
     return `
     <tr onclick="abrirDetalleAlq(${a.ID})" style="cursor:pointer${vencido ? ';background:#fdecec' : ''}">

@@ -168,14 +168,14 @@ function render() {
     return;
   }
   tbody.innerHTML = lista.map(({ c, propios, debe, urgente, ultima }) => {
-    const wa = linkWhatsApp(c.Telefono, `Hola ${c.Nombre || ''}! `);
+    const contacto = botonContacto(c.Telefono, c.Instagram, `Hola ${c.Nombre || ''}! `);
     return `<tr onclick="abrirFicha('${c.Nombre.replace(/'/g,"\\'")}')" style="cursor:pointer${urgente ? ';background:#fdecec' : ''}">
       <td data-label="Nombre"><strong>${c.Nombre}</strong>${urgente ? ' <span class="pill Pendiente" style="font-size:.62rem">debe y devolvió</span>' : ''}</td>
       <td data-label="Teléfono">${c.Telefono || '—'}</td>
       <td data-label="Alquileres">${propios.length}</td>
       <td data-label="Debe">${debe > 0 ? `<span style="color:var(--warn);font-weight:600">${fmtMoney(debe)}</span>` : '—'}</td>
       <td data-label="Última vez">${ultima ? fmtDate(ultima.FechaRetiro) : '—'}</td>
-      <td class="acciones">${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank" onclick="event.stopPropagation()">💬</a>` : '<span class="hint">Ver ficha →</span>'}</td>
+      <td class="acciones">${contacto || '<span class="hint">Ver ficha →</span>'}</td>
     </tr>`;
   }).join('');
 }
