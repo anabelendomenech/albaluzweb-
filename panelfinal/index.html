@@ -132,25 +132,33 @@ async function cargar() {
       }).join('');
     }
 
-    // ---- Clientas que deben plata (las que ya devolvieron y deben, primero y en rojo) ----
-    const deudores = alquileres
-      .filter(a => a.Estado !== 'Anulado' && Number(a.Debe) > 0)
-      .sort((a,b) => {
-        const ar = a.Estado === 'Devuelto' ? 0 : 1, br = b.Estado === 'Devuelto' ? 0 : 1;
-        return ar !== br ? ar - br : Number(b.Debe) - Number(a.Debe);
-      });
-    const totalDeuda = deudores.reduce((s,a) => s + (Number(a.Debe)||0), 0);
+    // ---- Clientas que deben plata, agrupado por clienta (una línea con el total de todos sus alquileres) ----
+    const porCliente = {};
+    alquileres.filter(a => a.Estado !== 'Anulado' && Number(a.Debe) > 0).forEach(a => {
+      const key = a.Cliente || '(sin nombre)';
+      if (!porCliente[key]) porCliente[key] = { cliente: a.Cliente, telefono: a.Telefono, total: 0, items: [], urgente: false };
+      const d = porCliente[key];
+      d.total += Number(a.Debe) || 0;
+      d.items.push(a);
+      if (a.Estado === 'Devuelto') d.urgente = true;
+      if (!d.telefono && a.Telefono) d.telefono = a.Telefono;
+    });
+    const deudores = Object.values(porCliente).sort((a,b) => (b.urgente - a.urgente) || (b.total - a.total));
+    const totalDeuda = deudores.reduce((s,d) => s + d.total, 0);
     const boxD = document.getElementById('deudas');
     if (!deudores.length) {
       boxD.innerHTML = '<p class="hint">Nadie te debe plata en este momento 🎉</p>';
     } else {
-      boxD.innerHTML = deudores.map(a => {
-        const urgente = a.Estado === 'Devuelto';
-        const wa = linkWhatsApp(a.Telefono, `Hola ${a.Cliente || ''}! Te recordamos que quedó un saldo pendiente de ${fmtMoney(a.Debe)} por tu alquiler (#${a.VestidoID} ${a.VestidoDesc||''}). ¡Gracias! 💛 ALBALUZ`);
-        return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)${urgente ? ';background:#fdecec;border-radius:8px' : ''}" onclick="event.stopPropagation()">
-          <div><strong>${a.Cliente}</strong>${urgente ? ' <span class="pill Pendiente" style="font-size:.66rem">ya devolvió y debe</span>' : ''} · <span class="hint">#${a.VestidoID} ${a.VestidoDesc||''}</span></div>
+      boxD.innerHTML = deudores.map(d => {
+        const detalle = d.items.map(a => `#${a.VestidoID}`).join(', ');
+        const msg = d.items.length > 1
+          ? `Hola ${d.cliente || ''}! Te recordamos que quedó un saldo pendiente de ${fmtMoney(d.total)} por tus alquileres (${detalle}). ¡Gracias! 💛 ALBALUZ`
+          : `Hola ${d.cliente || ''}! Te recordamos que quedó un saldo pendiente de ${fmtMoney(d.total)} por tu alquiler (${detalle} ${d.items[0].VestidoDesc||''}). ¡Gracias! 💛 ALBALUZ`;
+        const wa = linkWhatsApp(d.telefono, msg);
+        return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)${d.urgente ? ';background:#fdecec;border-radius:8px' : ''}" onclick="event.stopPropagation()">
+          <div><strong>${d.cliente}</strong>${d.urgente ? ' <span class="pill Pendiente" style="font-size:.66rem">ya devolvió y debe</span>' : ''} · <span class="hint">${detalle}</span></div>
           <div style="display:flex;align-items:center;gap:8px">
-            <span style="color:var(--warn);font-weight:600">${fmtMoney(a.Debe)}</span>
+            <span style="color:var(--warn);font-weight:600">${fmtMoney(d.total)}</span>
             ${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank">💬</a>` : ''}
           </div>
         </div>`;
