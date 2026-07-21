@@ -140,9 +140,9 @@ let clientes = [], alquileres = [];
 let fichaClienteActual = null;
 
 async function cargar() {
-  const [c, a] = await Promise.all([apiGet('getClientes'), apiGet('getAlquileres')]);
-  clientes = c.data || [];
-  alquileres = a.data || [];
+  const bundle = await apiBundle(['clientes', 'alquileres']);
+  clientes = bundle.clientes || [];
+  alquileres = bundle.alquileres || [];
   render();
 }
 

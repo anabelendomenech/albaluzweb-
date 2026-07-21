@@ -96,12 +96,11 @@ document.getElementById('fechaHoy').textContent = 'Hoy es ' + new Date().toLocal
 async function cargar() {
   const grid = document.getElementById('dashGrid');
   try {
-    const [dash, alq, pru, cli] = await Promise.all([
-      apiGet('getDashboard'), apiGet('getAlquileres'), apiGet('getPruebas'), apiGet('getClientes')
-    ]);
-    const alquileres = alq.data || [];
-    const pruebas = pru.data || [];
-    const clientes = cli.data || [];
+    const bundle = await apiBundle(['dashboard', 'alquileres', 'pruebas', 'clientes']);
+    const dash = bundle.dashboard || {};
+    const alquileres = bundle.alquileres || [];
+    const pruebas = bundle.pruebas || [];
+    const clientes = bundle.clientes || [];
 
     document.getElementById('dcFinde').textContent = dash.alquiladosProxFinde ?? 0;
     document.getElementById('dcArreglos').textContent = dash.arreglosPendientes ?? 0;

@@ -204,11 +204,11 @@ let alquileres = [], vestidos = [], clientes = [], gastos = [];
 let filtroEstado = 'activos';
 
 async function cargar() {
-  const [a, v, c, g] = await Promise.all([apiGet('getAlquileres'), apiGet('getVestidos'), apiGet('getClientes'), apiGet('getGastos')]);
-  alquileres = a.data || [];
-  vestidos = v.data || [];
-  clientes = c.data || [];
-  gastos = g.data || [];
+  const bundle = await apiBundle(['alquileres', 'vestidos', 'clientes', 'gastos']);
+  alquileres = bundle.alquileres || [];
+  vestidos = bundle.vestidos || [];
+  clientes = bundle.clientes || [];
+  gastos = bundle.gastos || [];
   render();
 }
 

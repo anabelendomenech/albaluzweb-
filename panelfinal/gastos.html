@@ -134,8 +134,9 @@ function pintarStats() {
 }
 
 async function cargar() {
-  const [g, dash] = await Promise.all([apiGet('getGastos'), apiGet('getDashboard')]);
-  gastos = g.data || [];
+  const bundle = await apiBundle(['gastos', 'dashboard']);
+  const dash = bundle.dashboard || {};
+  gastos = bundle.gastos || [];
   document.getElementById('statIngresos').textContent = fmtMoney(dash.ingresosAlquileresMes);
   statGastosMes = dash.gastosMes;
   statNetoMes = dash.gananciaNetaMes;

@@ -122,9 +122,9 @@ let alquileres = [];
 let filtroEstado = 'Todos';
 
 async function cargar() {
-  const [rv, ra] = await Promise.all([apiGet('getVestidos'), apiGet('getAlquileres')]);
-  vestidos = rv.data || [];
-  alquileres = ra.data || [];
+  const bundle = await apiBundle(['vestidos', 'alquileres']);
+  vestidos = bundle.vestidos || [];
+  alquileres = bundle.alquileres || [];
   render();
 }
 

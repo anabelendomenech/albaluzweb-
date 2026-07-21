@@ -126,9 +126,9 @@ let mesActual = new Date();
 let diaSeleccionado = null;
 
 async function cargar() {
-  const [rp, rc] = await Promise.all([apiGet('getPruebas'), apiGet('getClientes')]);
-  pruebas = rp.data || [];
-  CLIENTES = rc.data || [];
+  const bundle = await apiBundle(['pruebas', 'clientes']);
+  pruebas = bundle.pruebas || [];
+  CLIENTES = bundle.clientes || [];
   if (!diaSeleccionado) { diaSeleccionado = new Date(); diaSeleccionado.setHours(0, 0, 0, 0); }
   render();
 }

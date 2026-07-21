@@ -18,6 +18,12 @@ async function apiPost(action, data = {}) {
   return res.json();
 }
 
+// Junta varios recursos en un solo viaje al servidor (ej: apiBundle(['alquileres','vestidos']))
+// en vez de un apiGet por cada uno, para que la pantalla cargue más rápido.
+async function apiBundle(recursos) {
+  return apiGet('getBundle', { recursos: recursos.join(',') });
+}
+
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
