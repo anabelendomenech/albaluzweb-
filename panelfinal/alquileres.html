@@ -220,19 +220,20 @@ function resumenPrendas(a) {
   return `#${first.id} · ${first.desc || ''}` + (rest.length ? ` <span class="hint">+${resumenExtras(rest)}</span>` : '');
 }
 
-// Celda "Vestido" de la tabla: foto + descripción completa de la prenda principal.
+// Celda "Vestido" de la tabla: foto + descripción completa de TODOS los artículos del alquiler.
 function celdaVestido(a) {
   const items = vestidosDeAlquiler(a);
   if (!items.length) return '—';
-  const [first, ...rest] = items;
-  const v = vestidos.find(v => String(v.ID) === String(first.id));
-  const foto = v && v.Foto;
-  return `<div style="display:flex;align-items:center;gap:10px">
-    ${foto ? `<img src="${foto}" style="width:44px;height:58px;object-fit:cover;border-radius:6px;flex-shrink:0">` : ''}
-    <div>
-      <div>#${first.id} · ${first.desc || ''}</div>
-      ${rest.length ? `<div class="hint">+${resumenExtras(rest)}</div>` : ''}
-    </div>
+  return `<div style="display:flex;flex-direction:column;gap:8px">
+    ${items.map(it => {
+      const v = vestidos.find(v => String(v.ID) === String(it.id));
+      const foto = v && v.Foto;
+      const etiqueta = it.tipo === 'accesorio' ? ' <span class="hint">(accesorio)</span>' : '';
+      return `<div style="display:flex;align-items:center;gap:10px">
+        ${foto ? `<img src="${foto}" style="width:44px;height:58px;object-fit:cover;border-radius:6px;flex-shrink:0">` : ''}
+        <div>#${it.id} · ${it.desc || ''}${etiqueta}</div>
+      </div>`;
+    }).join('')}
   </div>`;
 }
 
