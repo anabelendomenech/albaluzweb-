@@ -102,13 +102,12 @@
       </div>
 
       <div class="field autocomplete">
-        <label>Vestido</label>
-        <input id="vestidoBuscar" autocomplete="off" placeholder="Primero elegí las fechas, después buscá el vestido…" required>
+        <label>Prendas</label>
+        <input id="vestidoBuscar" autocomplete="off" placeholder="Buscá y agregá una prenda (vestido, accesorio, otro vestido…)">
         <div class="ac-list" id="acVestido" style="display:none"></div>
         <div class="hint" id="vestidoInfo"></div>
+        <div id="prendasElegidas" style="margin-top:8px"></div>
       </div>
-      <input type="hidden" id="vestidoId">
-      <input type="hidden" id="vestidoDesc">
       <div class="row">
         <div class="field">
           <label>Precio base</label>
@@ -202,6 +201,14 @@
 <script>
 let alquileres = [], vestidos = [], clientes = [], gastos = [];
 let filtroEstado = 'activos';
+let prendasSeleccionadas = []; // [{id, desc, precio}] — un alquiler puede llevar más de una prenda.
+
+function resumenPrendas(a) {
+  const items = vestidosDeAlquiler(a);
+  if (!items.length) return '—';
+  const [first, ...rest] = items;
+  return `#${first.id} · ${first.desc || ''}` + (rest.length ? ` <span class="hint">+${rest.length} más</span>` : '');
+}
 
 async function cargar() {
   const bundle = await apiBundle(['alquileres', 'vestidos', 'clientes', 'gastos']);
@@ -254,7 +261,7 @@ function abrirDetalleAlq(id) {
       <h2>${a.Cliente || ''}</h2>
       <span class="pill ${a.Estado}">${a.Estado}</span>
     </div>
-    <p class="hint" style="margin-bottom:12px">#${a.VestidoID} · ${a.VestidoDesc || ''}<br>Retiro ${fmtDate(a.FechaRetiro)} → Devolución ${fmtDate(a.FechaDevolucion)}</p>
+    <p class="hint" style="margin-bottom:12px">${vestidosDeAlquiler(a).map(it => `#${it.id} · ${it.desc || ''}`).join('<br>')}<br>Retiro ${fmtDate(a.FechaRetiro)} → Devolución ${fmtDate(a.FechaDevolucion)}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
       ${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank">💬 WhatsApp</a>` : ''}
       ${ig ? `<a class="btn ghost sm" href="${ig}" target="_blank">📷 Instagram</a>` : ''}
@@ -356,7 +363,7 @@ function render() {
     return `
     <tr onclick="abrirDetalleAlq(${a.ID})" style="cursor:pointer${vencido ? ';background:#fdecec' : ''}">
       <td data-label="Cliente"><strong>${a.Cliente}</strong>${a.Telefono ? `<br><span class="hint">${a.Telefono}</span>` : ''}</td>
-      <td data-label="Vestido">#${a.VestidoID} · ${a.VestidoDesc || ''}</td>
+      <td data-label="Vestido">${resumenPrendas(a)}</td>
       <td data-label="Retiro">${fmtDate(a.FechaRetiro)}</td>
       <td data-label="Devolución">${fmtDate(a.FechaDevolucion)}${vencido ? ' <span class="hint" style="color:#a44343">⚠️ vencido</span>' : ''}</td>
       <td data-label="Precio">${fmtMoney(a.PrecioFinal)}</td>
@@ -381,7 +388,7 @@ async function cambiarEstado(id, estado) {
 function abrirArreglo(id) {
   document.getElementById('arregloAlquilerId').value = id;
   const a = alquileres.find(x => String(x.ID) === String(id));
-  document.getElementById('arregloInfo').textContent = a ? `${a.Cliente} · #${a.VestidoID} ${a.VestidoDesc || ''}` : '';
+  document.getElementById('arregloInfo').innerHTML = a ? `${a.Cliente} · ${resumenPrendas(a)}` : '';
   document.getElementById('notaArreglo').value = '';
   document.getElementById('overlayArreglo').classList.add('open');
 }
@@ -404,7 +411,7 @@ function abrirPago(id) {
   const a = alquileres.find(x => String(x.ID) === String(id));
   if (!a) return;
   document.getElementById('pagoAlquilerId').value = id;
-  document.getElementById('pagoInfo').textContent = `${a.Cliente} · #${a.VestidoID} ${a.VestidoDesc || ''}`;
+  document.getElementById('pagoInfo').innerHTML = `${a.Cliente} · ${resumenPrendas(a)}`;
   document.getElementById('pagoResumen').textContent = `Precio ${fmtMoney(a.PrecioFinal)} · Cobrado ${fmtMoney(a.Cobrado)} · Debe ${fmtMoney(a.Debe)}`;
   document.getElementById('montoPago').value = a.Debe || '';
   document.getElementById('overlayPago').classList.add('open');
@@ -431,7 +438,8 @@ document.getElementById('formPago').addEventListener('submit', async (e) => {
 function abrirNuevo() {
   document.getElementById('form').reset();
   document.getElementById('editId').value = '';
-  document.getElementById('vestidoId').value = '';
+  prendasSeleccionadas = [];
+  renderPrendas();
   document.getElementById('vestidoInfo').textContent = '';
   document.getElementById('debeHint').textContent = '';
   document.getElementById('cumpleChip').textContent = '';
@@ -449,9 +457,11 @@ function abrirEditar(id) {
   document.getElementById('telefono').value = a.Telefono || '';
   document.getElementById('fechaRetiro').value = (a.FechaRetiro || '').slice(0, 10);
   document.getElementById('fechaDevolucion').value = (a.FechaDevolucion || '').slice(0, 10);
-  document.getElementById('vestidoBuscar').value = a.VestidoID ? `#${a.VestidoID} — ${a.VestidoDesc || ''}` : '';
-  document.getElementById('vestidoId').value = a.VestidoID || '';
-  document.getElementById('vestidoDesc').value = a.VestidoDesc || '';
+  prendasSeleccionadas = vestidosDeAlquiler(a).map(item => ({
+    id: item.id, desc: item.desc,
+    precio: item.precio !== undefined ? Number(item.precio) : precioDePrendaEnAlquiler(a, item.id)
+  }));
+  renderPrendas();
   document.getElementById('precioBase').value = a.PrecioBase || 0;
   document.getElementById('descuento').value = a.Descuento || 0;
   document.getElementById('precioFinal').value = a.PrecioFinal || 0;
@@ -477,12 +487,11 @@ async function anularAlquiler() {
   render();
 }
 
-// ---- autocompletar vestido ----
+// ---- autocompletar / agregar prendas (un alquiler puede llevar más de una) ----
 const vestidoInput = document.getElementById('vestidoBuscar');
 vestidoInput.addEventListener('input', () => {
   const q = vestidoInput.value.trim().toLowerCase();
   const box = document.getElementById('acVestido');
-  document.getElementById('vestidoId').value = '';
   const retiro = document.getElementById('fechaRetiro').value;
   const devolucion = document.getElementById('fechaDevolucion').value;
   if (!retiro || !devolucion) {
@@ -492,7 +501,9 @@ vestidoInput.addEventListener('input', () => {
   }
   if (!q) { box.style.display = 'none'; return; }
   const editId = document.getElementById('editId').value;
-  const res = vestidos.filter(v => `${v.ID} ${v.Descripcion}`.toLowerCase().includes(q)).slice(0, 8);
+  const res = vestidos
+    .filter(v => `${v.ID} ${v.Descripcion}`.toLowerCase().includes(q) && !prendasSeleccionadas.some(p => String(p.id) === String(v.ID)))
+    .slice(0, 8);
   if (!res.length) { box.style.display = 'none'; return; }
   box.innerHTML = res.map(v => {
     const ocupa = alquilerQueOcupa(v.ID, retiro, devolucion, alquileres, editId);
@@ -509,26 +520,51 @@ vestidoInput.addEventListener('input', () => {
 });
 
 function elegirVestido(v) {
-  document.getElementById('vestidoBuscar').value = `#${v.ID} — ${v.Descripcion}`;
-  document.getElementById('vestidoId').value = v.ID;
-  document.getElementById('vestidoDesc').value = v.Descripcion;
-  document.getElementById('precioBase').value = v.Precio || 0;
+  prendasSeleccionadas.push({ id: v.ID, desc: v.Descripcion, precio: Number(v.Precio) || 0 });
+  vestidoInput.value = '';
   document.getElementById('acVestido').style.display = 'none';
+  renderPrendas();
+  recalcularPrecioBase();
   revisarDisponibilidad();
   calcular();
 }
 
+function quitarPrenda(id) {
+  prendasSeleccionadas = prendasSeleccionadas.filter(p => String(p.id) !== String(id));
+  renderPrendas();
+  recalcularPrecioBase();
+  revisarDisponibilidad();
+  calcular();
+}
+
+function recalcularPrecioBase() {
+  document.getElementById('precioBase').value = prendasSeleccionadas.reduce((s, p) => s + (Number(p.precio) || 0), 0);
+}
+
+function renderPrendas() {
+  const box = document.getElementById('prendasElegidas');
+  box.innerHTML = prendasSeleccionadas.map(p => `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;background:var(--rose-light);border-radius:8px;margin-bottom:6px">
+      <span>#${p.id} — ${p.desc}</span>
+      <span style="display:flex;align-items:center;gap:8px">
+        <span class="hint">${fmtMoney(p.precio)}</span>
+        <button type="button" class="btn ghost sm" onclick="quitarPrenda('${p.id}')" style="padding:2px 8px" aria-label="Quitar">&times;</button>
+      </span>
+    </div>`).join('');
+}
+
 function revisarDisponibilidad() {
   const info = document.getElementById('vestidoInfo');
-  const vestidoId = document.getElementById('vestidoId').value;
-  if (!vestidoId) { info.textContent = ''; return; }
+  if (!prendasSeleccionadas.length) { info.textContent = ''; return; }
   const retiro = document.getElementById('fechaRetiro').value;
   const devolucion = document.getElementById('fechaDevolucion').value;
   if (!retiro || !devolucion) { info.textContent = ''; return; }
   const editId = document.getElementById('editId').value;
-  const ocupa = alquilerQueOcupa(vestidoId, retiro, devolucion, alquileres, editId);
-  info.innerHTML = ocupa
-    ? `<span style="color:var(--warn);font-weight:600">⚠️ Este vestido ya está reservado del ${fmtDate(ocupa.FechaRetiro)} al ${fmtDate(ocupa.FechaDevolucion)} — elegí otras fechas u otro vestido.</span>`
+  const conflictos = prendasSeleccionadas
+    .map(p => ({ p, ocupa: alquilerQueOcupa(p.id, retiro, devolucion, alquileres, editId) }))
+    .filter(x => x.ocupa);
+  info.innerHTML = conflictos.length
+    ? conflictos.map(x => `<span style="color:var(--warn);font-weight:600">⚠️ #${x.p.id} — ${x.p.desc} ya está reservado del ${fmtDate(x.ocupa.FechaRetiro)} al ${fmtDate(x.ocupa.FechaDevolucion)}.</span>`).join('<br>')
     : `<span style="color:var(--ok)">✓ Disponible para esas fechas</span>`;
 }
 
@@ -569,27 +605,29 @@ function calcular() {
 
 document.getElementById('form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  if (!document.getElementById('vestidoId').value) {
-    toast('Elegí un vestido de la lista');
+  if (!prendasSeleccionadas.length) {
+    toast('Agregá al menos una prenda');
     return;
   }
   const editId = document.getElementById('editId').value;
-  const vestidoId = document.getElementById('vestidoId').value;
   const retiro = document.getElementById('fechaRetiro').value;
   const devolucion = document.getElementById('fechaDevolucion').value;
-  const ocupa = alquilerQueOcupa(vestidoId, retiro, devolucion, alquileres, editId);
-  if (ocupa) {
-    toast('Ese vestido ya está reservado en esas fechas');
+  const conflicto = prendasSeleccionadas.find(p => alquilerQueOcupa(p.id, retiro, devolucion, alquileres, editId));
+  if (conflicto) {
+    toast(`#${conflicto.id} — ${conflicto.desc} ya está reservado en esas fechas`);
     return;
   }
   const btn = e.target.querySelector('button[type=submit]');
   btn.disabled = true; btn.textContent = 'Guardando…';
   try {
+    const [primaria, ...extras] = prendasSeleccionadas;
+    const itemsExtra = JSON.stringify(extras.map(p => ({ vestidoId: p.id, vestidoDesc: p.desc, precio: p.precio })));
     const payload = {
       cliente: document.getElementById('cliente').value,
       telefono: document.getElementById('telefono').value,
-      vestidoId: document.getElementById('vestidoId').value,
-      vestidoDesc: document.getElementById('vestidoDesc').value,
+      vestidoId: primaria.id,
+      vestidoDesc: primaria.desc,
+      itemsExtra: itemsExtra,
       fechaRetiro: document.getElementById('fechaRetiro').value,
       fechaDevolucion: document.getElementById('fechaDevolucion').value,
       precioBase: document.getElementById('precioBase').value,
@@ -608,7 +646,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
       const a = alquileres.find(x => String(x.ID) === String(editId));
       if (a) Object.assign(a, {
         Cliente: payload.cliente, Telefono: payload.telefono, VestidoID: payload.vestidoId,
-        VestidoDesc: payload.vestidoDesc, FechaRetiro: payload.fechaRetiro, FechaDevolucion: payload.fechaDevolucion,
+        VestidoDesc: payload.vestidoDesc, ItemsExtra: payload.itemsExtra, FechaRetiro: payload.fechaRetiro, FechaDevolucion: payload.fechaDevolucion,
         PrecioBase: Number(payload.precioBase) || 0, Descuento: Number(payload.descuento) || 0,
         PrecioFinal: precioFinal, Debe: debe, Notas: payload.notas, Cobrado: cobrado, EstadoPago: estadoPago
       });
@@ -617,7 +655,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
       const res = await apiPost('addAlquiler', payload);
       alquileres.push({
         ID: res.id, Cliente: payload.cliente, Telefono: payload.telefono, VestidoID: payload.vestidoId,
-        VestidoDesc: payload.vestidoDesc, FechaRetiro: payload.fechaRetiro, FechaDevolucion: payload.fechaDevolucion,
+        VestidoDesc: payload.vestidoDesc, ItemsExtra: payload.itemsExtra, FechaRetiro: payload.fechaRetiro, FechaDevolucion: payload.fechaDevolucion,
         PrecioBase: Number(payload.precioBase) || 0, Descuento: Number(payload.descuento) || 0,
         PrecioFinal: precioFinal, Debe: debe, Notas: payload.notas, Estado: 'Reservado',
         FechaCreacion: new Date().toISOString(), ParaArreglar: 'NO', NotaArreglo: '',

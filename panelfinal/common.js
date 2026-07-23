@@ -75,14 +75,40 @@ function rangosSeSolapan(inicioA, finA, inicioB, finB) {
   return new Date(inicioA) <= new Date(finB) && new Date(inicioB) <= new Date(finA);
 }
 
+// Un alquiler puede incluir más de una prenda (el vestido principal + accesorios/otro
+// vestido agregados). Devuelve la lista completa {id, desc, precio} de ese alquiler.
+function vestidosDeAlquiler(a) {
+  const items = [];
+  if (a.VestidoID) items.push({ id: a.VestidoID, desc: a.VestidoDesc });
+  if (a.ItemsExtra) {
+    try {
+      JSON.parse(a.ItemsExtra).forEach(it => items.push({ id: it.vestidoId, desc: it.vestidoDesc, precio: it.precio }));
+    } catch (e) { /* ItemsExtra corrupto o vacío: se ignora */ }
+  }
+  return items;
+}
+
+// Precio de UNA prenda dentro de un alquiler que puede tener varias (vestido principal +
+// accesorios/otro vestido agregados). Sirve para repartir ingresos/estadísticas por prenda.
+function precioDePrendaEnAlquiler(a, vestidoId) {
+  const items = vestidosDeAlquiler(a);
+  const item = items.find(it => String(it.id) === String(vestidoId));
+  if (!item) return 0;
+  if (item.precio !== undefined) return Number(item.precio) || 0;
+  // Es la prenda principal: su precio es el total menos lo que ya tienen asignado los extras.
+  const sumExtra = items.filter(it => it.precio !== undefined).reduce((s, it) => s + (Number(it.precio) || 0), 0);
+  return Math.max((Number(a.PrecioBase) || 0) - sumExtra, 0);
+}
+
 // Devuelve el alquiler activo (no devuelto) que ocupa ese vestido en esas fechas, o null si está libre.
-// excludeId sirve para no chocar contra el propio alquiler cuando se edita uno existente.
+// Revisa todas las prendas del alquiler (no solo la principal). excludeId sirve para no
+// chocar contra el propio alquiler cuando se edita uno existente.
 function alquilerQueOcupa(vestidoId, fechaRetiro, fechaDevolucion, alquileres, excludeId) {
   return alquileres.find(a =>
-    String(a.VestidoID) === String(vestidoId) &&
     a.Estado !== 'Devuelto' && a.Estado !== 'Anulado' &&
     (!excludeId || String(a.ID) !== String(excludeId)) &&
-    rangosSeSolapan(fechaRetiro, fechaDevolucion, a.FechaRetiro, a.FechaDevolucion)
+    rangosSeSolapan(fechaRetiro, fechaDevolucion, a.FechaRetiro, a.FechaDevolucion) &&
+    vestidosDeAlquiler(a).some(v => String(v.id) === String(vestidoId))
   );
 }
 

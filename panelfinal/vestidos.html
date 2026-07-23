@@ -137,12 +137,16 @@ function filtrar(el) {
 
 // Estado automático del vestido según sus alquileres: En reparación (arreglo pendiente) >
 // Alquilado (fuera hoy) > En tienda (disponible).
+function ocupaEsteVestido(a, v) {
+  return vestidosDeAlquiler(a).some(item => String(item.id) === String(v.ID));
+}
+
 function estadoVestido(v) {
-  const enRep = alquileres.some(a => String(a.VestidoID) === String(v.ID) && a.ParaArreglar === 'Pendiente');
+  const enRep = alquileres.some(a => ocupaEsteVestido(a, v) && a.ParaArreglar === 'Pendiente');
   if (enRep) return { txt: 'En reparación', cls: 'ocupado' };
   const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
   const alquiladoHoy = alquileres.some(a =>
-    String(a.VestidoID) === String(v.ID) && a.Estado !== 'Devuelto' && a.Estado !== 'Anulado' &&
+    ocupaEsteVestido(a, v) && a.Estado !== 'Devuelto' && a.Estado !== 'Anulado' &&
     a.FechaRetiro && a.FechaDevolucion && new Date(a.FechaRetiro) <= hoy && new Date(a.FechaDevolucion) >= hoy);
   if (alquiladoHoy) return { txt: 'Alquilado', cls: 'alquilado' };
   return { txt: 'En tienda', cls: 'disponible' };
@@ -152,7 +156,7 @@ function estadoVestido(v) {
 function proximaReserva(v) {
   const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
   return alquileres
-    .filter(a => String(a.VestidoID) === String(v.ID) && a.Estado !== 'Anulado' && a.Estado !== 'Devuelto' && a.FechaRetiro && new Date(a.FechaRetiro) >= hoy)
+    .filter(a => ocupaEsteVestido(a, v) && a.Estado !== 'Anulado' && a.Estado !== 'Devuelto' && a.FechaRetiro && new Date(a.FechaRetiro) >= hoy)
     .sort((a, b) => new Date(a.FechaRetiro) - new Date(b.FechaRetiro))[0] || null;
 }
 
@@ -225,9 +229,15 @@ function toDateInput(v) {
 
 // Ficha de detalle del vestido: datos, estado, estadísticas (uso, ingresos, rentabilidad) e historial.
 function abrirDetalle(v) {
-  const propios = alquileres.filter(a => String(a.VestidoID) === String(v.ID) && a.Estado !== 'Anulado');
+  const propios = alquileres.filter(a => ocupaEsteVestido(a, v) && a.Estado !== 'Anulado');
   const nAlq = propios.length;
-  const ingresos = propios.reduce((s, a) => s + (Number(a.Cobrado) || 0), 0);
+  // Si el alquiler tenía más de una prenda, el ingreso de este vestido es su parte proporcional
+  // del precio total (no el pago completo, que se repartió entre todas las prendas).
+  const ingresos = Math.round(propios.reduce((s, a) => {
+    const totalBase = Number(a.PrecioBase) || 0;
+    const share = totalBase > 0 ? precioDePrendaEnAlquiler(a, v.ID) / totalBase : 1;
+    return s + (Number(a.Cobrado) || 0) * share;
+  }, 0));
   const costo = Number(v.CostoCompra) || 0;
   const rent = costo > 0 ? ingresos - costo : null;
   const ordenadas = [...propios].sort((a, b) => new Date(b.FechaRetiro) - new Date(a.FechaRetiro));
@@ -270,11 +280,14 @@ function abrirDetalle(v) {
     <div>`;
   html += !propios.length
     ? '<p class="hint">Todavía no se alquiló.</p>'
-    : ordenadas.map(a => `
+    : ordenadas.map(a => {
+        const otras = vestidosDeAlquiler(a).length - 1;
+        return `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);gap:10px">
-        <div><strong>${a.Cliente || ''}</strong><div class="hint">${fmtDate(a.FechaRetiro)} → ${fmtDate(a.FechaDevolucion)} · ${fmtMoney(a.PrecioFinal)}</div></div>
+        <div><strong>${a.Cliente || ''}</strong><div class="hint">${fmtDate(a.FechaRetiro)} → ${fmtDate(a.FechaDevolucion)} · ${fmtMoney(precioDePrendaEnAlquiler(a, v.ID))}${otras > 0 ? ` · +${otras} prenda${otras > 1 ? 's' : ''} más en ese alquiler` : ''}</div></div>
         <span class="pill ${a.Estado}">${a.Estado}</span>
-      </div>`).join('');
+      </div>`;
+      }).join('');
   html += '</div>';
 
   document.getElementById('detalleContenido').innerHTML = html;
