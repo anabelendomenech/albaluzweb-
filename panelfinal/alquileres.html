@@ -201,13 +201,23 @@
 <script>
 let alquileres = [], vestidos = [], clientes = [], gastos = [];
 let filtroEstado = 'activos';
-let prendasSeleccionadas = []; // [{id, desc, precio}] — un alquiler puede llevar más de una prenda.
+let prendasSeleccionadas = []; // [{id, desc, precio, tipo}] — un alquiler puede llevar más de una prenda.
+// tipo: 'vestido' (otro vestido/traje, mismo peso que la prenda principal) o 'accesorio' (sandalias, cinto, etc.)
+
+function resumenExtras(rest) {
+  const vestidos = rest.filter(it => it.tipo !== 'accesorio').length;
+  const accesorios = rest.filter(it => it.tipo === 'accesorio').length;
+  const partes = [];
+  if (vestidos) partes.push(`${vestidos} vestido${vestidos > 1 ? 's' : ''}/traje${vestidos > 1 ? 's' : ''}`);
+  if (accesorios) partes.push(`${accesorios} accesorio${accesorios > 1 ? 's' : ''}`);
+  return partes.join(' + ');
+}
 
 function resumenPrendas(a) {
   const items = vestidosDeAlquiler(a);
   if (!items.length) return '—';
   const [first, ...rest] = items;
-  return `#${first.id} · ${first.desc || ''}` + (rest.length ? ` <span class="hint">+${rest.length} más</span>` : '');
+  return `#${first.id} · ${first.desc || ''}` + (rest.length ? ` <span class="hint">+${resumenExtras(rest)}</span>` : '');
 }
 
 async function cargar() {
@@ -261,7 +271,7 @@ function abrirDetalleAlq(id) {
       <h2>${a.Cliente || ''}</h2>
       <span class="pill ${a.Estado}">${a.Estado}</span>
     </div>
-    <p class="hint" style="margin-bottom:12px">${vestidosDeAlquiler(a).map(it => `#${it.id} · ${it.desc || ''}`).join('<br>')}<br>Retiro ${fmtDate(a.FechaRetiro)} → Devolución ${fmtDate(a.FechaDevolucion)}</p>
+    <p class="hint" style="margin-bottom:12px">${vestidosDeAlquiler(a).map(it => `#${it.id} · ${it.desc || ''}${it.tipo === 'accesorio' ? ' <span class="hint">(accesorio)</span>' : ''}`).join('<br>')}<br>Retiro ${fmtDate(a.FechaRetiro)} → Devolución ${fmtDate(a.FechaDevolucion)}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
       ${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank">💬 WhatsApp</a>` : ''}
       ${ig ? `<a class="btn ghost sm" href="${ig}" target="_blank">📷 Instagram</a>` : ''}
@@ -458,7 +468,7 @@ function abrirEditar(id) {
   document.getElementById('fechaRetiro').value = (a.FechaRetiro || '').slice(0, 10);
   document.getElementById('fechaDevolucion').value = (a.FechaDevolucion || '').slice(0, 10);
   prendasSeleccionadas = vestidosDeAlquiler(a).map(item => ({
-    id: item.id, desc: item.desc,
+    id: item.id, desc: item.desc, tipo: item.tipo,
     precio: item.precio !== undefined ? Number(item.precio) : precioDePrendaEnAlquiler(a, item.id)
   }));
   renderPrendas();
@@ -520,7 +530,7 @@ vestidoInput.addEventListener('input', () => {
 });
 
 function elegirVestido(v) {
-  prendasSeleccionadas.push({ id: v.ID, desc: v.Descripcion, precio: Number(v.Precio) || 0 });
+  prendasSeleccionadas.push({ id: v.ID, desc: v.Descripcion, precio: Number(v.Precio) || 0, tipo: 'vestido' });
   vestidoInput.value = '';
   document.getElementById('acVestido').style.display = 'none';
   renderPrendas();
@@ -541,13 +551,21 @@ function recalcularPrecioBase() {
   document.getElementById('precioBase').value = prendasSeleccionadas.reduce((s, p) => s + (Number(p.precio) || 0), 0);
 }
 
+function toggleTipoPrenda(id) {
+  const p = prendasSeleccionadas.find(p => String(p.id) === String(id));
+  if (!p) return;
+  p.tipo = p.tipo === 'accesorio' ? 'vestido' : 'accesorio';
+  renderPrendas();
+}
+
 function renderPrendas() {
   const box = document.getElementById('prendasElegidas');
-  box.innerHTML = prendasSeleccionadas.map(p => `
+  box.innerHTML = prendasSeleccionadas.map((p, i) => `
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;background:var(--rose-light);border-radius:8px;margin-bottom:6px">
-      <span>#${p.id} — ${p.desc}</span>
+      <span>#${p.id} — ${p.desc}${i === 0 ? ' <span class="hint">(principal)</span>' : ''}</span>
       <span style="display:flex;align-items:center;gap:8px">
         <span class="hint">${fmtMoney(p.precio)}</span>
+        ${i > 0 ? `<button type="button" class="btn ghost sm" onclick="toggleTipoPrenda('${p.id}')" style="padding:2px 8px">${p.tipo === 'accesorio' ? '🎀 Accesorio' : '👗 Vestido/Traje'}</button>` : ''}
         <button type="button" class="btn ghost sm" onclick="quitarPrenda('${p.id}')" style="padding:2px 8px" aria-label="Quitar">&times;</button>
       </span>
     </div>`).join('');
@@ -621,7 +639,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
   btn.disabled = true; btn.textContent = 'Guardando…';
   try {
     const [primaria, ...extras] = prendasSeleccionadas;
-    const itemsExtra = JSON.stringify(extras.map(p => ({ vestidoId: p.id, vestidoDesc: p.desc, precio: p.precio })));
+    const itemsExtra = JSON.stringify(extras.map(p => ({ vestidoId: p.id, vestidoDesc: p.desc, precio: p.precio, tipo: p.tipo || 'vestido' })));
     const payload = {
       cliente: document.getElementById('cliente').value,
       telefono: document.getElementById('telefono').value,

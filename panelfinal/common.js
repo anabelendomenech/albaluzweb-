@@ -79,10 +79,10 @@ function rangosSeSolapan(inicioA, finA, inicioB, finB) {
 // vestido agregados). Devuelve la lista completa {id, desc, precio} de ese alquiler.
 function vestidosDeAlquiler(a) {
   const items = [];
-  if (a.VestidoID) items.push({ id: a.VestidoID, desc: a.VestidoDesc });
+  if (a.VestidoID) items.push({ id: a.VestidoID, desc: a.VestidoDesc, tipo: 'principal' });
   if (a.ItemsExtra) {
     try {
-      JSON.parse(a.ItemsExtra).forEach(it => items.push({ id: it.vestidoId, desc: it.vestidoDesc, precio: it.precio }));
+      JSON.parse(a.ItemsExtra).forEach(it => items.push({ id: it.vestidoId, desc: it.vestidoDesc, precio: it.precio, tipo: it.tipo || 'vestido' }));
     } catch (e) { /* ItemsExtra corrupto o vacío: se ignora */ }
   }
   return items;
