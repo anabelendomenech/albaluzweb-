@@ -2,10 +2,45 @@
 // Backend "ALBALUZ - Backend" (Fase 1 + Agenda de Pruebas), desplegado 2026-07-18.
 const API_URL = 'https://script.google.com/macros/s/AKfycbyKCB-mN7pC_OaOJoNhqgsrxCA7ra1rJ966tG-YHCEjxiT_yfnYvkHkimd3PGA6fzjVgg/exec';
 
+// ---- Sesión ----
+// El token se guarda en el navegador, así queda la sesión iniciada en esta compu
+// hasta que se cierre sesión a mano (o pase un año).
+const TOKEN_KEY = 'albaluz_token';
+
+function getToken() {
+  try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+}
+function setToken(t) {
+  try { localStorage.setItem(TOKEN_KEY, t); } catch (e) { /* modo privado */ }
+}
+function borrarToken() {
+  try { localStorage.removeItem(TOKEN_KEY); } catch (e) { /* modo privado */ }
+}
+function enLogin() {
+  return (location.pathname.split('/').pop() || '') === 'login.html';
+}
+function cerrarSesion() {
+  borrarToken();
+  location.replace('login.html');
+}
+
+// Sin sesión no se muestra nada del panel.
+if (!enLogin() && !getToken()) location.replace('login.html');
+
+// Si el backend dice que la sesión no vale (venció o la cambiaron), volvemos al login.
+function chequearAutorizacion(data) {
+  if (data && data.noAutorizado) {
+    borrarToken();
+    if (!enLogin()) location.replace('login.html');
+    throw new Error('Sesión vencida');
+  }
+  return data;
+}
+
 async function apiGet(action, params = {}) {
-  const qs = new URLSearchParams({ action, ...params }).toString();
+  const qs = new URLSearchParams({ action, ...params, token: getToken() }).toString();
   const res = await fetch(`${API_URL}?${qs}`);
-  return res.json();
+  return chequearAutorizacion(await res.json());
 }
 
 // Usamos text/plain a propósito: evita el preflight CORS que Apps Script no maneja bien.
@@ -13,9 +48,9 @@ async function apiPost(action, data = {}) {
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ action, ...data })
+    body: JSON.stringify({ action, ...data, token: getToken() })
   });
-  return res.json();
+  return chequearAutorizacion(await res.json());
 }
 
 // Junta varios recursos en un solo viaje al servidor (ej: apiBundle(['alquileres','vestidos']))
@@ -65,6 +100,16 @@ function setActiveNav() {
   });
   const sel = document.getElementById('mobileNav');
   if (sel) sel.value = page;
+
+  // "Cerrar sesión" al final del menú, en todas las páginas.
+  const nav = document.querySelector('.sidebar nav');
+  if (nav && !enLogin()) {
+    const salir = document.createElement('a');
+    salir.href = '#';
+    salir.textContent = '🚪 Cerrar sesión';
+    salir.addEventListener('click', (e) => { e.preventDefault(); cerrarSesion(); });
+    nav.appendChild(salir);
+  }
 }
 document.addEventListener('DOMContentLoaded', setActiveNav);
 

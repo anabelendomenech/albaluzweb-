@@ -1,41 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ALBALUZ · ALQUILER DE VESTIDOS</title>
-  <link rel="stylesheet" href="./styles-panel.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Entrar · ALBALUZ</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
-<body class="login-body">
+<body>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:34px 30px;width:100%;max-width:380px">
+    <div style="text-align:center;margin-bottom:26px">
+      <div class="brand" style="font-size:1.7rem;color:var(--wine)">👗 ALBALUZ</div>
+      <p class="hint" style="margin:6px 0 0">Panel de gestión</p>
+    </div>
 
-  <div class="login-box">
-    <h1>Panel ALBALUZ</h1>
-    <p class="login-sub">Acceso privado</p>
-
-    <input type="password" id="password" placeholder="Contraseña" class="input-login" />
-    <button id="btnLogin" class="btn-login">Ingresar</button>
-
-    <p id="error" class="error-msg"></p>
+    <form id="form">
+      <div class="field">
+        <label>Usuario</label>
+        <input id="usuario" autocomplete="username" required autofocus>
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" id="password" autocomplete="current-password" required>
+      </div>
+      <div id="error" style="display:none;color:var(--warn);font-size:.85rem;font-weight:600;margin-bottom:12px"></div>
+      <button type="submit" class="btn gold" style="width:100%">Entrar</button>
+      <p class="hint" style="text-align:center;margin:14px 0 0">Esta compu queda con la sesión iniciada.</p>
+    </form>
   </div>
+</div>
 
-  <script>
-    // Cambiá la contraseña si querés
-    const PASSWORD = "albaluz2025";
+<script src="common.js"></script>
+<script>
+// Si ya hay sesión, no tiene sentido mostrar el login.
+if (getToken()) location.replace('index.html');
 
-    document.getElementById("btnLogin").addEventListener("click", () => {
-      const pass = document.getElementById("password").value;
-      if (pass === PASSWORD) {
-        localStorage.setItem("albaluzPanel", "ok");
-        location.href = "index.html";
-      } else {
-        document.getElementById("error").innerText = "Contraseña incorrecta";
-      }
+const form = document.getElementById('form');
+const cajaError = document.getElementById('error');
+
+function mostrarError(msg) {
+  cajaError.textContent = msg;
+  cajaError.style.display = 'block';
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  cajaError.style.display = 'none';
+  const btn = form.querySelector('button[type=submit]');
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  try {
+    const res = await apiPost('login', {
+      usuario: document.getElementById('usuario').value,
+      password: document.getElementById('password').value
     });
-
-    // Si ya está logueada, ir al panel
-    if (localStorage.getItem("albaluzPanel") === "ok") {
-      location.href = "index.html";
+    if (res && res.token) {
+      setToken(res.token);
+      location.replace('index.html');
+      return;
     }
-  </script>
+    mostrarError((res && res.error) || 'No se pudo entrar. Intentá de nuevo.');
+  } catch (err) {
+    mostrarError('No se pudo conectar. Revisá tu internet.');
+    console.error(err);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+});
+</script>
 </body>
 </html>
