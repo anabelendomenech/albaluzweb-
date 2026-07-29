@@ -221,12 +221,6 @@ function abrirEditar(v) {
   document.getElementById('overlay').classList.add('open');
 }
 
-function toDateInput(v) {
-  const d = parseFechaLocal(v);
-  if (!d) return '';
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
 // Ficha de detalle del vestido: datos, estado, estadísticas (uso, ingresos, rentabilidad) e historial.
 function abrirDetalle(v) {
   const propios = alquileres.filter(a => ocupaEsteVestido(a, v) && a.Estado !== 'Anulado');

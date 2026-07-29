@@ -72,11 +72,14 @@ function fmtMoney(n) {
   return '$' + (Number(n) || 0).toLocaleString('es-UY');
 }
 
+// Las fechas de la planilla son "día de calendario", no instantes. Se parsean con
+// parseFechaLocal para que no se corran un día por el huso horario: un "2026-08-01"
+// leído con new Date() es medianoche UTC, que en Uruguay (UTC-3) cae el 31/07.
 function fmtDate(d) {
   if (!d) return '-';
-  const date = new Date(d);
-  if (isNaN(date)) return d;
-  return date.toLocaleDateString('es-UY', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const date = parseFechaLocal(d);
+  if (!date) return String(d);
+  return date.toLocaleDateString('es-UY', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
 function toast(msg) {
@@ -227,9 +230,28 @@ function fmtHora(v) {
 
 // "lunes 21 de jul" — encabezado de cada día en la agenda.
 function fmtDiaLargo(d) {
-  const date = new Date(d);
-  if (isNaN(date)) return '';
+  const date = parseFechaLocal(d);
+  if (!date) return '';
   return date.toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric', month: 'short' });
+}
+
+// Fecha → "YYYY-MM-DD" para poner en un <input type="date">, usando el día LOCAL.
+function toDateInput(v) {
+  const d = parseFechaLocal(v);
+  if (!d) return '';
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// ---- Calendario mensual (lo usan la agenda de Pruebas y los Alquileres) ----
+// Clave para agrupar por día de calendario: "AAAA-M-D" (mes 0-indexado, sin relleno).
+function claveDia(f) {
+  return `${f.getFullYear()}-${f.getMonth()}-${f.getDate()}`;
+}
+
+// Primer día del mes. El calendario guarda SIEMPRE el día 1 como estado: si guardara
+// un día 31, setMonth desbordaría (31 de marzo menos un mes cae en el 3 de marzo).
+function primerDiaDelMes(f) {
+  return new Date(f.getFullYear(), f.getMonth(), 1);
 }
 
 // ---- Contacto (WhatsApp / Instagram) ----

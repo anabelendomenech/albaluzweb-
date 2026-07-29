@@ -6,24 +6,6 @@
 <title>Pruebas · ALBALUZ</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<style>
-  .cal-nav{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
-  .cal-nav .rango{font-family:'Fraunces',serif;color:var(--wine);font-size:1.15rem;min-width:180px;text-align:center;text-transform:capitalize;}
-  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:24px;}
-  .cal-dow{text-align:center;font-size:.72rem;color:var(--ink-soft);text-transform:uppercase;font-weight:600;padding-bottom:2px;}
-  .cal-day{min-height:62px;background:#fff;border-radius:10px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;padding:6px 4px;cursor:pointer;border:2px solid transparent;transition:border .12s;}
-  .cal-day:hover{border-color:var(--rose-light);}
-  .cal-day.otro{background:transparent;box-shadow:none;opacity:.4;cursor:default;}
-  .cal-day.hoy{border-color:var(--gold);}
-  .cal-day.sel{border-color:var(--wine);}
-  .cal-day .num{font-weight:600;font-size:.9rem;}
-  .cal-day .cnt{margin-top:5px;font-size:.66rem;background:var(--wine);color:#fff;border-radius:999px;padding:1px 8px;font-weight:600;}
-  .prueba-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;}
-  .prueba-row:last-child{border-bottom:none;}
-  .prueba-hora{font-family:'Fraunces',serif;color:var(--wine);font-weight:600;min-width:52px;}
-  .prueba-main{flex:1;min-width:160px;}
-  .prueba-acciones{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start;}
-</style>
 </head>
 <body>
 <div class="mobilebar">
@@ -122,7 +104,7 @@
 <script>
 let pruebas = [];
 let CLIENTES = [];
-let mesActual = new Date();
+let mesActual = primerDiaDelMes(new Date());
 let diaSeleccionado = null;
 
 async function cargar() {
@@ -156,9 +138,14 @@ document.addEventListener('click', (e) => {
   }
 });
 
-function cambiarMes(delta) { mesActual.setMonth(mesActual.getMonth() + delta); render(); }
+// Se reconstruye desde el día 1: setMonth sobre un día 31 desborda (31 de marzo
+// menos un mes cae en el 3 de marzo) y el calendario saltearía meses.
+function cambiarMes(delta) {
+  mesActual = new Date(mesActual.getFullYear(), mesActual.getMonth() + delta, 1);
+  render();
+}
 function irHoy() {
-  mesActual = new Date();
+  mesActual = primerDiaDelMes(new Date());
   diaSeleccionado = new Date(); diaSeleccionado.setHours(0, 0, 0, 0);
   render();
 }
@@ -171,7 +158,7 @@ function pruebasPorDia() {
     if (p.Estado === 'Cancelada') return;
     const f = parseFechaLocal(p.Fecha);
     if (!f) return;
-    const k = `${f.getFullYear()}-${f.getMonth()}-${f.getDate()}`;
+    const k = claveDia(f);
     (porDia[k] = porDia[k] || []).push(p);
   });
   return porDia;
@@ -192,7 +179,7 @@ function render() {
   for (let i = 0; i < 42; i++) {
     const d = new Date(inicio); d.setDate(inicio.getDate() + i); d.setHours(0, 0, 0, 0);
     if (d.getMonth() !== m) { cells += `<div class="cal-day otro"><span class="num">${d.getDate()}</span></div>`; continue; }
-    const cnt = (porDia[`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`] || []).length;
+    const cnt = (porDia[claveDia(d)] || []).length;
     const esHoy = d.getTime() === hoy.getTime();
     const esSel = diaSeleccionado && d.getTime() === diaSeleccionado.getTime();
     cells += `<div class="cal-day${esHoy ? ' hoy' : ''}${esSel ? ' sel' : ''}" onclick="seleccionarDia(${d.getFullYear()},${d.getMonth()},${d.getDate()})">
@@ -204,28 +191,43 @@ function render() {
   // Panel del día seleccionado.
   const panel = document.getElementById('diaPanel');
   if (!diaSeleccionado) { panel.innerHTML = '<p class="hint">Tocá un día del calendario.</p>'; return; }
-  const lista = (porDia[`${diaSeleccionado.getFullYear()}-${diaSeleccionado.getMonth()}-${diaSeleccionado.getDate()}`] || [])
+  const lista = (porDia[claveDia(diaSeleccionado)] || [])
     .sort((a, b) => fmtHora(a.Hora).localeCompare(fmtHora(b.Hora)));
   let h = `<h3 style="text-transform:capitalize;margin-bottom:12px">${fmtDiaLargo(diaSeleccionado)}</h3>`;
   if (!lista.length) {
     h += `<p class="hint">Sin pruebas este día. Agendá una con el botón de arriba.</p>`;
   } else {
-    h += lista.map(p => filaPrueba(p)).join('');
+    // Varias clientas pueden compartir horario (se prueban a la vez). Se agrupan bajo
+    // un solo encabezado de hora en vez de repetir la hora en filas sueltas.
+    const porHora = {};
+    lista.forEach(p => {
+      const k = fmtHora(p.Hora) || '--:--';
+      (porHora[k] = porHora[k] || []).push(p);
+    });
+    // El orden alfabético alcanza: fmtHora ya devuelve "HH:MM" con relleno de ceros.
+    h += Object.keys(porHora).sort().map(hora => bloqueHora(hora, porHora[hora])).join('');
   }
   panel.innerHTML = h;
+}
+
+function bloqueHora(hora, lista) {
+  const compartida = lista.length > 1;
+  return `<div class="hora-bloque${compartida ? ' compartida' : ''}">
+    <div class="hora-encabezado">🕐 ${hora}${compartida ? ` <span class="hint">· ${lista.length} clientas a la misma hora</span>` : ''}</div>
+    ${lista.map(p => filaPrueba(p)).join('')}
+  </div>`;
 }
 
 function filaPrueba(p) {
   const cliP = CLIENTES.find(c => (c.Nombre || '').trim().toLowerCase() === (p.Nombre || '').trim().toLowerCase());
   const contactoRecordar = botonContacto(p.Telefono, cliP && cliP.Instagram, `Hola ${p.Nombre || ''}! Te recordamos tu cita de prueba en ALBALUZ el ${fmtDate(p.Fecha)} a las ${fmtHora(p.Hora)}. ¡Te esperamos! 👗`, '💬 Recordar');
   return `
-  <div class="prueba-row" onclick="abrirEditar(${p.ID})" style="cursor:pointer">
-    <div class="prueba-hora">${fmtHora(p.Hora) || '--:--'}</div>
-    <div class="prueba-main">
+  <div class="dia-row" onclick="abrirEditar(${p.ID})" style="cursor:pointer">
+    <div class="dia-main">
       <strong>${p.Nombre || ''}</strong>${p.Telefono ? ` · <span class="hint">${p.Telefono}</span>` : ''}
       ${p.Observaciones ? `<div class="hint">${p.Observaciones}</div>` : ''}
     </div>
-    <div class="prueba-acciones">
+    <div class="dia-acciones">
       ${contactoRecordar}
       <button class="btn gold sm" onclick="event.stopPropagation();convertirDirecto(${p.ID})">👗 A alquiler</button>
     </div>

@@ -201,7 +201,8 @@ function actualizarCategorias() {
 
 function abrirNuevo() {
   document.getElementById('form').reset();
-  document.getElementById('fecha').value = new Date().toISOString().slice(0, 10);
+  // toDateInput y no toISOString: en Uruguay, después de las 21:00 el ISO ya es del día siguiente.
+  document.getElementById('fecha').value = toDateInput(new Date());
   actualizarCategorias();
   document.getElementById('overlay').classList.add('open');
 }

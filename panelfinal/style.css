@@ -219,8 +219,48 @@ tr:hover td{background:#fbf7f4;}
 .ac-item:hover{background:var(--rose-light);}
 .ac-item small{color:var(--ink-soft);}
 
+/* -------- calendario mensual (lo usan la agenda de Pruebas y los Alquileres) -------- */
+.cal-nav{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.cal-nav .rango{font-family:'Fraunces',serif;color:var(--wine);font-size:1.15rem;min-width:180px;text-align:center;text-transform:capitalize;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:24px;}
+.cal-dow{text-align:center;font-size:.72rem;color:var(--ink-soft);text-transform:uppercase;font-weight:600;padding-bottom:2px;}
+.cal-day{min-height:62px;background:#fff;border-radius:10px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;padding:6px 4px;cursor:pointer;border:2px solid transparent;transition:border .12s;}
+.cal-day:hover{border-color:var(--rose-light);}
+.cal-day.otro{background:transparent;box-shadow:none;opacity:.4;cursor:default;}
+.cal-day.hoy{border-color:var(--gold);}
+.cal-day.sel{border-color:var(--wine);}
+.cal-day .num{font-weight:600;font-size:.9rem;}
+.cal-day .cnt{margin-top:5px;font-size:.66rem;background:var(--wine);color:#fff;border-radius:999px;padding:1px 8px;font-weight:600;}
+/* Un día de alquileres puede tener dos marcas (salen / vuelven). Necesitan envoltorio
+   propio porque .cal-day apila en columna y dos pills sueltas quedarían una sobre otra. */
+.cal-badges{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap;justify-content:center;}
+.cal-badges .cnt{margin-top:0;}
+.cal-day .cnt.vuelven{background:var(--gold);color:var(--wine-dark);}
+
+/* Filas del panel del día (sirven para pruebas y para alquileres) */
+.dia-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.dia-row:last-child{border-bottom:none;}
+.dia-clave{font-family:'Fraunces',serif;color:var(--wine);font-weight:600;min-width:52px;}
+.dia-main{flex:1;min-width:160px;}
+.dia-acciones{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start;}
+.dia-seccion{font-family:'Fraunces',serif;color:var(--wine);font-size:1rem;margin:14px 0 2px;}
+.dia-seccion:first-child{margin-top:0;}
+
+/* Varias clientas en el mismo horario: se agrupan bajo un encabezado de hora. */
+.hora-bloque{padding:10px 0;border-bottom:1px solid var(--line);}
+.hora-bloque:last-child{border-bottom:none;}
+.hora-encabezado{font-family:'Fraunces',serif;color:var(--wine);font-weight:600;margin-bottom:2px;}
+.hora-bloque.compartida{border-left:3px solid var(--gold);padding-left:12px;background:var(--rose-light);border-radius:8px;margin-bottom:8px;border-bottom:none;}
+.hora-bloque.compartida .dia-row:last-child{border-bottom:none;}
+
 /* -------- tabla a tarjetas en mobile -------- */
 @media (max-width:680px){
+  /* El calendario mantiene las 7 columnas (romperlas lo desvirtúa): solo se comprime. */
+  .cal-grid{gap:3px;}
+  .cal-day{min-height:48px;padding:4px 2px;}
+  .cal-day .num{font-size:.8rem;}
+  .cal-day .cnt{font-size:.6rem;padding:0 5px;}
+  .cal-nav .rango{min-width:120px;font-size:1rem;}
   table thead{display:none;}
   table, tbody, tr, td{display:block;width:100%;}
   table{background:transparent;box-shadow:none;border-radius:0;}
