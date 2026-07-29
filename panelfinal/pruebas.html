@@ -70,9 +70,15 @@
         <div class="ac-list" id="acClientePrueba" style="display:none"></div>
         <p class="hint">Si ya es clienta, aparece en la lista para elegirla. Si no, escribila igual (no se agrega sola a Clientes).</p>
       </div>
-      <div class="field">
-        <label>Teléfono (opcional)</label>
-        <input id="telefono" placeholder="09X XXX XXX">
+      <div class="row">
+        <div class="field">
+          <label>Teléfono (opcional)</label>
+          <input id="telefono" placeholder="09X XXX XXX">
+        </div>
+        <div class="field">
+          <label>Instagram (opcional)</label>
+          <input id="instagram" placeholder="usuaria (sin @)">
+        </div>
       </div>
       <div class="row">
         <div class="field">
@@ -129,6 +135,7 @@ nombreInput.addEventListener('input', () => {
 function elegirClientePrueba(c) {
   document.getElementById('nombre').value = c.Nombre || '';
   document.getElementById('telefono').value = c.Telefono || '';
+  document.getElementById('instagram').value = c.Instagram || '';
   document.getElementById('acClientePrueba').style.display = 'none';
 }
 document.addEventListener('click', (e) => {
@@ -220,11 +227,13 @@ function bloqueHora(hora, lista) {
 
 function filaPrueba(p) {
   const cliP = CLIENTES.find(c => (c.Nombre || '').trim().toLowerCase() === (p.Nombre || '').trim().toLowerCase());
-  const contactoRecordar = botonContacto(p.Telefono, cliP && cliP.Instagram, `Hola ${p.Nombre || ''}! Te recordamos tu cita de prueba en ALBALUZ el ${fmtDate(p.Fecha)} a las ${fmtHora(p.Hora)}. ¡Te esperamos! 👗`, '💬 Recordar');
+  // El Instagram cargado en la prueba manda; si no hay, se usa el de la clienta (si ya lo es).
+  const insta = p.Instagram || (cliP && cliP.Instagram) || '';
+  const contactoRecordar = botonContacto(p.Telefono, insta, `Hola ${p.Nombre || ''}! Te recordamos tu cita de prueba en ALBALUZ el ${fmtDate(p.Fecha)} a las ${fmtHora(p.Hora)}. ¡Te esperamos! 👗`, '💬 Recordar');
   return `
   <div class="dia-row" onclick="abrirEditar(${p.ID})" style="cursor:pointer">
     <div class="dia-main">
-      <strong>${p.Nombre || ''}</strong>${p.Telefono ? ` · <span class="hint">${p.Telefono}</span>` : ''}
+      <strong>${p.Nombre || ''}</strong>${p.Telefono ? ` · <span class="hint">${p.Telefono}</span>` : ''}${insta ? ` · <span class="hint">@${String(insta).replace(/^@/, '')}</span>` : ''}
       ${p.Observaciones ? `<div class="hint">${p.Observaciones}</div>` : ''}
     </div>
     <div class="dia-acciones">
@@ -239,7 +248,13 @@ function convertirDirecto(id) {
   if (p) irAAlquiler(p);
 }
 function irAAlquiler(p) {
-  const qs = new URLSearchParams({ prellenarCliente: p.Nombre || '', prellenarTelefono: p.Telefono || '' }).toString();
+  // Se lleva también el Instagram: si la persona todavía no es clienta, el alta
+  // desde Alquileres ya lo va a tener cargado.
+  const qs = new URLSearchParams({
+    prellenarCliente: p.Nombre || '',
+    prellenarTelefono: p.Telefono || '',
+    prellenarInstagram: p.Instagram || ''
+  }).toString();
   location.href = `alquileres.html?${qs}`;
 }
 
@@ -262,6 +277,7 @@ function abrirEditar(id) {
   document.getElementById('editId').value = p.ID;
   document.getElementById('nombre').value = p.Nombre || '';
   document.getElementById('telefono').value = p.Telefono || '';
+  document.getElementById('instagram').value = p.Instagram || '';
   document.getElementById('fecha').value = (p.Fecha || '').slice(0, 10);
   document.getElementById('hora').value = fmtHora(p.Hora);
   document.getElementById('observaciones').value = p.Observaciones || '';
@@ -296,6 +312,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
     const payload = {
       nombre: document.getElementById('nombre').value,
       telefono: document.getElementById('telefono').value,
+      instagram: document.getElementById('instagram').value.trim().replace(/^@/, ''),
       fecha: document.getElementById('fecha').value,
       hora: document.getElementById('hora').value,
       observaciones: document.getElementById('observaciones').value
@@ -307,15 +324,15 @@ document.getElementById('form').addEventListener('submit', async (e) => {
       await apiPost('updatePrueba', { id: editId, ...payload });
       const p = pruebas.find(x => String(x.ID) === String(editId));
       if (p) Object.assign(p, {
-        Nombre: payload.nombre, Telefono: payload.telefono, Fecha: payload.fecha,
-        Hora: payload.hora, Observaciones: payload.observaciones
+        Nombre: payload.nombre, Telefono: payload.telefono, Instagram: payload.instagram,
+        Fecha: payload.fecha, Hora: payload.hora, Observaciones: payload.observaciones
       });
       toast('Prueba actualizada');
     } else {
       const res = await apiPost('addPrueba', payload);
       pruebas.push({
-        ID: res.id, Nombre: payload.nombre, Telefono: payload.telefono, Fecha: payload.fecha,
-        Hora: payload.hora, Observaciones: payload.observaciones, Estado: 'Agendada',
+        ID: res.id, Nombre: payload.nombre, Telefono: payload.telefono, Instagram: payload.instagram,
+        Fecha: payload.fecha, Hora: payload.hora, Observaciones: payload.observaciones, Estado: 'Agendada',
         ConvertidaCliente: 'NO', CalendarEventId: ''
       });
       toast('Prueba agendada');

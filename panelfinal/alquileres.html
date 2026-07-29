@@ -965,6 +965,8 @@ function aplicarParametrosURL() {
     // si la persona de la prueba todavía no es clienta, tienen que aparecer los campos.
     revisarClientaNueva();
     checkCumpleCliente(prellenarCliente);
+    // El Instagram que se cargó en la prueba llega ya escrito en el alta de la clienta.
+    document.getElementById('nuevaInsta').value = params.get('prellenarInstagram') || '';
   }
 }
 
