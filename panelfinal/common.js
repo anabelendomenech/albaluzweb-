@@ -133,6 +133,13 @@ function vestidosDeAlquiler(a) {
   return items;
 }
 
+// Prenda cargada "a mano", sin ficha en el catálogo de Vestidos: se le pone un ID
+// con este prefijo, que nunca coincide con un ID real, así no ocupa ni bloquea
+// fechas de ningún vestido del catálogo.
+function esPrendaLibre(id) {
+  return String(id || '').indexOf('LIBRE-') === 0;
+}
+
 // Precio de UNA prenda dentro de un alquiler que puede tener varias (vestido principal +
 // accesorios/otro vestido agregados). Sirve para repartir ingresos/estadísticas por prenda.
 function precioDePrendaEnAlquiler(a, vestidoId) {

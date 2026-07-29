@@ -213,11 +213,26 @@ function resumenExtras(rest) {
   return partes.join(' + ');
 }
 
+// La descripción de una prenda sin ficha la escribe la usuaria, así que se escapa
+// antes de meterla en el HTML.
+function escaparHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g,
+    c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// Cómo se nombra una prenda: las del catálogo con su número, las sueltas solo con
+// la descripción y un aviso de que todavía no tienen ficha.
+function etiquetaPrenda(it) {
+  return esPrendaLibre(it.id)
+    ? `${escaparHtml(it.desc)} <span class="hint">(sin ficha)</span>`
+    : `#${it.id} · ${escaparHtml(it.desc || '')}`;
+}
+
 function resumenPrendas(a) {
   const items = vestidosDeAlquiler(a);
   if (!items.length) return '—';
   const [first, ...rest] = items;
-  return `#${first.id} · ${first.desc || ''}` + (rest.length ? ` <span class="hint">+${resumenExtras(rest)}</span>` : '');
+  return etiquetaPrenda(first) + (rest.length ? ` <span class="hint">+${resumenExtras(rest)}</span>` : '');
 }
 
 // Celda "Vestido" de la tabla: foto + descripción completa de TODOS los artículos del alquiler.
@@ -231,7 +246,7 @@ function celdaVestido(a) {
       const etiqueta = it.tipo === 'accesorio' ? ' <span class="hint">(accesorio)</span>' : '';
       return `<div style="display:flex;align-items:center;gap:10px">
         ${foto ? `<img src="${foto}" style="width:44px;height:58px;object-fit:cover;border-radius:6px;flex-shrink:0">` : ''}
-        <div>#${it.id} · ${it.desc || ''}${etiqueta}</div>
+        <div>${etiquetaPrenda(it)}${etiqueta}</div>
       </div>`;
     }).join('')}
   </div>`;
@@ -288,7 +303,7 @@ function abrirDetalleAlq(id) {
       <h2>${a.Cliente || ''}</h2>
       <span class="pill ${a.Estado}">${a.Estado}</span>
     </div>
-    <p class="hint" style="margin-bottom:12px">${vestidosDeAlquiler(a).map(it => `#${it.id} · ${it.desc || ''}${it.tipo === 'accesorio' ? ' <span class="hint">(accesorio)</span>' : ''}`).join('<br>')}<br>Retiro ${fmtDate(a.FechaRetiro)} → Devolución ${fmtDate(a.FechaDevolucion)}</p>
+    <p class="hint" style="margin-bottom:12px">${vestidosDeAlquiler(a).map(it => `${etiquetaPrenda(it)}${it.tipo === 'accesorio' ? ' <span class="hint">(accesorio)</span>' : ''}`).join('<br>')}<br>Retiro ${fmtDate(a.FechaRetiro)} → Devolución ${fmtDate(a.FechaDevolucion)}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
       ${wa ? `<a class="btn ghost sm" href="${wa}" target="_blank">💬 WhatsApp</a>` : ''}
       ${ig ? `<a class="btn ghost sm" href="${ig}" target="_blank">📷 Instagram</a>` : ''}
@@ -531,8 +546,7 @@ vestidoInput.addEventListener('input', () => {
   const res = vestidos
     .filter(v => `${v.ID} ${v.Descripcion}`.toLowerCase().includes(q) && !prendasSeleccionadas.some(p => String(p.id) === String(v.ID)))
     .slice(0, 8);
-  if (!res.length) { box.style.display = 'none'; return; }
-  box.innerHTML = res.map(v => {
+  const delCatalogo = res.map(v => {
     const ocupa = alquilerQueOcupa(v.ID, retiro, devolucion, alquileres, editId);
     const estadoTxt = ocupa ? `🔴 ocupado hasta ${fmtDate(ocupa.FechaDevolucion)}` : `🟢 libre esas fechas · ${fmtMoney(v.Precio)}`;
     return `<div class="ac-item" onclick='elegirVestido(${JSON.stringify(v).replace(/'/g,"&#39;")})'>
@@ -543,6 +557,12 @@ vestidoInput.addEventListener('input', () => {
       <small style="flex-shrink:0">${estadoTxt}</small>
     </div>`;
   }).join('');
+  // Si la prenda todavía no está cargada en el catálogo, se puede sumar solo con la descripción.
+  const opcionLibre = `<div class="ac-item" onclick="agregarPrendaLibre()">
+    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">➕ Agregar «${escaparHtml(vestidoInput.value.trim())}» sin ficha</span>
+    <small class="hint" style="flex-shrink:0">todavía no está en el catálogo</small>
+  </div>`;
+  box.innerHTML = delCatalogo + opcionLibre;
   box.style.display = 'block';
 });
 
@@ -553,6 +573,34 @@ function elegirVestido(v) {
   renderPrendas();
   recalcularPrecioBase();
   revisarDisponibilidad();
+  calcular();
+}
+
+// Prenda que todavía no está en el catálogo: se guarda solo con la descripción.
+// El ID con prefijo LIBRE- no coincide con ningún vestido real, así que no bloquea
+// fechas de nadie. Cuando la prenda se cargue al catálogo, se puede editar el
+// alquiler y reemplazarla por la ficha de verdad.
+function agregarPrendaLibre() {
+  const desc = vestidoInput.value.trim();
+  if (!desc) return;
+  prendasSeleccionadas.push({
+    id: 'LIBRE-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+    desc, precio: 0, tipo: 'vestido'
+  });
+  vestidoInput.value = '';
+  document.getElementById('acVestido').style.display = 'none';
+  renderPrendas();
+  recalcularPrecioBase();
+  revisarDisponibilidad();
+  calcular();
+}
+
+// Las prendas sin ficha no tienen precio de catálogo, así que se escribe a mano.
+function cambiarPrecioLibre(id, valor) {
+  const p = prendasSeleccionadas.find(p => String(p.id) === String(id));
+  if (!p) return;
+  p.precio = Number(valor) || 0;
+  recalcularPrecioBase();
   calcular();
 }
 
@@ -579,9 +627,13 @@ function renderPrendas() {
   const box = document.getElementById('prendasElegidas');
   box.innerHTML = prendasSeleccionadas.map((p, i) => `
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;background:var(--rose-light);border-radius:8px;margin-bottom:6px">
-      <span>#${p.id} — ${p.desc}${i === 0 ? ' <span class="hint">(principal)</span>' : ''}</span>
+      <span>${etiquetaPrenda(p)}${i === 0 ? ' <span class="hint">(principal)</span>' : ''}</span>
       <span style="display:flex;align-items:center;gap:8px">
-        <span class="hint">${fmtMoney(p.precio)}</span>
+        ${esPrendaLibre(p.id)
+          ? `<input type="number" value="${Number(p.precio) || 0}" min="0" aria-label="Precio"
+               onchange="cambiarPrecioLibre('${p.id}', this.value)"
+               style="width:92px;padding:4px 8px;margin:0;font-size:.85rem">`
+          : `<span class="hint">${fmtMoney(p.precio)}</span>`}
         ${i > 0 ? `<button type="button" class="btn ghost sm" onclick="toggleTipoPrenda('${p.id}')" style="padding:2px 8px">${p.tipo === 'accesorio' ? '🎀 Accesorio' : '👗 Vestido/Traje'}</button>` : ''}
         <button type="button" class="btn ghost sm" onclick="quitarPrenda('${p.id}')" style="padding:2px 8px" aria-label="Quitar">&times;</button>
       </span>
