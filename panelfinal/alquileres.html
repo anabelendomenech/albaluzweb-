@@ -876,6 +876,19 @@ document.getElementById('form').addEventListener('submit', async (e) => {
   const btn = e.target.querySelector('button[type=submit]');
   btn.disabled = true; btn.textContent = 'Guardando…';
   try {
+    // Las prendas "sin ficha" (cargadas solo con descripción, mientras se completa
+    // el catálogo) se dan de alta como vestidos reales antes de guardar el alquiler.
+    // Así el alquiler queda con un ID de verdad y la prenda ya aparece en Vestidos.
+    for (const p of prendasSeleccionadas) {
+      if (!esPrendaLibre(p.id)) continue;
+      const nuevoVestido = await apiPost('addVestido', { descripcion: p.desc, precio: p.precio });
+      vestidos.push({
+        ID: nuevoVestido.id, Descripcion: p.desc, Precio: p.precio, Foto: '',
+        Tipo: '', Detalle: '', Estado: 'Disponible', Talle: '', FechaCompra: '', CostoCompra: 0
+      });
+      p.id = nuevoVestido.id;
+    }
+
     const [primaria, ...extras] = prendasSeleccionadas;
     const itemsExtra = JSON.stringify(extras.map(p => ({ vestidoId: p.id, vestidoDesc: p.desc, precio: p.precio, tipo: p.tipo || 'vestido' })));
     const payload = {
